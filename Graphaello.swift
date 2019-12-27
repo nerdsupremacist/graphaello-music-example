@@ -14909,13 +14909,13 @@ extension ArtistDetailView {
 extension Music {
     
     func artistDetailView(mbid: String
-, lang: String? = "en"
 , size: Music.TheAudioDBImageSize? = Music.TheAudioDBImageSize.full
+, lang: String? = "en"
 ) -> some View {
         return QueryRenderer(client: client,
                              query: ApolloStuff.ArtistDetailViewQuery(mbid: mbid
-, lang: lang
 , size: .init(size)
+, lang: lang
 )) { data in
         
             ArtistDetailView(api: self
@@ -19337,7 +19337,7 @@ public enum ApolloStuff {
     /// The raw GraphQL definition of this operation.
     public let operationDefinition =
       """
-      query ArtistDetailView($mbid: MBID!, $lang: String, $size: TheAudioDBImageSize) {
+      query ArtistDetailView($mbid: MBID!, $size: TheAudioDBImageSize, $lang: String) {
         lookup {
           __typename
           artist(mbid: $mbid) {
@@ -19368,17 +19368,17 @@ public enum ApolloStuff {
     public let operationName = "ArtistDetailView"
 
     public var mbid: String
-    public var lang: String?
     public var size: TheAudioDBImageSize?
+    public var lang: String?
 
-    public init(mbid: String, lang: String? = nil, size: TheAudioDBImageSize? = nil) {
+    public init(mbid: String, size: TheAudioDBImageSize? = nil, lang: String? = nil) {
       self.mbid = mbid
-      self.lang = lang
       self.size = size
+      self.lang = lang
     }
 
     public var variables: GraphQLMap? {
-      return ["mbid": mbid, "lang": lang, "size": size]
+      return ["mbid": mbid, "size": size, "lang": lang]
     }
 
     public struct Data: GraphQLSelectionSet {
