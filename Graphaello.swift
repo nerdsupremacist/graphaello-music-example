@@ -14978,9 +14978,11 @@ extension SimilarArtistCell {
     
     
     
-    init(lastFmArtist: LastFMArtist
+    init(api: Music
+, lastFmArtist: LastFMArtist
 ) {
-        self.init(id: GraphQL(lastFmArtist.mbid)
+        self.init(api: api
+, id: GraphQL(lastFmArtist.mbid)
 , name: GraphQL(lastFmArtist.name)
 , images: GraphQL(lastFmArtist.topAlbums?.nodes?.map { $0?.image })
 )
@@ -15003,10 +15005,12 @@ extension SimilarArtistsList {
     typealias Data = ApolloStuff.SimilarArtistsListQuery.Data
     
     
-    init(artists: Paging<SimilarArtistCell.LastFMArtist>?
+    init(api: Music
+, artists: Paging<SimilarArtistCell.LastFMArtist>?
 , data: Data
 ) {
-        self.init(artists: GraphQL(artists)
+        self.init(api: api
+, artists: GraphQL(artists)
 )
     }
 }
@@ -15026,7 +15030,8 @@ extension Music {
 , size: .init(size)
 )) { data in
         
-            SimilarArtistsList(artists: data.lookup?.artist?.lastFm?.similarArtists?.fragments.lastFmArtistConnectionSimilarArtistCellLastFmArtist.paging { _cursor, _pageSize, _completion in
+            SimilarArtistsList(api: self
+, artists: data.lookup?.artist?.lastFm?.similarArtists?.fragments.lastFmArtistConnectionSimilarArtistCellLastFmArtist.paging { _cursor, _pageSize, _completion in
     self.client.fetch(query: ApolloStuff.SimilarArtistsListLastFmArtistConnectionSimilarArtistCellLastFmArtistQuery(mbid: mbid
 , first: _pageSize ?? first
 , after: _cursor

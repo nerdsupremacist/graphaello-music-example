@@ -10,6 +10,8 @@ import Foundation
 import SwiftUI
 
 struct SimilarArtistCell: View {
+    let api: Music
+
     @GraphQL(Music.LastFMArtist.mbid)
     var id: String?
 
@@ -20,9 +22,18 @@ struct SimilarArtistCell: View {
     var images: [String?]?
 
     var body: some View {
-        VStack {
+        let stack = VStack {
             Image.artwork(images?.first?.flatMap(URL.init(string:))).clipShape(Circle())
-            name.map { Text($0).font(.body).lineLimit(1) }
+            name.map { Text($0).font(.body).foregroundColor(.primary).lineLimit(1) }
+        }
+
+        return VStack {
+            id.map { id in
+                NavigationLink(destination: api.artistDetailView(mbid: id)) {
+                    stack
+                }
+            }
+            id == nil ? stack : nil
         }
     }
 }

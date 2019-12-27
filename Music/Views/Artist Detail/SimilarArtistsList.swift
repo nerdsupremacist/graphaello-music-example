@@ -10,6 +10,8 @@ import Foundation
 import SwiftUI
 
 struct SimilarArtistsList: View {
+    let api: Music
+
     @GraphQL(Music.lookup.artist.lastFm.similarArtists)
     var artists: Paging<SimilarArtistCell.LastFMArtist>?
 
@@ -18,7 +20,7 @@ struct SimilarArtistsList: View {
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack {
                     PagingView(artists) { artist in
-                        SimilarArtistCell(lastFmArtist: artist)
+                        SimilarArtistCell(api: self.api, lastFmArtist: artist)
                             .frame(width: 140, height: 160, alignment: .leading)
                     }
                 }
