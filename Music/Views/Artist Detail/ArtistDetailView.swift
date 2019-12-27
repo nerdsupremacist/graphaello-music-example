@@ -26,6 +26,7 @@ struct ArtistDetailView: View {
     var bio: String?
 
     var body: some View {
+        
         FancyScrollView(title: name ?? "",
                         headerHeight: 350,
                         scrollUpHeaderBehavior: .parallax,
@@ -39,18 +40,7 @@ struct ArtistDetailView: View {
                         }) {
 
             id.map { id in
-                VStack(alignment: .leading) {
-                    bio.map { bio in
-                        ArtistInfoSection("About") {
-                            Text(bio)
-                                .font(.body)
-                                .fontWeight(.light)
-                                .padding(.horizontal, 16)
-                                .lineLimit(4)
-                        }
-                        .padding(.top, 16)
-                    }
-
+                VStack(alignment: .leading, spacing: 16) {
                     ArtistInfoSection("Top Songs") {
                         api.artistTopSongsList(mbid: id, first: 5)
                     }
@@ -66,7 +56,28 @@ struct ArtistDetailView: View {
                     ArtistInfoSection("Singles") {
                         api.artistAlbumList(mbid: id, type: [.single], first: 3)
                     }
+
+                    VStack(spacing: 16) {
+                        bio.map { bio in
+                            ArtistInfoSection("About") {
+                                Text(bio)
+                                    .font(.body)
+                                    .fontWeight(.light)
+                                    .padding(.horizontal, 16)
+                                    .lineLimit(4)
+                            }
+                        }
+
+                        Divider()
+
+                        ArtistInfoSection("Similar Artists") {
+                            api.similarArtistsList(mbid: id, first: 8)
+                        }
+                    }
+                    .padding(.vertical, 16)
+                    .background(Color(UIColor.systemGray6))
                 }
+                .padding(.top, 16)
             }
         }
     }

@@ -21,15 +21,13 @@ struct ArtistInfoSection: View {
                 .padding(.horizontal, 16)
 
             content
-
-            Spacer()
         }
     }
 }
 
 extension ArtistInfoSection {
 
-    init<Content: View>(_ title: String, content: () -> Content) {
+    init<Content: View>(_ title: String, @ViewBuilder content: () -> Content) {
         self.init(title: title, content: AnyView(content()))
     }
 
