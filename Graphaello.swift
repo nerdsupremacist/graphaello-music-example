@@ -14817,6 +14817,11 @@ extension ArtistDetailView {
 , name: GraphQL(data.lookup?.artist?.name)
 , image: GraphQL(data.lookup?.artist?.theAudioDb?.thumbnail)
 , bio: GraphQL(data.lookup?.artist?.theAudioDb?.biography)
+, area: GraphQL(data.lookup?.artist?.area?.name)
+, type: GraphQL(data.lookup?.artist?.type)
+, formed: GraphQL(data.lookup?.artist?.lifeSpan?.begin)
+, genre: GraphQL(data.lookup?.artist?.theAudioDb?.style)
+, mood: GraphQL(data.lookup?.artist?.theAudioDb?.mood)
 )
     }
 }
@@ -14825,13 +14830,13 @@ extension ArtistDetailView {
 extension Music {
     
     func artistDetailView(mbid: String
-, size: Music.TheAudioDBImageSize? = Music.TheAudioDBImageSize.full
 , lang: String? = "en"
+, size: Music.TheAudioDBImageSize? = Music.TheAudioDBImageSize.full
 ) -> some View {
         return QueryRenderer(client: client,
                              query: ApolloStuff.ArtistDetailViewQuery(mbid: mbid
-, size: .init(size)
 , lang: lang
+, size: .init(size)
 )) { data in
         
             ArtistDetailView(api: self
@@ -18641,18 +18646,29 @@ public enum ApolloStuff {
     /// The raw GraphQL definition of this operation.
     public let operationDefinition =
       """
-      query ArtistDetailView($mbid: MBID!, $size: TheAudioDBImageSize, $lang: String) {
+      query ArtistDetailView($mbid: MBID!, $lang: String, $size: TheAudioDBImageSize) {
         lookup {
           __typename
           artist(mbid: $mbid) {
             __typename
+            area {
+              __typename
+              name
+            }
+            lifeSpan {
+              __typename
+              begin
+            }
             mbid
             name
             theAudioDB {
               __typename
               biography(lang: $lang)
+              mood
+              style
               thumbnail(size: $size)
             }
+            type
           }
         }
       }
@@ -18661,17 +18677,17 @@ public enum ApolloStuff {
     public let operationName = "ArtistDetailView"
 
     public var mbid: String
-    public var size: TheAudioDBImageSize?
     public var lang: String?
+    public var size: TheAudioDBImageSize?
 
-    public init(mbid: String, size: TheAudioDBImageSize? = nil, lang: String? = nil) {
+    public init(mbid: String, lang: String? = nil, size: TheAudioDBImageSize? = nil) {
       self.mbid = mbid
-      self.size = size
       self.lang = lang
+      self.size = size
     }
 
     public var variables: GraphQLMap? {
-      return ["mbid": mbid, "size": size, "lang": lang]
+      return ["mbid": mbid, "lang": lang, "size": size]
     }
 
     public struct Data: GraphQLSelectionSet {
@@ -18743,9 +18759,12 @@ public enum ApolloStuff {
 
           public static let selections: [GraphQLSelection] = [
             GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+            GraphQLField("area", type: .object(Area.selections)),
+            GraphQLField("lifeSpan", type: .object(LifeSpan.selections)),
             GraphQLField("mbid", type: .nonNull(.scalar(String.self))),
             GraphQLField("name", type: .scalar(String.self)),
             GraphQLField("theAudioDB", type: .object(TheAudioDb.selections)),
+            GraphQLField("type", type: .scalar(String.self)),
           ]
 
           public private(set) var resultMap: ResultMap
@@ -18754,8 +18773,8 @@ public enum ApolloStuff {
             self.resultMap = unsafeResultMap
           }
 
-          public init(mbid: String, name: String? = nil, theAudioDb: TheAudioDb? = nil) {
-            self.init(unsafeResultMap: ["__typename": "Artist", "mbid": mbid, "name": name, "theAudioDB": theAudioDb.flatMap { (value: TheAudioDb) -> ResultMap in value.resultMap }])
+          public init(area: Area? = nil, lifeSpan: LifeSpan? = nil, mbid: String, name: String? = nil, theAudioDb: TheAudioDb? = nil, type: String? = nil) {
+            self.init(unsafeResultMap: ["__typename": "Artist", "area": area.flatMap { (value: Area) -> ResultMap in value.resultMap }, "lifeSpan": lifeSpan.flatMap { (value: LifeSpan) -> ResultMap in value.resultMap }, "mbid": mbid, "name": name, "theAudioDB": theAudioDb.flatMap { (value: TheAudioDb) -> ResultMap in value.resultMap }, "type": type])
           }
 
           public var __typename: String {
@@ -18764,6 +18783,28 @@ public enum ApolloStuff {
             }
             set {
               resultMap.updateValue(newValue, forKey: "__typename")
+            }
+          }
+
+          /// The area with which an artist is primarily identified. It
+          /// is often, but not always, its birth/formation country.
+          public var area: Area? {
+            get {
+              return (resultMap["area"] as? ResultMap).flatMap { Area(unsafeResultMap: $0) }
+            }
+            set {
+              resultMap.updateValue(newValue?.resultMap, forKey: "area")
+            }
+          }
+
+          /// The begin and end dates of the entity’s existence. Its exact
+          /// meaning depends on the type of entity.
+          public var lifeSpan: LifeSpan? {
+            get {
+              return (resultMap["lifeSpan"] as? ResultMap).flatMap { LifeSpan(unsafeResultMap: $0) }
+            }
+            set {
+              resultMap.updateValue(newValue?.resultMap, forKey: "lifeSpan")
             }
           }
 
@@ -18799,12 +18840,100 @@ public enum ApolloStuff {
             }
           }
 
+          /// Whether an artist is a person, a group, or something else.
+          public var type: String? {
+            get {
+              return resultMap["type"] as? String
+            }
+            set {
+              resultMap.updateValue(newValue, forKey: "type")
+            }
+          }
+
+          public struct Area: GraphQLSelectionSet {
+            public static let possibleTypes = ["Area"]
+
+            public static let selections: [GraphQLSelection] = [
+              GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+              GraphQLField("name", type: .scalar(String.self)),
+            ]
+
+            public private(set) var resultMap: ResultMap
+
+            public init(unsafeResultMap: ResultMap) {
+              self.resultMap = unsafeResultMap
+            }
+
+            public init(name: String? = nil) {
+              self.init(unsafeResultMap: ["__typename": "Area", "name": name])
+            }
+
+            public var __typename: String {
+              get {
+                return resultMap["__typename"]! as! String
+              }
+              set {
+                resultMap.updateValue(newValue, forKey: "__typename")
+              }
+            }
+
+            /// The official name of the entity.
+            public var name: String? {
+              get {
+                return resultMap["name"] as? String
+              }
+              set {
+                resultMap.updateValue(newValue, forKey: "name")
+              }
+            }
+          }
+
+          public struct LifeSpan: GraphQLSelectionSet {
+            public static let possibleTypes = ["LifeSpan"]
+
+            public static let selections: [GraphQLSelection] = [
+              GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+              GraphQLField("begin", type: .scalar(String.self)),
+            ]
+
+            public private(set) var resultMap: ResultMap
+
+            public init(unsafeResultMap: ResultMap) {
+              self.resultMap = unsafeResultMap
+            }
+
+            public init(begin: String? = nil) {
+              self.init(unsafeResultMap: ["__typename": "LifeSpan", "begin": begin])
+            }
+
+            public var __typename: String {
+              get {
+                return resultMap["__typename"]! as! String
+              }
+              set {
+                resultMap.updateValue(newValue, forKey: "__typename")
+              }
+            }
+
+            /// The start date of the entity’s life span.
+            public var begin: String? {
+              get {
+                return resultMap["begin"] as? String
+              }
+              set {
+                resultMap.updateValue(newValue, forKey: "begin")
+              }
+            }
+          }
+
           public struct TheAudioDb: GraphQLSelectionSet {
             public static let possibleTypes = ["TheAudioDBArtist"]
 
             public static let selections: [GraphQLSelection] = [
               GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
               GraphQLField("biography", arguments: ["lang": GraphQLVariable("lang")], type: .scalar(String.self)),
+              GraphQLField("mood", type: .scalar(String.self)),
+              GraphQLField("style", type: .scalar(String.self)),
               GraphQLField("thumbnail", arguments: ["size": GraphQLVariable("size")], type: .scalar(String.self)),
             ]
 
@@ -18814,8 +18943,8 @@ public enum ApolloStuff {
               self.resultMap = unsafeResultMap
             }
 
-            public init(biography: String? = nil, thumbnail: String? = nil) {
-              self.init(unsafeResultMap: ["__typename": "TheAudioDBArtist", "biography": biography, "thumbnail": thumbnail])
+            public init(biography: String? = nil, mood: String? = nil, style: String? = nil, thumbnail: String? = nil) {
+              self.init(unsafeResultMap: ["__typename": "TheAudioDBArtist", "biography": biography, "mood": mood, "style": style, "thumbnail": thumbnail])
             }
 
             public var __typename: String {
@@ -18834,6 +18963,26 @@ public enum ApolloStuff {
               }
               set {
                 resultMap.updateValue(newValue, forKey: "biography")
+              }
+            }
+
+            /// The primary musical mood of the artist (e.g. “Sad”).
+            public var mood: String? {
+              get {
+                return resultMap["mood"] as? String
+              }
+              set {
+                resultMap.updateValue(newValue, forKey: "mood")
+              }
+            }
+
+            /// The primary musical style of the artist (e.g. “Rock/Pop”).
+            public var style: String? {
+              get {
+                return resultMap["style"] as? String
+              }
+              set {
+                resultMap.updateValue(newValue, forKey: "style")
               }
             }
 

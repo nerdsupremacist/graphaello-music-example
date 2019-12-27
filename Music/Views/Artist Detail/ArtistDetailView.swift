@@ -25,6 +25,21 @@ struct ArtistDetailView: View {
     @GraphQL(Music.lookup.artist.theAudioDb.biography)
     var bio: String?
 
+    @GraphQL(Music.lookup.artist.area.name)
+    var area: String?
+
+    @GraphQL(Music.lookup.artist.type)
+    var type: String?
+
+    @GraphQL(Music.lookup.artist.lifeSpan.begin)
+    var formed: String?
+
+    @GraphQL(Music.lookup.artist.theAudioDb.style)
+    var genre: String?
+
+    @GraphQL(Music.lookup.artist.theAudioDb.mood)
+    var mood: String?
+
     var body: some View {
         
         FancyScrollView(title: name ?? "",
@@ -68,10 +83,16 @@ struct ArtistDetailView: View {
                             }
                         }
 
+                        ArtistMetadata(type: "Origin", text: area)
+                        ArtistMetadata(type: type == "Person" ? "Born" : "Formed", text: formed)
+                        ArtistMetadata(type: "Genre", text: genre)
+                        ArtistMetadata(type: "Mood", text: mood)
+
                         Divider()
+                            .padding(.horizontal, 16)
 
                         ArtistInfoSection("Similar Artists") {
-                            api.similarArtistsList(mbid: id, first: 8)
+                            api.similarArtistsList(mbid: id, first: 4)
                         }
                     }
                     .padding(.vertical, 16)
