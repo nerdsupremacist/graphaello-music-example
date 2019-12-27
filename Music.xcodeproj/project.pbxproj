@@ -22,6 +22,8 @@
 		0E8BAB2123B5A029000FE98A /* SimilarArtistCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E8BAB2023B5A029000FE98A /* SimilarArtistCell.swift */; };
 		0E8BAB2323B5A1AD000FE98A /* SimilarArtistsList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E8BAB2223B5A1AC000FE98A /* SimilarArtistsList.swift */; };
 		0E96235223B5B071003DE485 /* ArtistMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E96235123B5B071003DE485 /* ArtistMetadata.swift */; };
+		0E96235423B616DB003DE485 /* AlbumDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E96235323B616DB003DE485 /* AlbumDetailView.swift */; };
+		0E96235623B62498003DE485 /* AlbumTrackCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E96235523B62498003DE485 /* AlbumTrackCell.swift */; };
 		0EB5889723B4EF9800FAFDF2 /* FancyScrollView in Frameworks */ = {isa = PBXBuildFile; productRef = 0EB5889623B4EF9800FAFDF2 /* FancyScrollView */; };
 		0EB5889A23B5700500FAFDF2 /* URLImage in Frameworks */ = {isa = PBXBuildFile; productRef = 0EB5889923B5700500FAFDF2 /* URLImage */; };
 		0EB5889C23B5704200FAFDF2 /* URLImage+artwork.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EB5889B23B5704200FAFDF2 /* URLImage+artwork.swift */; };
@@ -53,6 +55,8 @@
 		0E8BAB2023B5A029000FE98A /* SimilarArtistCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = SimilarArtistCell.swift; path = "../../../../music/Music/Views/Artist Detail/SimilarArtistCell.swift"; sourceTree = "<group>"; };
 		0E8BAB2223B5A1AC000FE98A /* SimilarArtistsList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = SimilarArtistsList.swift; path = "../../../../music/Music/Views/Artist Detail/SimilarArtistsList.swift"; sourceTree = "<group>"; };
 		0E96235123B5B071003DE485 /* ArtistMetadata.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArtistMetadata.swift; sourceTree = "<group>"; };
+		0E96235323B616DB003DE485 /* AlbumDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlbumDetailView.swift; sourceTree = "<group>"; };
+		0E96235523B62498003DE485 /* AlbumTrackCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlbumTrackCell.swift; sourceTree = "<group>"; };
 		0EB5889B23B5704200FAFDF2 /* URLImage+artwork.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "URLImage+artwork.swift"; sourceTree = "<group>"; };
 		0ECD147023AEF7E500ABD3F4 /* Music.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Music.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		0ECD147323AEF7E500ABD3F4 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -182,6 +186,8 @@
 			children = (
 				0EF69A5423B069D400712F5B /* Trending */,
 				0E8BAB1F23B59E8B000FE98A /* Artist Detail */,
+				0E96235323B616DB003DE485 /* AlbumDetailView.swift */,
+				0E96235523B62498003DE485 /* AlbumTrackCell.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -277,7 +283,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "if ! type \"graphaello\" > /dev/null; then\n  echo \"warning: graphaello is not installed on your machine. Your project won't be updated automatically\"\n  exit 0\nfi\ngraphaello codegen --project $PROJECT_FILE_PATH --apollo derivedData\n";
+			shellScript = "if ! type \"graphaello\" > /dev/null; then\n  echo \"warning: graphaello is not installed on your machine. Your project won't be updated automatically\"\n  exit 0\nfi\n#graphaello codegen --project $PROJECT_FILE_PATH --apollo derivedData\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -294,6 +300,7 @@
 				0E08AA4023B17D0700146CFB /* ArtistAlbumCell.swift in Sources */,
 				0E3E9ADF23AFF32600B28C72 /* TrendingTrackCell.swift in Sources */,
 				0EF69A5023B0644A00712F5B /* ImageGridView.swift in Sources */,
+				0E96235623B62498003DE485 /* AlbumTrackCell.swift in Sources */,
 				0E08AA3023B072F300146CFB /* TopArtistsList.swift in Sources */,
 				0E8BAB2123B5A029000FE98A /* SimilarArtistCell.swift in Sources */,
 				0EF69A4E23B04E4D00712F5B /* CardContainer.swift in Sources */,
@@ -305,6 +312,7 @@
 				0E08AA4623B195D700146CFB /* ArtistInfoSection.swift in Sources */,
 				0E96235223B5B071003DE485 /* ArtistMetadata.swift in Sources */,
 				0E3E9AD623AEF88400B28C72 /* TrendingArtistCell.swift in Sources */,
+				0E96235423B616DB003DE485 /* AlbumDetailView.swift in Sources */,
 				EDD135E656423891EF4039B0 /* Graphaello.swift in Sources */,
 				0E08AA4423B195A100146CFB /* ArtistAlbumList.swift in Sources */,
 			);

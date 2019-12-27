@@ -10,6 +10,8 @@ import Foundation
 import SwiftUI
 
 struct ArtistAlbumList: View {
+    let api: Music
+
     @GraphQL(Music.lookup.artist.releaseGroups)
     var albums: Paging<ArtistAlbumCell.ReleaseGroup>?
 
@@ -18,7 +20,7 @@ struct ArtistAlbumList: View {
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack {
                     PagingView(albums) { album in
-                        ArtistAlbumCell(releaseGroup: album)
+                        ArtistAlbumCell(api: self.api, releaseGroup: album)
                             .frame(width: 180, height: 200, alignment: .leading)
                     }
                 }
