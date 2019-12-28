@@ -13,9 +13,6 @@ import FancyScrollView
 struct ArtistDetailView: View {
     let api: Music
 
-    @GraphQL(Music.lookup.artist.mbid)
-    var id: String?
-
     @GraphQL(Music.lookup.artist.name)
     var name: String?
 
@@ -62,44 +59,42 @@ struct ArtistDetailView: View {
                                 }
                         }) {
 
-            id.map { id in
-                VStack(alignment: .leading, spacing: 16) {
-                    ArtistInfoSection("Top Songs") {
-                        ArtistTopSongsList(tracks: self.topSongs)
-                    }
-
-                    ArtistInfoSection("Albums") {
-                        ArtistAlbumList(api: self.api, albums: self.albums)
-                    }
-
-                    VStack(spacing: 16) {
-                        bio.map { bio in
-                            ArtistInfoSection("About") {
-                                Text(bio)
-                                    .font(.body)
-                                    .fontWeight(.light)
-                                    .padding(.horizontal, 16)
-                                    .lineLimit(4)
-                            }
-                        }
-
-                        ArtistMetadata(type: "Origin", text: area)
-                        ArtistMetadata(type: type == "Person" ? "Born" : "Formed", text: formed)
-                        ArtistMetadata(type: "Genre", text: genre)
-                        ArtistMetadata(type: "Mood", text: mood)
-
-                        Divider()
-                            .padding(.horizontal, 16)
-
-                        ArtistInfoSection("Similar Artists") {
-                            SimilarArtistsList(api: self.api, artists: self.similarArtists)
-                        }
-                    }
-                    .padding(.vertical, 16)
-                    .background(Color(UIColor.systemGray6))
+            VStack(alignment: .leading, spacing: 16) {
+                ArtistInfoSection("Top Songs") {
+                    ArtistTopSongsList(tracks: self.topSongs)
                 }
-                .padding(.top, 16)
+
+                ArtistInfoSection("Albums") {
+                    ArtistAlbumList(api: self.api, albums: self.albums)
+                }
+
+                VStack(spacing: 16) {
+                    bio.map { bio in
+                        ArtistInfoSection("About") {
+                            Text(bio)
+                                .font(.body)
+                                .fontWeight(.light)
+                                .padding(.horizontal, 16)
+                                .lineLimit(4)
+                        }
+                    }
+
+                    ArtistMetadata(type: "Origin", text: area)
+                    ArtistMetadata(type: type == "Person" ? "Born" : "Formed", text: formed)
+                    ArtistMetadata(type: "Genre", text: genre)
+                    ArtistMetadata(type: "Mood", text: mood)
+
+                    Divider()
+                        .padding(.horizontal, 16)
+
+                    ArtistInfoSection("Similar Artists") {
+                        SimilarArtistsList(api: self.api, artists: self.similarArtists)
+                    }
+                }
+                .padding(.vertical, 16)
+                .background(Color(UIColor.systemGray6))
             }
+            .padding(.top, 16)
         }
     }
 }
