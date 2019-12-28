@@ -14752,132 +14752,6 @@ extension ArtistAlbumCell {
 
 
 
-// MARK: - ArtistAlbumList
-
-
-
-extension ArtistAlbumList {
-    
-    
-    typealias Data = ApolloStuff.ArtistAlbumListQuery.Data
-    
-    
-    init(api: Music
-, albums: Paging<ArtistAlbumCell.ReleaseGroup>?
-, data: Data
-) {
-        self.init(api: api
-, albums: GraphQL(albums)
-)
-    }
-}
-
-
-extension Music {
-    
-    func artistAlbumList(mbid: String
-, type: [Music.ReleaseGroupType?]? = nil
-, after: String? = nil
-, first: Int? = nil
-, status: [Music.ReleaseStatus?]? = [.official]
-, size: Music.TheAudioDBImageSize? = Music.TheAudioDBImageSize.full
-) -> some View {
-        return QueryRenderer(client: client,
-                             query: ApolloStuff.ArtistAlbumListQuery(mbid: mbid
-, type: .init(type)
-, after: after
-, first: first
-, status: [.official]
-, size: .init(size)
-)) { data in
-        
-            ArtistAlbumList(api: self
-, albums: data.lookup?.artist?.releaseGroups?.fragments.releaseGroupConnectionArtistAlbumCellReleaseGroup.paging { _cursor, _pageSize, _completion in
-    self.client.fetch(query: ApolloStuff.ArtistAlbumListReleaseGroupConnectionArtistAlbumCellReleaseGroupQuery(mbid: mbid
-, type: .init(type)
-, after: _cursor
-, first: _pageSize ?? first
-, status: [.official]
-, size: .init(size)
-)) { result in
-        _completion(result.map { $0.data?.lookup?.artist?.releaseGroups?.fragments.releaseGroupConnectionArtistAlbumCellReleaseGroup })
-    }
-}
-
-, data: data
-)
-        }
-    }
-    
-}
-
-
-extension ApolloStuff.ArtistAlbumListQuery.Data.Lookup.Artist.ReleaseGroup {
-    public struct Fragments {
-        public private(set) var resultMap: ResultMap
-
-        public init(unsafeResultMap: ResultMap) {
-            resultMap = unsafeResultMap
-        }
-    }
-
-    public var fragments: Fragments {
-        get {
-            return Fragments(unsafeResultMap: resultMap)
-        }
-        set {
-            resultMap += newValue.resultMap
-        }
-    }
-}
-
-extension ApolloStuff.ArtistAlbumListReleaseGroupConnectionArtistAlbumCellReleaseGroupQuery.Data.Lookup.Artist.ReleaseGroup {
-    public struct Fragments {
-        public private(set) var resultMap: ResultMap
-
-        public init(unsafeResultMap: ResultMap) {
-            resultMap = unsafeResultMap
-        }
-    }
-
-    public var fragments: Fragments {
-        get {
-            return Fragments(unsafeResultMap: resultMap)
-        }
-        set {
-            resultMap += newValue.resultMap
-        }
-    }
-}
-
-extension ApolloStuff.ArtistAlbumListQuery.Data.Lookup.Artist.ReleaseGroup.Fragments {
-
-    public var releaseGroupConnectionArtistAlbumCellReleaseGroup: ApolloStuff.ReleaseGroupConnectionArtistAlbumCellReleaseGroup {
-        get {
-            return ApolloStuff.ReleaseGroupConnectionArtistAlbumCellReleaseGroup(unsafeResultMap: resultMap)
-        }
-        set {
-            resultMap += newValue.resultMap
-        }
-    }
-
-}
-
-extension ApolloStuff.ArtistAlbumListReleaseGroupConnectionArtistAlbumCellReleaseGroupQuery.Data.Lookup.Artist.ReleaseGroup.Fragments {
-
-    public var releaseGroupConnectionArtistAlbumCellReleaseGroup: ApolloStuff.ReleaseGroupConnectionArtistAlbumCellReleaseGroup {
-        get {
-            return ApolloStuff.ReleaseGroupConnectionArtistAlbumCellReleaseGroup(unsafeResultMap: resultMap)
-        }
-        set {
-            resultMap += newValue.resultMap
-        }
-    }
-
-}
-
-
-
 // MARK: - ArtistDetailView
 
 
@@ -14889,18 +14763,24 @@ extension ArtistDetailView {
     
     
     init(api: Music
+, topSongs: Paging<TrendingTrackCell.LastFMTrack>?
+, albums: Paging<ArtistAlbumCell.ReleaseGroup>?
+, similarArtists: Paging<SimilarArtistCell.LastFMArtist>?
 , data: Data
 ) {
         self.init(api: api
 , id: GraphQL(data.lookup?.artist?.mbid)
 , name: GraphQL(data.lookup?.artist?.name)
 , image: GraphQL(data.lookup?.artist?.theAudioDb?.thumbnail)
+, topSongs: GraphQL(topSongs)
+, albums: GraphQL(albums)
 , bio: GraphQL(data.lookup?.artist?.theAudioDb?.biography)
 , area: GraphQL(data.lookup?.artist?.area?.name)
 , type: GraphQL(data.lookup?.artist?.type)
 , formed: GraphQL(data.lookup?.artist?.lifeSpan?.begin)
 , genre: GraphQL(data.lookup?.artist?.theAudioDb?.style)
 , mood: GraphQL(data.lookup?.artist?.theAudioDb?.mood)
+, similarArtists: GraphQL(similarArtists)
 )
     }
 }
@@ -14909,71 +14789,61 @@ extension ArtistDetailView {
 extension Music {
     
     func artistDetailView(mbid: String
+, after: String? = nil
+, releaseConnectionFirst: Int? = nil
 , size: Music.TheAudioDBImageSize? = Music.TheAudioDBImageSize.full
+, urlStringSize: Music.LastFMImageSize? = nil
 , lang: String? = "en"
 ) -> some View {
         return QueryRenderer(client: client,
                              query: ApolloStuff.ArtistDetailViewQuery(mbid: mbid
+, type: [.album]
+, after: after
+, first: 5
+, status: [.official]
+, ReleaseConnection_first: releaseConnectionFirst
 , size: .init(size)
+, LastFMArtistConnection_first: 3
+, URLString_size: .init(urlStringSize)
+, LastFMAlbumConnection_first: 1
 , lang: lang
 )) { data in
         
             ArtistDetailView(api: self
-, data: data
-)
-        }
-    }
-    
-}
-
-
-
-
-
-
-// MARK: - ArtistTopSongsList
-
-
-
-extension ArtistTopSongsList {
-    
-    
-    typealias Data = ApolloStuff.ArtistTopSongsListQuery.Data
-    
-    
-    init(tracks: Paging<TrendingTrackCell.LastFMTrack>?
-, data: Data
-) {
-        self.init(tracks: GraphQL(tracks)
-)
-    }
-}
-
-
-extension Music {
-    
-    func artistTopSongsList(mbid: String
-, first: Int? = 25
-, after: String? = nil
-, size: Music.LastFMImageSize? = nil
-) -> some View {
-        return QueryRenderer(client: client,
-                             query: ApolloStuff.ArtistTopSongsListQuery(mbid: mbid
-, first: first
-, after: after
-, size: .init(size)
-)) { data in
-        
-            ArtistTopSongsList(tracks: data.lookup?.artist?.lastFm?.topTracks?.fragments.lastFmTrackConnectionTrendingTrackCellLastFmTrack.paging { _cursor, _pageSize, _completion in
-    self.client.fetch(query: ApolloStuff.ArtistTopSongsListLastFmTrackConnectionTrendingTrackCellLastFmTrackQuery(mbid: mbid
-, first: _pageSize ?? first
+, topSongs: data.lookup?.artist?.lastFm?.topTracks?.fragments.lastFmTrackConnectionTrendingTrackCellLastFmTrack.paging { _cursor, _pageSize, _completion in
+    self.client.fetch(query: ApolloStuff.ArtistDetailViewLastFmTrackConnectionTrendingTrackCellLastFmTrackQuery(mbid: mbid
+, first: _pageSize ?? 5
 , after: _cursor
-, size: .init(size)
+, URLString_size: .init(urlStringSize)
 )) { result in
         _completion(result.map { $0.data?.lookup?.artist?.lastFm?.topTracks?.fragments.lastFmTrackConnectionTrendingTrackCellLastFmTrack })
     }
 }
 
+, albums: data.lookup?.artist?.releaseGroups?.fragments.releaseGroupConnectionArtistAlbumCellReleaseGroup.paging { _cursor, _pageSize, _completion in
+    self.client.fetch(query: ApolloStuff.ArtistDetailViewReleaseGroupConnectionArtistAlbumCellReleaseGroupQuery(mbid: mbid
+, type: [.album]
+, after: _cursor
+, first: _pageSize ?? 5
+, status: [.official]
+, ReleaseConnection_first: releaseConnectionFirst
+, size: .init(size)
+)) { result in
+        _completion(result.map { $0.data?.lookup?.artist?.releaseGroups?.fragments.releaseGroupConnectionArtistAlbumCellReleaseGroup })
+    }
+}
+
+, similarArtists: data.lookup?.artist?.lastFm?.similarArtists?.fragments.lastFmArtistConnectionSimilarArtistCellLastFmArtist.paging { _cursor, _pageSize, _completion in
+    self.client.fetch(query: ApolloStuff.ArtistDetailViewLastFmArtistConnectionSimilarArtistCellLastFmArtistQuery(mbid: mbid
+, LastFMArtistConnection_first: 3
+, after: _cursor
+, LastFMAlbumConnection_first: 1
+, URLString_size: .init(urlStringSize)
+)) { result in
+        _completion(result.map { $0.data?.lookup?.artist?.lastFm?.similarArtists?.fragments.lastFmArtistConnectionSimilarArtistCellLastFmArtist })
+    }
+}
+
 , data: data
 )
         }
@@ -14982,7 +14852,7 @@ extension Music {
 }
 
 
-extension ApolloStuff.ArtistTopSongsListQuery.Data.Lookup.Artist.LastFm.TopTrack {
+extension ApolloStuff.ArtistDetailViewQuery.Data.Lookup.Artist.LastFm.SimilarArtist {
     public struct Fragments {
         public private(set) var resultMap: ResultMap
 
@@ -15001,7 +14871,7 @@ extension ApolloStuff.ArtistTopSongsListQuery.Data.Lookup.Artist.LastFm.TopTrack
     }
 }
 
-extension ApolloStuff.ArtistTopSongsListLastFmTrackConnectionTrendingTrackCellLastFmTrackQuery.Data.Lookup.Artist.LastFm.TopTrack {
+extension ApolloStuff.ArtistDetailViewQuery.Data.Lookup.Artist.LastFm.TopTrack {
     public struct Fragments {
         public private(set) var resultMap: ResultMap
 
@@ -15020,7 +14890,96 @@ extension ApolloStuff.ArtistTopSongsListLastFmTrackConnectionTrendingTrackCellLa
     }
 }
 
-extension ApolloStuff.ArtistTopSongsListQuery.Data.Lookup.Artist.LastFm.TopTrack.Fragments {
+extension ApolloStuff.ArtistDetailViewQuery.Data.Lookup.Artist.ReleaseGroup {
+    public struct Fragments {
+        public private(set) var resultMap: ResultMap
+
+        public init(unsafeResultMap: ResultMap) {
+            resultMap = unsafeResultMap
+        }
+    }
+
+    public var fragments: Fragments {
+        get {
+            return Fragments(unsafeResultMap: resultMap)
+        }
+        set {
+            resultMap += newValue.resultMap
+        }
+    }
+}
+
+extension ApolloStuff.ArtistDetailViewLastFmTrackConnectionTrendingTrackCellLastFmTrackQuery.Data.Lookup.Artist.LastFm.TopTrack {
+    public struct Fragments {
+        public private(set) var resultMap: ResultMap
+
+        public init(unsafeResultMap: ResultMap) {
+            resultMap = unsafeResultMap
+        }
+    }
+
+    public var fragments: Fragments {
+        get {
+            return Fragments(unsafeResultMap: resultMap)
+        }
+        set {
+            resultMap += newValue.resultMap
+        }
+    }
+}
+
+extension ApolloStuff.ArtistDetailViewReleaseGroupConnectionArtistAlbumCellReleaseGroupQuery.Data.Lookup.Artist.ReleaseGroup {
+    public struct Fragments {
+        public private(set) var resultMap: ResultMap
+
+        public init(unsafeResultMap: ResultMap) {
+            resultMap = unsafeResultMap
+        }
+    }
+
+    public var fragments: Fragments {
+        get {
+            return Fragments(unsafeResultMap: resultMap)
+        }
+        set {
+            resultMap += newValue.resultMap
+        }
+    }
+}
+
+extension ApolloStuff.ArtistDetailViewLastFmArtistConnectionSimilarArtistCellLastFmArtistQuery.Data.Lookup.Artist.LastFm.SimilarArtist {
+    public struct Fragments {
+        public private(set) var resultMap: ResultMap
+
+        public init(unsafeResultMap: ResultMap) {
+            resultMap = unsafeResultMap
+        }
+    }
+
+    public var fragments: Fragments {
+        get {
+            return Fragments(unsafeResultMap: resultMap)
+        }
+        set {
+            resultMap += newValue.resultMap
+        }
+    }
+}
+
+extension ApolloStuff.ArtistDetailViewQuery.Data.Lookup.Artist.LastFm.SimilarArtist.Fragments {
+
+    public var lastFmArtistConnectionSimilarArtistCellLastFmArtist: ApolloStuff.LastFmArtistConnectionSimilarArtistCellLastFmArtist {
+        get {
+            return ApolloStuff.LastFmArtistConnectionSimilarArtistCellLastFmArtist(unsafeResultMap: resultMap)
+        }
+        set {
+            resultMap += newValue.resultMap
+        }
+    }
+
+}
+
+extension ApolloStuff.ArtistDetailViewQuery.Data.Lookup.Artist.LastFm.TopTrack.Fragments {
 
     public var lastFmTrackConnectionTrendingTrackCellLastFmTrack: ApolloStuff.LastFmTrackConnectionTrendingTrackCellLastFmTrack {
         get {
@@ -15033,11 +14992,50 @@ extension ApolloStuff.ArtistTopSongsListQuery.Data.Lookup.Artist.LastFm.TopTrack
 
 }
 
-extension ApolloStuff.ArtistTopSongsListLastFmTrackConnectionTrendingTrackCellLastFmTrackQuery.Data.Lookup.Artist.LastFm.TopTrack.Fragments {
+extension ApolloStuff.ArtistDetailViewQuery.Data.Lookup.Artist.ReleaseGroup.Fragments {
+
+    public var releaseGroupConnectionArtistAlbumCellReleaseGroup: ApolloStuff.ReleaseGroupConnectionArtistAlbumCellReleaseGroup {
+        get {
+            return ApolloStuff.ReleaseGroupConnectionArtistAlbumCellReleaseGroup(unsafeResultMap: resultMap)
+        }
+        set {
+            resultMap += newValue.resultMap
+        }
+    }
+
+}
+
+extension ApolloStuff.ArtistDetailViewLastFmTrackConnectionTrendingTrackCellLastFmTrackQuery.Data.Lookup.Artist.LastFm.TopTrack.Fragments {
 
     public var lastFmTrackConnectionTrendingTrackCellLastFmTrack: ApolloStuff.LastFmTrackConnectionTrendingTrackCellLastFmTrack {
         get {
             return ApolloStuff.LastFmTrackConnectionTrendingTrackCellLastFmTrack(unsafeResultMap: resultMap)
+        }
+        set {
+            resultMap += newValue.resultMap
+        }
+    }
+
+}
+
+extension ApolloStuff.ArtistDetailViewReleaseGroupConnectionArtistAlbumCellReleaseGroupQuery.Data.Lookup.Artist.ReleaseGroup.Fragments {
+
+    public var releaseGroupConnectionArtistAlbumCellReleaseGroup: ApolloStuff.ReleaseGroupConnectionArtistAlbumCellReleaseGroup {
+        get {
+            return ApolloStuff.ReleaseGroupConnectionArtistAlbumCellReleaseGroup(unsafeResultMap: resultMap)
+        }
+        set {
+            resultMap += newValue.resultMap
+        }
+    }
+
+}
+
+extension ApolloStuff.ArtistDetailViewLastFmArtistConnectionSimilarArtistCellLastFmArtistQuery.Data.Lookup.Artist.LastFm.SimilarArtist.Fragments {
+
+    public var lastFmArtistConnectionSimilarArtistCellLastFmArtist: ApolloStuff.LastFmArtistConnectionSimilarArtistCellLastFmArtist {
+        get {
+            return ApolloStuff.LastFmArtistConnectionSimilarArtistCellLastFmArtist(unsafeResultMap: resultMap)
         }
         set {
             resultMap += newValue.resultMap
@@ -15076,126 +15074,6 @@ extension SimilarArtistCell {
 
 
 
-
-
-
-// MARK: - SimilarArtistsList
-
-
-
-extension SimilarArtistsList {
-    
-    
-    typealias Data = ApolloStuff.SimilarArtistsListQuery.Data
-    
-    
-    init(api: Music
-, artists: Paging<SimilarArtistCell.LastFMArtist>?
-, data: Data
-) {
-        self.init(api: api
-, artists: GraphQL(artists)
-)
-    }
-}
-
-
-extension Music {
-    
-    func similarArtistsList(mbid: String
-, first: Int? = 25
-, after: String? = nil
-, size: Music.LastFMImageSize? = nil
-) -> some View {
-        return QueryRenderer(client: client,
-                             query: ApolloStuff.SimilarArtistsListQuery(mbid: mbid
-, first: first
-, after: after
-, size: .init(size)
-)) { data in
-        
-            SimilarArtistsList(api: self
-, artists: data.lookup?.artist?.lastFm?.similarArtists?.fragments.lastFmArtistConnectionSimilarArtistCellLastFmArtist.paging { _cursor, _pageSize, _completion in
-    self.client.fetch(query: ApolloStuff.SimilarArtistsListLastFmArtistConnectionSimilarArtistCellLastFmArtistQuery(mbid: mbid
-, first: _pageSize ?? first
-, after: _cursor
-, size: .init(size)
-)) { result in
-        _completion(result.map { $0.data?.lookup?.artist?.lastFm?.similarArtists?.fragments.lastFmArtistConnectionSimilarArtistCellLastFmArtist })
-    }
-}
-
-, data: data
-)
-        }
-    }
-    
-}
-
-
-extension ApolloStuff.SimilarArtistsListQuery.Data.Lookup.Artist.LastFm.SimilarArtist {
-    public struct Fragments {
-        public private(set) var resultMap: ResultMap
-
-        public init(unsafeResultMap: ResultMap) {
-            resultMap = unsafeResultMap
-        }
-    }
-
-    public var fragments: Fragments {
-        get {
-            return Fragments(unsafeResultMap: resultMap)
-        }
-        set {
-            resultMap += newValue.resultMap
-        }
-    }
-}
-
-extension ApolloStuff.SimilarArtistsListLastFmArtistConnectionSimilarArtistCellLastFmArtistQuery.Data.Lookup.Artist.LastFm.SimilarArtist {
-    public struct Fragments {
-        public private(set) var resultMap: ResultMap
-
-        public init(unsafeResultMap: ResultMap) {
-            resultMap = unsafeResultMap
-        }
-    }
-
-    public var fragments: Fragments {
-        get {
-            return Fragments(unsafeResultMap: resultMap)
-        }
-        set {
-            resultMap += newValue.resultMap
-        }
-    }
-}
-
-extension ApolloStuff.SimilarArtistsListQuery.Data.Lookup.Artist.LastFm.SimilarArtist.Fragments {
-
-    public var lastFmArtistConnectionSimilarArtistCellLastFmArtist: ApolloStuff.LastFmArtistConnectionSimilarArtistCellLastFmArtist {
-        get {
-            return ApolloStuff.LastFmArtistConnectionSimilarArtistCellLastFmArtist(unsafeResultMap: resultMap)
-        }
-        set {
-            resultMap += newValue.resultMap
-        }
-    }
-
-}
-
-extension ApolloStuff.SimilarArtistsListLastFmArtistConnectionSimilarArtistCellLastFmArtistQuery.Data.Lookup.Artist.LastFm.SimilarArtist.Fragments {
-
-    public var lastFmArtistConnectionSimilarArtistCellLastFmArtist: ApolloStuff.LastFmArtistConnectionSimilarArtistCellLastFmArtist {
-        get {
-            return ApolloStuff.LastFmArtistConnectionSimilarArtistCellLastFmArtist(unsafeResultMap: resultMap)
-        }
-        set {
-            resultMap += newValue.resultMap
-        }
-    }
-
-}
 
 
 
@@ -15266,6 +15144,9 @@ extension Music {
                              query: ApolloStuff.TrendingArtistsListQuery(country: country
 , first: first
 , after: after
+, LastFMTagConnection_first: 3
+, LastFMTrackConnection_first: 1
+, LastFMAlbumConnection_first: 4
 , size: .init(size)
 )) { data in
         
@@ -15274,6 +15155,9 @@ extension Music {
     self.client.fetch(query: ApolloStuff.TrendingArtistsListLastFmArtistConnectionTrendingArtistCellLastFmArtistQuery(country: country
 , first: _pageSize ?? first
 , after: _cursor
+, LastFMTagConnection_first: 3
+, LastFMTrackConnection_first: 1
+, LastFMAlbumConnection_first: 4
 , size: .init(size)
 )) { result in
         _completion(result.map { $0.data?.lastFm?.chart.topArtists?.fragments.lastFmArtistConnectionTrendingArtistCellLastFmArtist })
@@ -15459,59 +15343,6 @@ extension TrendingTrackCell {
 
 
 
-extension ApolloStuff.ReleaseGroupConnectionArtistAlbumCellReleaseGroup {
-    typealias Completion = (Result<ApolloStuff.ReleaseGroupConnectionArtistAlbumCellReleaseGroup?, Error>) -> Void
-    typealias Loader = (String, Int?, @escaping Completion) -> Void
-
-    private var response: Paging<ApolloStuff.ArtistAlbumCellReleaseGroup>.Response {
-        return Paging.Response(values: edges?.compactMap { $0?.node?.fragments.artistAlbumCellReleaseGroup } ?? [],
-                               cursor: pageInfo.endCursor,
-                               hasMore: pageInfo.hasNextPage)
-    }
-
-    fileprivate func paging(loader: @escaping Loader) -> Paging<ApolloStuff.ArtistAlbumCellReleaseGroup> {
-        return Paging(response) { cursor, pageSize, completion in
-            loader(cursor, pageSize) { result in
-                completion(result.map { $0?.response ?? .empty })
-            }
-        }
-    }
-}
-
-extension ApolloStuff.ReleaseGroupConnectionArtistAlbumCellReleaseGroup.Edge.Node {
-    public struct Fragments {
-        public private(set) var resultMap: ResultMap
-
-        public init(unsafeResultMap: ResultMap) {
-            resultMap = unsafeResultMap
-        }
-    }
-
-    public var fragments: Fragments {
-        get {
-            return Fragments(unsafeResultMap: resultMap)
-        }
-        set {
-            resultMap += newValue.resultMap
-        }
-    }
-}
-
-extension ApolloStuff.ReleaseGroupConnectionArtistAlbumCellReleaseGroup.Edge.Node.Fragments {
-
-    public var artistAlbumCellReleaseGroup: ApolloStuff.ArtistAlbumCellReleaseGroup {
-        get {
-            return ApolloStuff.ArtistAlbumCellReleaseGroup(unsafeResultMap: resultMap)
-        }
-        set {
-            resultMap += newValue.resultMap
-        }
-    }
-
-}
-
-
-
 extension ApolloStuff.LastFmTrackConnectionTrendingTrackCellLastFmTrack {
     typealias Completion = (Result<ApolloStuff.LastFmTrackConnectionTrendingTrackCellLastFmTrack?, Error>) -> Void
     typealias Loader = (String, Int?, @escaping Completion) -> Void
@@ -15555,6 +15386,59 @@ extension ApolloStuff.LastFmTrackConnectionTrendingTrackCellLastFmTrack.Edge.Nod
     public var trendingTrackCellLastFmTrack: ApolloStuff.TrendingTrackCellLastFmTrack {
         get {
             return ApolloStuff.TrendingTrackCellLastFmTrack(unsafeResultMap: resultMap)
+        }
+        set {
+            resultMap += newValue.resultMap
+        }
+    }
+
+}
+
+
+
+extension ApolloStuff.ReleaseGroupConnectionArtistAlbumCellReleaseGroup {
+    typealias Completion = (Result<ApolloStuff.ReleaseGroupConnectionArtistAlbumCellReleaseGroup?, Error>) -> Void
+    typealias Loader = (String, Int?, @escaping Completion) -> Void
+
+    private var response: Paging<ApolloStuff.ArtistAlbumCellReleaseGroup>.Response {
+        return Paging.Response(values: edges?.compactMap { $0?.node?.fragments.artistAlbumCellReleaseGroup } ?? [],
+                               cursor: pageInfo.endCursor,
+                               hasMore: pageInfo.hasNextPage)
+    }
+
+    fileprivate func paging(loader: @escaping Loader) -> Paging<ApolloStuff.ArtistAlbumCellReleaseGroup> {
+        return Paging(response) { cursor, pageSize, completion in
+            loader(cursor, pageSize) { result in
+                completion(result.map { $0?.response ?? .empty })
+            }
+        }
+    }
+}
+
+extension ApolloStuff.ReleaseGroupConnectionArtistAlbumCellReleaseGroup.Edge.Node {
+    public struct Fragments {
+        public private(set) var resultMap: ResultMap
+
+        public init(unsafeResultMap: ResultMap) {
+            resultMap = unsafeResultMap
+        }
+    }
+
+    public var fragments: Fragments {
+        get {
+            return Fragments(unsafeResultMap: resultMap)
+        }
+        set {
+            resultMap += newValue.resultMap
+        }
+    }
+}
+
+extension ApolloStuff.ReleaseGroupConnectionArtistAlbumCellReleaseGroup.Edge.Node.Fragments {
+
+    public var artistAlbumCellReleaseGroup: ApolloStuff.ArtistAlbumCellReleaseGroup {
+        get {
+            return ApolloStuff.ArtistAlbumCellReleaseGroup(unsafeResultMap: resultMap)
         }
         set {
             resultMap += newValue.resultMap
@@ -15680,6 +15564,67 @@ import Foundation
 
 /// ApolloStuff namespace
 public enum ApolloStuff {
+  /// The image sizes that may be requested at [Last.fm](https://www.last.fm/).
+  public enum LastFMImageSize: RawRepresentable, Equatable, Hashable, CaseIterable, Apollo.JSONDecodable, Apollo.JSONEncodable {
+    public typealias RawValue = String
+    /// A maximum dimension of 34px.
+    case small
+    /// A maximum dimension of 64px.
+    case medium
+    /// A maximum dimension of 174px.
+    case large
+    /// A maximum dimension of 300px.
+    case extralarge
+    /// A maximum dimension of 300px.
+    case mega
+    /// Auto generated constant for unknown enum values
+    case __unknown(RawValue)
+
+    public init?(rawValue: RawValue) {
+      switch rawValue {
+        case "SMALL": self = .small
+        case "MEDIUM": self = .medium
+        case "LARGE": self = .large
+        case "EXTRALARGE": self = .extralarge
+        case "MEGA": self = .mega
+        default: self = .__unknown(rawValue)
+      }
+    }
+
+    public var rawValue: RawValue {
+      switch self {
+        case .small: return "SMALL"
+        case .medium: return "MEDIUM"
+        case .large: return "LARGE"
+        case .extralarge: return "EXTRALARGE"
+        case .mega: return "MEGA"
+        case .__unknown(let value): return value
+      }
+    }
+
+    public static func == (lhs: LastFMImageSize, rhs: LastFMImageSize) -> Bool {
+      switch (lhs, rhs) {
+        case (.small, .small): return true
+        case (.medium, .medium): return true
+        case (.large, .large): return true
+        case (.extralarge, .extralarge): return true
+        case (.mega, .mega): return true
+        case (.__unknown(let lhsValue), .__unknown(let rhsValue)): return lhsValue == rhsValue
+        default: return false
+      }
+    }
+
+    public static var allCases: [LastFMImageSize] {
+      return [
+        .small,
+        .medium,
+        .large,
+        .extralarge,
+        .mega,
+      ]
+    }
+  }
+
   /// A type used to describe release groups, e.g. album, single, EP,
   /// etc.
   public enum ReleaseGroupType: RawRepresentable, Equatable, Hashable, CaseIterable, Apollo.JSONDecodable, Apollo.JSONEncodable {
@@ -15943,67 +15888,6 @@ public enum ApolloStuff {
     }
   }
 
-  /// The image sizes that may be requested at [Last.fm](https://www.last.fm/).
-  public enum LastFMImageSize: RawRepresentable, Equatable, Hashable, CaseIterable, Apollo.JSONDecodable, Apollo.JSONEncodable {
-    public typealias RawValue = String
-    /// A maximum dimension of 34px.
-    case small
-    /// A maximum dimension of 64px.
-    case medium
-    /// A maximum dimension of 174px.
-    case large
-    /// A maximum dimension of 300px.
-    case extralarge
-    /// A maximum dimension of 300px.
-    case mega
-    /// Auto generated constant for unknown enum values
-    case __unknown(RawValue)
-
-    public init?(rawValue: RawValue) {
-      switch rawValue {
-        case "SMALL": self = .small
-        case "MEDIUM": self = .medium
-        case "LARGE": self = .large
-        case "EXTRALARGE": self = .extralarge
-        case "MEGA": self = .mega
-        default: self = .__unknown(rawValue)
-      }
-    }
-
-    public var rawValue: RawValue {
-      switch self {
-        case .small: return "SMALL"
-        case .medium: return "MEDIUM"
-        case .large: return "LARGE"
-        case .extralarge: return "EXTRALARGE"
-        case .mega: return "MEGA"
-        case .__unknown(let value): return value
-      }
-    }
-
-    public static func == (lhs: LastFMImageSize, rhs: LastFMImageSize) -> Bool {
-      switch (lhs, rhs) {
-        case (.small, .small): return true
-        case (.medium, .medium): return true
-        case (.large, .large): return true
-        case (.extralarge, .extralarge): return true
-        case (.mega, .mega): return true
-        case (.__unknown(let lhsValue), .__unknown(let rhsValue)): return lhsValue == rhsValue
-        default: return false
-      }
-    }
-
-    public static var allCases: [LastFMImageSize] {
-      return [
-        .small,
-        .medium,
-        .large,
-        .extralarge,
-        .mega,
-      ]
-    }
-  }
-
   /// The image sizes that may be requested at the [Cover Art Archive](https://musicbrainz.org/doc/Cover_Art_Archive).
   public enum CoverArtArchiveImageSize: RawRepresentable, Equatable, Hashable, CaseIterable, Apollo.JSONDecodable, Apollo.JSONEncodable {
     public typealias RawValue = String
@@ -16053,491 +15937,11 @@ public enum ApolloStuff {
     }
   }
 
-  public final class ArtistAlbumListReleaseGroupConnectionArtistAlbumCellReleaseGroupQuery: GraphQLQuery {
+  public final class ArtistDetailViewLastFmTrackConnectionTrendingTrackCellLastFmTrackQuery: GraphQLQuery {
     /// The raw GraphQL definition of this operation.
     public let operationDefinition =
       """
-      query ArtistAlbumListReleaseGroupConnectionArtistAlbumCellReleaseGroup($mbid: MBID!, $type: [ReleaseGroupType], $after: String, $first: Int, $status: [ReleaseStatus], $size: TheAudioDBImageSize) {
-        lookup {
-          __typename
-          artist(mbid: $mbid) {
-            __typename
-            releaseGroups(after: $after, first: $first, type: $type) {
-              __typename
-              edges {
-                __typename
-                node {
-                  __typename
-                  releases(after: $after, first: $first, status: $status, type: $type) {
-                    __typename
-                    nodes {
-                      __typename
-                      mbid
-                    }
-                  }
-                  theAudioDB {
-                    __typename
-                    frontImage(size: $size)
-                  }
-                  title
-                }
-              }
-              pageInfo {
-                __typename
-                endCursor
-                hasNextPage
-              }
-            }
-          }
-        }
-      }
-      """
-
-    public let operationName = "ArtistAlbumListReleaseGroupConnectionArtistAlbumCellReleaseGroup"
-
-    public var mbid: String
-    public var type: [ReleaseGroupType?]?
-    public var after: String?
-    public var first: Int?
-    public var status: [ReleaseStatus?]?
-    public var size: TheAudioDBImageSize?
-
-    public init(mbid: String, type: [ReleaseGroupType?]? = nil, after: String? = nil, first: Int? = nil, status: [ReleaseStatus?]? = nil, size: TheAudioDBImageSize? = nil) {
-      self.mbid = mbid
-      self.type = type
-      self.after = after
-      self.first = first
-      self.status = status
-      self.size = size
-    }
-
-    public var variables: GraphQLMap? {
-      return ["mbid": mbid, "type": type, "after": after, "first": first, "status": status, "size": size]
-    }
-
-    public struct Data: GraphQLSelectionSet {
-      public static let possibleTypes = ["Query"]
-
-      public static let selections: [GraphQLSelection] = [
-        GraphQLField("lookup", type: .object(Lookup.selections)),
-      ]
-
-      public private(set) var resultMap: ResultMap
-
-      public init(unsafeResultMap: ResultMap) {
-        self.resultMap = unsafeResultMap
-      }
-
-      public init(lookup: Lookup? = nil) {
-        self.init(unsafeResultMap: ["__typename": "Query", "lookup": lookup.flatMap { (value: Lookup) -> ResultMap in value.resultMap }])
-      }
-
-      /// Perform a lookup of a MusicBrainz entity by its MBID.
-      public var lookup: Lookup? {
-        get {
-          return (resultMap["lookup"] as? ResultMap).flatMap { Lookup(unsafeResultMap: $0) }
-        }
-        set {
-          resultMap.updateValue(newValue?.resultMap, forKey: "lookup")
-        }
-      }
-
-      public struct Lookup: GraphQLSelectionSet {
-        public static let possibleTypes = ["LookupQuery"]
-
-        public static let selections: [GraphQLSelection] = [
-          GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
-          GraphQLField("artist", arguments: ["mbid": GraphQLVariable("mbid")], type: .object(Artist.selections)),
-        ]
-
-        public private(set) var resultMap: ResultMap
-
-        public init(unsafeResultMap: ResultMap) {
-          self.resultMap = unsafeResultMap
-        }
-
-        public init(artist: Artist? = nil) {
-          self.init(unsafeResultMap: ["__typename": "LookupQuery", "artist": artist.flatMap { (value: Artist) -> ResultMap in value.resultMap }])
-        }
-
-        public var __typename: String {
-          get {
-            return resultMap["__typename"]! as! String
-          }
-          set {
-            resultMap.updateValue(newValue, forKey: "__typename")
-          }
-        }
-
-        /// Look up a specific artist by its MBID.
-        public var artist: Artist? {
-          get {
-            return (resultMap["artist"] as? ResultMap).flatMap { Artist(unsafeResultMap: $0) }
-          }
-          set {
-            resultMap.updateValue(newValue?.resultMap, forKey: "artist")
-          }
-        }
-
-        public struct Artist: GraphQLSelectionSet {
-          public static let possibleTypes = ["Artist"]
-
-          public static let selections: [GraphQLSelection] = [
-            GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
-            GraphQLField("releaseGroups", arguments: ["after": GraphQLVariable("after"), "first": GraphQLVariable("first"), "type": GraphQLVariable("type")], type: .object(ReleaseGroup.selections)),
-          ]
-
-          public private(set) var resultMap: ResultMap
-
-          public init(unsafeResultMap: ResultMap) {
-            self.resultMap = unsafeResultMap
-          }
-
-          public init(releaseGroups: ReleaseGroup? = nil) {
-            self.init(unsafeResultMap: ["__typename": "Artist", "releaseGroups": releaseGroups.flatMap { (value: ReleaseGroup) -> ResultMap in value.resultMap }])
-          }
-
-          public var __typename: String {
-            get {
-              return resultMap["__typename"]! as! String
-            }
-            set {
-              resultMap.updateValue(newValue, forKey: "__typename")
-            }
-          }
-
-          /// A list of release groups linked to this entity.
-          public var releaseGroups: ReleaseGroup? {
-            get {
-              return (resultMap["releaseGroups"] as? ResultMap).flatMap { ReleaseGroup(unsafeResultMap: $0) }
-            }
-            set {
-              resultMap.updateValue(newValue?.resultMap, forKey: "releaseGroups")
-            }
-          }
-
-          public struct ReleaseGroup: GraphQLSelectionSet {
-            public static let possibleTypes = ["ReleaseGroupConnection"]
-
-            public static let selections: [GraphQLSelection] = [
-              GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
-              GraphQLField("edges", type: .list(.object(Edge.selections))),
-              GraphQLField("pageInfo", type: .nonNull(.object(PageInfo.selections))),
-            ]
-
-            public private(set) var resultMap: ResultMap
-
-            public init(unsafeResultMap: ResultMap) {
-              self.resultMap = unsafeResultMap
-            }
-
-            public init(edges: [Edge?]? = nil, pageInfo: PageInfo) {
-              self.init(unsafeResultMap: ["__typename": "ReleaseGroupConnection", "edges": edges.flatMap { (value: [Edge?]) -> [ResultMap?] in value.map { (value: Edge?) -> ResultMap? in value.flatMap { (value: Edge) -> ResultMap in value.resultMap } } }, "pageInfo": pageInfo.resultMap])
-            }
-
-            public var __typename: String {
-              get {
-                return resultMap["__typename"]! as! String
-              }
-              set {
-                resultMap.updateValue(newValue, forKey: "__typename")
-              }
-            }
-
-            /// A list of edges.
-            public var edges: [Edge?]? {
-              get {
-                return (resultMap["edges"] as? [ResultMap?]).flatMap { (value: [ResultMap?]) -> [Edge?] in value.map { (value: ResultMap?) -> Edge? in value.flatMap { (value: ResultMap) -> Edge in Edge(unsafeResultMap: value) } } }
-              }
-              set {
-                resultMap.updateValue(newValue.flatMap { (value: [Edge?]) -> [ResultMap?] in value.map { (value: Edge?) -> ResultMap? in value.flatMap { (value: Edge) -> ResultMap in value.resultMap } } }, forKey: "edges")
-              }
-            }
-
-            /// Information to aid in pagination.
-            public var pageInfo: PageInfo {
-              get {
-                return PageInfo(unsafeResultMap: resultMap["pageInfo"]! as! ResultMap)
-              }
-              set {
-                resultMap.updateValue(newValue.resultMap, forKey: "pageInfo")
-              }
-            }
-
-            public struct Edge: GraphQLSelectionSet {
-              public static let possibleTypes = ["ReleaseGroupEdge"]
-
-              public static let selections: [GraphQLSelection] = [
-                GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
-                GraphQLField("node", type: .object(Node.selections)),
-              ]
-
-              public private(set) var resultMap: ResultMap
-
-              public init(unsafeResultMap: ResultMap) {
-                self.resultMap = unsafeResultMap
-              }
-
-              public init(node: Node? = nil) {
-                self.init(unsafeResultMap: ["__typename": "ReleaseGroupEdge", "node": node.flatMap { (value: Node) -> ResultMap in value.resultMap }])
-              }
-
-              public var __typename: String {
-                get {
-                  return resultMap["__typename"]! as! String
-                }
-                set {
-                  resultMap.updateValue(newValue, forKey: "__typename")
-                }
-              }
-
-              /// The item at the end of the edge
-              public var node: Node? {
-                get {
-                  return (resultMap["node"] as? ResultMap).flatMap { Node(unsafeResultMap: $0) }
-                }
-                set {
-                  resultMap.updateValue(newValue?.resultMap, forKey: "node")
-                }
-              }
-
-              public struct Node: GraphQLSelectionSet {
-                public static let possibleTypes = ["ReleaseGroup"]
-
-                public static let selections: [GraphQLSelection] = [
-                  GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
-                  GraphQLField("releases", arguments: ["after": GraphQLVariable("after"), "first": GraphQLVariable("first"), "status": GraphQLVariable("status"), "type": GraphQLVariable("type")], type: .object(Release.selections)),
-                  GraphQLField("theAudioDB", type: .object(TheAudioDb.selections)),
-                  GraphQLField("title", type: .scalar(String.self)),
-                ]
-
-                public private(set) var resultMap: ResultMap
-
-                public init(unsafeResultMap: ResultMap) {
-                  self.resultMap = unsafeResultMap
-                }
-
-                public init(releases: Release? = nil, theAudioDb: TheAudioDb? = nil, title: String? = nil) {
-                  self.init(unsafeResultMap: ["__typename": "ReleaseGroup", "releases": releases.flatMap { (value: Release) -> ResultMap in value.resultMap }, "theAudioDB": theAudioDb.flatMap { (value: TheAudioDb) -> ResultMap in value.resultMap }, "title": title])
-                }
-
-                public var __typename: String {
-                  get {
-                    return resultMap["__typename"]! as! String
-                  }
-                  set {
-                    resultMap.updateValue(newValue, forKey: "__typename")
-                  }
-                }
-
-                /// A list of releases linked to this entity.
-                public var releases: Release? {
-                  get {
-                    return (resultMap["releases"] as? ResultMap).flatMap { Release(unsafeResultMap: $0) }
-                  }
-                  set {
-                    resultMap.updateValue(newValue?.resultMap, forKey: "releases")
-                  }
-                }
-
-                /// Data about the release group from [TheAudioDB](http://www.theaudiodb.com/),
-                /// a good source of descriptive information, reviews, and images.
-                /// This field is provided by TheAudioDB extension.
-                public var theAudioDb: TheAudioDb? {
-                  get {
-                    return (resultMap["theAudioDB"] as? ResultMap).flatMap { TheAudioDb(unsafeResultMap: $0) }
-                  }
-                  set {
-                    resultMap.updateValue(newValue?.resultMap, forKey: "theAudioDB")
-                  }
-                }
-
-                /// The official title of the entity.
-                public var title: String? {
-                  get {
-                    return resultMap["title"] as? String
-                  }
-                  set {
-                    resultMap.updateValue(newValue, forKey: "title")
-                  }
-                }
-
-                public struct Release: GraphQLSelectionSet {
-                  public static let possibleTypes = ["ReleaseConnection"]
-
-                  public static let selections: [GraphQLSelection] = [
-                    GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
-                    GraphQLField("nodes", type: .list(.object(Node.selections))),
-                  ]
-
-                  public private(set) var resultMap: ResultMap
-
-                  public init(unsafeResultMap: ResultMap) {
-                    self.resultMap = unsafeResultMap
-                  }
-
-                  public init(nodes: [Node?]? = nil) {
-                    self.init(unsafeResultMap: ["__typename": "ReleaseConnection", "nodes": nodes.flatMap { (value: [Node?]) -> [ResultMap?] in value.map { (value: Node?) -> ResultMap? in value.flatMap { (value: Node) -> ResultMap in value.resultMap } } }])
-                  }
-
-                  public var __typename: String {
-                    get {
-                      return resultMap["__typename"]! as! String
-                    }
-                    set {
-                      resultMap.updateValue(newValue, forKey: "__typename")
-                    }
-                  }
-
-                  /// A list of nodes in the connection (without going through the
-                  /// `edges` field).
-                  public var nodes: [Node?]? {
-                    get {
-                      return (resultMap["nodes"] as? [ResultMap?]).flatMap { (value: [ResultMap?]) -> [Node?] in value.map { (value: ResultMap?) -> Node? in value.flatMap { (value: ResultMap) -> Node in Node(unsafeResultMap: value) } } }
-                    }
-                    set {
-                      resultMap.updateValue(newValue.flatMap { (value: [Node?]) -> [ResultMap?] in value.map { (value: Node?) -> ResultMap? in value.flatMap { (value: Node) -> ResultMap in value.resultMap } } }, forKey: "nodes")
-                    }
-                  }
-
-                  public struct Node: GraphQLSelectionSet {
-                    public static let possibleTypes = ["Release"]
-
-                    public static let selections: [GraphQLSelection] = [
-                      GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
-                      GraphQLField("mbid", type: .nonNull(.scalar(String.self))),
-                    ]
-
-                    public private(set) var resultMap: ResultMap
-
-                    public init(unsafeResultMap: ResultMap) {
-                      self.resultMap = unsafeResultMap
-                    }
-
-                    public init(mbid: String) {
-                      self.init(unsafeResultMap: ["__typename": "Release", "mbid": mbid])
-                    }
-
-                    public var __typename: String {
-                      get {
-                        return resultMap["__typename"]! as! String
-                      }
-                      set {
-                        resultMap.updateValue(newValue, forKey: "__typename")
-                      }
-                    }
-
-                    /// The MBID of the entity.
-                    public var mbid: String {
-                      get {
-                        return resultMap["mbid"]! as! String
-                      }
-                      set {
-                        resultMap.updateValue(newValue, forKey: "mbid")
-                      }
-                    }
-                  }
-                }
-
-                public struct TheAudioDb: GraphQLSelectionSet {
-                  public static let possibleTypes = ["TheAudioDBAlbum"]
-
-                  public static let selections: [GraphQLSelection] = [
-                    GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
-                    GraphQLField("frontImage", arguments: ["size": GraphQLVariable("size")], type: .scalar(String.self)),
-                  ]
-
-                  public private(set) var resultMap: ResultMap
-
-                  public init(unsafeResultMap: ResultMap) {
-                    self.resultMap = unsafeResultMap
-                  }
-
-                  public init(frontImage: String? = nil) {
-                    self.init(unsafeResultMap: ["__typename": "TheAudioDBAlbum", "frontImage": frontImage])
-                  }
-
-                  public var __typename: String {
-                    get {
-                      return resultMap["__typename"]! as! String
-                    }
-                    set {
-                      resultMap.updateValue(newValue, forKey: "__typename")
-                    }
-                  }
-
-                  /// An image of the front of the album packaging.
-                  public var frontImage: String? {
-                    get {
-                      return resultMap["frontImage"] as? String
-                    }
-                    set {
-                      resultMap.updateValue(newValue, forKey: "frontImage")
-                    }
-                  }
-                }
-              }
-            }
-
-            public struct PageInfo: GraphQLSelectionSet {
-              public static let possibleTypes = ["PageInfo"]
-
-              public static let selections: [GraphQLSelection] = [
-                GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
-                GraphQLField("endCursor", type: .scalar(String.self)),
-                GraphQLField("hasNextPage", type: .nonNull(.scalar(Bool.self))),
-              ]
-
-              public private(set) var resultMap: ResultMap
-
-              public init(unsafeResultMap: ResultMap) {
-                self.resultMap = unsafeResultMap
-              }
-
-              public init(endCursor: String? = nil, hasNextPage: Bool) {
-                self.init(unsafeResultMap: ["__typename": "PageInfo", "endCursor": endCursor, "hasNextPage": hasNextPage])
-              }
-
-              public var __typename: String {
-                get {
-                  return resultMap["__typename"]! as! String
-                }
-                set {
-                  resultMap.updateValue(newValue, forKey: "__typename")
-                }
-              }
-
-              /// When paginating forwards, the cursor to continue.
-              public var endCursor: String? {
-                get {
-                  return resultMap["endCursor"] as? String
-                }
-                set {
-                  resultMap.updateValue(newValue, forKey: "endCursor")
-                }
-              }
-
-              /// When paginating forwards, are there more items?
-              public var hasNextPage: Bool {
-                get {
-                  return resultMap["hasNextPage"]! as! Bool
-                }
-                set {
-                  resultMap.updateValue(newValue, forKey: "hasNextPage")
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-
-  public final class ArtistTopSongsListLastFmTrackConnectionTrendingTrackCellLastFmTrackQuery: GraphQLQuery {
-    /// The raw GraphQL definition of this operation.
-    public let operationDefinition =
-      """
-      query ArtistTopSongsListLastFMTrackConnectionTrendingTrackCellLastFMTrack($mbid: MBID!, $first: Int, $after: String, $size: LastFMImageSize) {
+      query ArtistDetailViewLastFMTrackConnectionTrendingTrackCellLastFMTrack($mbid: MBID!, $first: Int, $after: String, $URLString_size: LastFMImageSize) {
         lookup {
           __typename
           artist(mbid: $mbid) {
@@ -16552,7 +15956,7 @@ public enum ApolloStuff {
                     __typename
                     album {
                       __typename
-                      image(size: $size)
+                      image(size: $URLString_size)
                     }
                     artist {
                       __typename
@@ -16573,22 +15977,22 @@ public enum ApolloStuff {
       }
       """
 
-    public let operationName = "ArtistTopSongsListLastFMTrackConnectionTrendingTrackCellLastFMTrack"
+    public let operationName = "ArtistDetailViewLastFMTrackConnectionTrendingTrackCellLastFMTrack"
 
     public var mbid: String
     public var first: Int?
     public var after: String?
-    public var size: LastFMImageSize?
+    public var URLString_size: LastFMImageSize?
 
-    public init(mbid: String, first: Int? = nil, after: String? = nil, size: LastFMImageSize? = nil) {
+    public init(mbid: String, first: Int? = nil, after: String? = nil, URLString_size: LastFMImageSize? = nil) {
       self.mbid = mbid
       self.first = first
       self.after = after
-      self.size = size
+      self.URLString_size = URLString_size
     }
 
     public var variables: GraphQLMap? {
-      return ["mbid": mbid, "first": first, "after": after, "size": size]
+      return ["mbid": mbid, "first": first, "after": after, "URLString_size": URLString_size]
     }
 
     public struct Data: GraphQLSelectionSet {
@@ -16882,7 +16286,7 @@ public enum ApolloStuff {
 
                     public static let selections: [GraphQLSelection] = [
                       GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
-                      GraphQLField("image", arguments: ["size": GraphQLVariable("size")], type: .scalar(String.self)),
+                      GraphQLField("image", arguments: ["size": GraphQLVariable("URLString_size")], type: .scalar(String.self)),
                     ]
 
                     public private(set) var resultMap: ResultMap
@@ -17010,18 +16414,500 @@ public enum ApolloStuff {
     }
   }
 
-  public final class SimilarArtistsListLastFmArtistConnectionSimilarArtistCellLastFmArtistQuery: GraphQLQuery {
+  public final class ArtistDetailViewReleaseGroupConnectionArtistAlbumCellReleaseGroupQuery: GraphQLQuery {
     /// The raw GraphQL definition of this operation.
     public let operationDefinition =
       """
-      query SimilarArtistsListLastFMArtistConnectionSimilarArtistCellLastFMArtist($mbid: MBID!, $first: Int, $after: String, $size: LastFMImageSize) {
+      query ArtistDetailViewReleaseGroupConnectionArtistAlbumCellReleaseGroup($mbid: MBID!, $type: [ReleaseGroupType], $after: String, $first: Int, $status: [ReleaseStatus], $ReleaseConnection_first: Int, $size: TheAudioDBImageSize) {
+        lookup {
+          __typename
+          artist(mbid: $mbid) {
+            __typename
+            releaseGroups(after: $after, first: $first, type: $type) {
+              __typename
+              edges {
+                __typename
+                node {
+                  __typename
+                  releases(after: $after, first: $ReleaseConnection_first, status: $status, type: $type) {
+                    __typename
+                    nodes {
+                      __typename
+                      mbid
+                    }
+                  }
+                  theAudioDB {
+                    __typename
+                    frontImage(size: $size)
+                  }
+                  title
+                }
+              }
+              pageInfo {
+                __typename
+                endCursor
+                hasNextPage
+              }
+            }
+          }
+        }
+      }
+      """
+
+    public let operationName = "ArtistDetailViewReleaseGroupConnectionArtistAlbumCellReleaseGroup"
+
+    public var mbid: String
+    public var type: [ReleaseGroupType?]?
+    public var after: String?
+    public var first: Int?
+    public var status: [ReleaseStatus?]?
+    public var ReleaseConnection_first: Int?
+    public var size: TheAudioDBImageSize?
+
+    public init(mbid: String, type: [ReleaseGroupType?]? = nil, after: String? = nil, first: Int? = nil, status: [ReleaseStatus?]? = nil, ReleaseConnection_first: Int? = nil, size: TheAudioDBImageSize? = nil) {
+      self.mbid = mbid
+      self.type = type
+      self.after = after
+      self.first = first
+      self.status = status
+      self.ReleaseConnection_first = ReleaseConnection_first
+      self.size = size
+    }
+
+    public var variables: GraphQLMap? {
+      return ["mbid": mbid, "type": type, "after": after, "first": first, "status": status, "ReleaseConnection_first": ReleaseConnection_first, "size": size]
+    }
+
+    public struct Data: GraphQLSelectionSet {
+      public static let possibleTypes = ["Query"]
+
+      public static let selections: [GraphQLSelection] = [
+        GraphQLField("lookup", type: .object(Lookup.selections)),
+      ]
+
+      public private(set) var resultMap: ResultMap
+
+      public init(unsafeResultMap: ResultMap) {
+        self.resultMap = unsafeResultMap
+      }
+
+      public init(lookup: Lookup? = nil) {
+        self.init(unsafeResultMap: ["__typename": "Query", "lookup": lookup.flatMap { (value: Lookup) -> ResultMap in value.resultMap }])
+      }
+
+      /// Perform a lookup of a MusicBrainz entity by its MBID.
+      public var lookup: Lookup? {
+        get {
+          return (resultMap["lookup"] as? ResultMap).flatMap { Lookup(unsafeResultMap: $0) }
+        }
+        set {
+          resultMap.updateValue(newValue?.resultMap, forKey: "lookup")
+        }
+      }
+
+      public struct Lookup: GraphQLSelectionSet {
+        public static let possibleTypes = ["LookupQuery"]
+
+        public static let selections: [GraphQLSelection] = [
+          GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+          GraphQLField("artist", arguments: ["mbid": GraphQLVariable("mbid")], type: .object(Artist.selections)),
+        ]
+
+        public private(set) var resultMap: ResultMap
+
+        public init(unsafeResultMap: ResultMap) {
+          self.resultMap = unsafeResultMap
+        }
+
+        public init(artist: Artist? = nil) {
+          self.init(unsafeResultMap: ["__typename": "LookupQuery", "artist": artist.flatMap { (value: Artist) -> ResultMap in value.resultMap }])
+        }
+
+        public var __typename: String {
+          get {
+            return resultMap["__typename"]! as! String
+          }
+          set {
+            resultMap.updateValue(newValue, forKey: "__typename")
+          }
+        }
+
+        /// Look up a specific artist by its MBID.
+        public var artist: Artist? {
+          get {
+            return (resultMap["artist"] as? ResultMap).flatMap { Artist(unsafeResultMap: $0) }
+          }
+          set {
+            resultMap.updateValue(newValue?.resultMap, forKey: "artist")
+          }
+        }
+
+        public struct Artist: GraphQLSelectionSet {
+          public static let possibleTypes = ["Artist"]
+
+          public static let selections: [GraphQLSelection] = [
+            GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+            GraphQLField("releaseGroups", arguments: ["after": GraphQLVariable("after"), "first": GraphQLVariable("first"), "type": GraphQLVariable("type")], type: .object(ReleaseGroup.selections)),
+          ]
+
+          public private(set) var resultMap: ResultMap
+
+          public init(unsafeResultMap: ResultMap) {
+            self.resultMap = unsafeResultMap
+          }
+
+          public init(releaseGroups: ReleaseGroup? = nil) {
+            self.init(unsafeResultMap: ["__typename": "Artist", "releaseGroups": releaseGroups.flatMap { (value: ReleaseGroup) -> ResultMap in value.resultMap }])
+          }
+
+          public var __typename: String {
+            get {
+              return resultMap["__typename"]! as! String
+            }
+            set {
+              resultMap.updateValue(newValue, forKey: "__typename")
+            }
+          }
+
+          /// A list of release groups linked to this entity.
+          public var releaseGroups: ReleaseGroup? {
+            get {
+              return (resultMap["releaseGroups"] as? ResultMap).flatMap { ReleaseGroup(unsafeResultMap: $0) }
+            }
+            set {
+              resultMap.updateValue(newValue?.resultMap, forKey: "releaseGroups")
+            }
+          }
+
+          public struct ReleaseGroup: GraphQLSelectionSet {
+            public static let possibleTypes = ["ReleaseGroupConnection"]
+
+            public static let selections: [GraphQLSelection] = [
+              GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+              GraphQLField("edges", type: .list(.object(Edge.selections))),
+              GraphQLField("pageInfo", type: .nonNull(.object(PageInfo.selections))),
+            ]
+
+            public private(set) var resultMap: ResultMap
+
+            public init(unsafeResultMap: ResultMap) {
+              self.resultMap = unsafeResultMap
+            }
+
+            public init(edges: [Edge?]? = nil, pageInfo: PageInfo) {
+              self.init(unsafeResultMap: ["__typename": "ReleaseGroupConnection", "edges": edges.flatMap { (value: [Edge?]) -> [ResultMap?] in value.map { (value: Edge?) -> ResultMap? in value.flatMap { (value: Edge) -> ResultMap in value.resultMap } } }, "pageInfo": pageInfo.resultMap])
+            }
+
+            public var __typename: String {
+              get {
+                return resultMap["__typename"]! as! String
+              }
+              set {
+                resultMap.updateValue(newValue, forKey: "__typename")
+              }
+            }
+
+            /// A list of edges.
+            public var edges: [Edge?]? {
+              get {
+                return (resultMap["edges"] as? [ResultMap?]).flatMap { (value: [ResultMap?]) -> [Edge?] in value.map { (value: ResultMap?) -> Edge? in value.flatMap { (value: ResultMap) -> Edge in Edge(unsafeResultMap: value) } } }
+              }
+              set {
+                resultMap.updateValue(newValue.flatMap { (value: [Edge?]) -> [ResultMap?] in value.map { (value: Edge?) -> ResultMap? in value.flatMap { (value: Edge) -> ResultMap in value.resultMap } } }, forKey: "edges")
+              }
+            }
+
+            /// Information to aid in pagination.
+            public var pageInfo: PageInfo {
+              get {
+                return PageInfo(unsafeResultMap: resultMap["pageInfo"]! as! ResultMap)
+              }
+              set {
+                resultMap.updateValue(newValue.resultMap, forKey: "pageInfo")
+              }
+            }
+
+            public struct Edge: GraphQLSelectionSet {
+              public static let possibleTypes = ["ReleaseGroupEdge"]
+
+              public static let selections: [GraphQLSelection] = [
+                GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+                GraphQLField("node", type: .object(Node.selections)),
+              ]
+
+              public private(set) var resultMap: ResultMap
+
+              public init(unsafeResultMap: ResultMap) {
+                self.resultMap = unsafeResultMap
+              }
+
+              public init(node: Node? = nil) {
+                self.init(unsafeResultMap: ["__typename": "ReleaseGroupEdge", "node": node.flatMap { (value: Node) -> ResultMap in value.resultMap }])
+              }
+
+              public var __typename: String {
+                get {
+                  return resultMap["__typename"]! as! String
+                }
+                set {
+                  resultMap.updateValue(newValue, forKey: "__typename")
+                }
+              }
+
+              /// The item at the end of the edge
+              public var node: Node? {
+                get {
+                  return (resultMap["node"] as? ResultMap).flatMap { Node(unsafeResultMap: $0) }
+                }
+                set {
+                  resultMap.updateValue(newValue?.resultMap, forKey: "node")
+                }
+              }
+
+              public struct Node: GraphQLSelectionSet {
+                public static let possibleTypes = ["ReleaseGroup"]
+
+                public static let selections: [GraphQLSelection] = [
+                  GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+                  GraphQLField("releases", arguments: ["after": GraphQLVariable("after"), "first": GraphQLVariable("ReleaseConnection_first"), "status": GraphQLVariable("status"), "type": GraphQLVariable("type")], type: .object(Release.selections)),
+                  GraphQLField("theAudioDB", type: .object(TheAudioDb.selections)),
+                  GraphQLField("title", type: .scalar(String.self)),
+                ]
+
+                public private(set) var resultMap: ResultMap
+
+                public init(unsafeResultMap: ResultMap) {
+                  self.resultMap = unsafeResultMap
+                }
+
+                public init(releases: Release? = nil, theAudioDb: TheAudioDb? = nil, title: String? = nil) {
+                  self.init(unsafeResultMap: ["__typename": "ReleaseGroup", "releases": releases.flatMap { (value: Release) -> ResultMap in value.resultMap }, "theAudioDB": theAudioDb.flatMap { (value: TheAudioDb) -> ResultMap in value.resultMap }, "title": title])
+                }
+
+                public var __typename: String {
+                  get {
+                    return resultMap["__typename"]! as! String
+                  }
+                  set {
+                    resultMap.updateValue(newValue, forKey: "__typename")
+                  }
+                }
+
+                /// A list of releases linked to this entity.
+                public var releases: Release? {
+                  get {
+                    return (resultMap["releases"] as? ResultMap).flatMap { Release(unsafeResultMap: $0) }
+                  }
+                  set {
+                    resultMap.updateValue(newValue?.resultMap, forKey: "releases")
+                  }
+                }
+
+                /// Data about the release group from [TheAudioDB](http://www.theaudiodb.com/),
+                /// a good source of descriptive information, reviews, and images.
+                /// This field is provided by TheAudioDB extension.
+                public var theAudioDb: TheAudioDb? {
+                  get {
+                    return (resultMap["theAudioDB"] as? ResultMap).flatMap { TheAudioDb(unsafeResultMap: $0) }
+                  }
+                  set {
+                    resultMap.updateValue(newValue?.resultMap, forKey: "theAudioDB")
+                  }
+                }
+
+                /// The official title of the entity.
+                public var title: String? {
+                  get {
+                    return resultMap["title"] as? String
+                  }
+                  set {
+                    resultMap.updateValue(newValue, forKey: "title")
+                  }
+                }
+
+                public struct Release: GraphQLSelectionSet {
+                  public static let possibleTypes = ["ReleaseConnection"]
+
+                  public static let selections: [GraphQLSelection] = [
+                    GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+                    GraphQLField("nodes", type: .list(.object(Node.selections))),
+                  ]
+
+                  public private(set) var resultMap: ResultMap
+
+                  public init(unsafeResultMap: ResultMap) {
+                    self.resultMap = unsafeResultMap
+                  }
+
+                  public init(nodes: [Node?]? = nil) {
+                    self.init(unsafeResultMap: ["__typename": "ReleaseConnection", "nodes": nodes.flatMap { (value: [Node?]) -> [ResultMap?] in value.map { (value: Node?) -> ResultMap? in value.flatMap { (value: Node) -> ResultMap in value.resultMap } } }])
+                  }
+
+                  public var __typename: String {
+                    get {
+                      return resultMap["__typename"]! as! String
+                    }
+                    set {
+                      resultMap.updateValue(newValue, forKey: "__typename")
+                    }
+                  }
+
+                  /// A list of nodes in the connection (without going through the
+                  /// `edges` field).
+                  public var nodes: [Node?]? {
+                    get {
+                      return (resultMap["nodes"] as? [ResultMap?]).flatMap { (value: [ResultMap?]) -> [Node?] in value.map { (value: ResultMap?) -> Node? in value.flatMap { (value: ResultMap) -> Node in Node(unsafeResultMap: value) } } }
+                    }
+                    set {
+                      resultMap.updateValue(newValue.flatMap { (value: [Node?]) -> [ResultMap?] in value.map { (value: Node?) -> ResultMap? in value.flatMap { (value: Node) -> ResultMap in value.resultMap } } }, forKey: "nodes")
+                    }
+                  }
+
+                  public struct Node: GraphQLSelectionSet {
+                    public static let possibleTypes = ["Release"]
+
+                    public static let selections: [GraphQLSelection] = [
+                      GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+                      GraphQLField("mbid", type: .nonNull(.scalar(String.self))),
+                    ]
+
+                    public private(set) var resultMap: ResultMap
+
+                    public init(unsafeResultMap: ResultMap) {
+                      self.resultMap = unsafeResultMap
+                    }
+
+                    public init(mbid: String) {
+                      self.init(unsafeResultMap: ["__typename": "Release", "mbid": mbid])
+                    }
+
+                    public var __typename: String {
+                      get {
+                        return resultMap["__typename"]! as! String
+                      }
+                      set {
+                        resultMap.updateValue(newValue, forKey: "__typename")
+                      }
+                    }
+
+                    /// The MBID of the entity.
+                    public var mbid: String {
+                      get {
+                        return resultMap["mbid"]! as! String
+                      }
+                      set {
+                        resultMap.updateValue(newValue, forKey: "mbid")
+                      }
+                    }
+                  }
+                }
+
+                public struct TheAudioDb: GraphQLSelectionSet {
+                  public static let possibleTypes = ["TheAudioDBAlbum"]
+
+                  public static let selections: [GraphQLSelection] = [
+                    GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+                    GraphQLField("frontImage", arguments: ["size": GraphQLVariable("size")], type: .scalar(String.self)),
+                  ]
+
+                  public private(set) var resultMap: ResultMap
+
+                  public init(unsafeResultMap: ResultMap) {
+                    self.resultMap = unsafeResultMap
+                  }
+
+                  public init(frontImage: String? = nil) {
+                    self.init(unsafeResultMap: ["__typename": "TheAudioDBAlbum", "frontImage": frontImage])
+                  }
+
+                  public var __typename: String {
+                    get {
+                      return resultMap["__typename"]! as! String
+                    }
+                    set {
+                      resultMap.updateValue(newValue, forKey: "__typename")
+                    }
+                  }
+
+                  /// An image of the front of the album packaging.
+                  public var frontImage: String? {
+                    get {
+                      return resultMap["frontImage"] as? String
+                    }
+                    set {
+                      resultMap.updateValue(newValue, forKey: "frontImage")
+                    }
+                  }
+                }
+              }
+            }
+
+            public struct PageInfo: GraphQLSelectionSet {
+              public static let possibleTypes = ["PageInfo"]
+
+              public static let selections: [GraphQLSelection] = [
+                GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+                GraphQLField("endCursor", type: .scalar(String.self)),
+                GraphQLField("hasNextPage", type: .nonNull(.scalar(Bool.self))),
+              ]
+
+              public private(set) var resultMap: ResultMap
+
+              public init(unsafeResultMap: ResultMap) {
+                self.resultMap = unsafeResultMap
+              }
+
+              public init(endCursor: String? = nil, hasNextPage: Bool) {
+                self.init(unsafeResultMap: ["__typename": "PageInfo", "endCursor": endCursor, "hasNextPage": hasNextPage])
+              }
+
+              public var __typename: String {
+                get {
+                  return resultMap["__typename"]! as! String
+                }
+                set {
+                  resultMap.updateValue(newValue, forKey: "__typename")
+                }
+              }
+
+              /// When paginating forwards, the cursor to continue.
+              public var endCursor: String? {
+                get {
+                  return resultMap["endCursor"] as? String
+                }
+                set {
+                  resultMap.updateValue(newValue, forKey: "endCursor")
+                }
+              }
+
+              /// When paginating forwards, are there more items?
+              public var hasNextPage: Bool {
+                get {
+                  return resultMap["hasNextPage"]! as! Bool
+                }
+                set {
+                  resultMap.updateValue(newValue, forKey: "hasNextPage")
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  public final class ArtistDetailViewLastFmArtistConnectionSimilarArtistCellLastFmArtistQuery: GraphQLQuery {
+    /// The raw GraphQL definition of this operation.
+    public let operationDefinition =
+      """
+      query ArtistDetailViewLastFMArtistConnectionSimilarArtistCellLastFMArtist($mbid: MBID!, $LastFMArtistConnection_first: Int, $after: String, $LastFMAlbumConnection_first: Int, $URLString_size: LastFMImageSize) {
         lookup {
           __typename
           artist(mbid: $mbid) {
             __typename
             lastFM {
               __typename
-              similarArtists(after: $after, first: $first) {
+              similarArtists(after: $after, first: $LastFMArtistConnection_first) {
                 __typename
                 edges {
                   __typename
@@ -17029,11 +16915,11 @@ public enum ApolloStuff {
                     __typename
                     mbid
                     name
-                    topAlbums(after: $after, first: $first) {
+                    topAlbums(after: $after, first: $LastFMAlbumConnection_first) {
                       __typename
                       nodes {
                         __typename
-                        image(size: $size)
+                        image(size: $URLString_size)
                       }
                     }
                   }
@@ -17050,22 +16936,24 @@ public enum ApolloStuff {
       }
       """
 
-    public let operationName = "SimilarArtistsListLastFMArtistConnectionSimilarArtistCellLastFMArtist"
+    public let operationName = "ArtistDetailViewLastFMArtistConnectionSimilarArtistCellLastFMArtist"
 
     public var mbid: String
-    public var first: Int?
+    public var LastFMArtistConnection_first: Int?
     public var after: String?
-    public var size: LastFMImageSize?
+    public var LastFMAlbumConnection_first: Int?
+    public var URLString_size: LastFMImageSize?
 
-    public init(mbid: String, first: Int? = nil, after: String? = nil, size: LastFMImageSize? = nil) {
+    public init(mbid: String, LastFMArtistConnection_first: Int? = nil, after: String? = nil, LastFMAlbumConnection_first: Int? = nil, URLString_size: LastFMImageSize? = nil) {
       self.mbid = mbid
-      self.first = first
+      self.LastFMArtistConnection_first = LastFMArtistConnection_first
       self.after = after
-      self.size = size
+      self.LastFMAlbumConnection_first = LastFMAlbumConnection_first
+      self.URLString_size = URLString_size
     }
 
     public var variables: GraphQLMap? {
-      return ["mbid": mbid, "first": first, "after": after, "size": size]
+      return ["mbid": mbid, "LastFMArtistConnection_first": LastFMArtistConnection_first, "after": after, "LastFMAlbumConnection_first": LastFMAlbumConnection_first, "URLString_size": URLString_size]
     }
 
     public struct Data: GraphQLSelectionSet {
@@ -17176,7 +17064,7 @@ public enum ApolloStuff {
 
             public static let selections: [GraphQLSelection] = [
               GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
-              GraphQLField("similarArtists", arguments: ["after": GraphQLVariable("after"), "first": GraphQLVariable("first")], type: .object(SimilarArtist.selections)),
+              GraphQLField("similarArtists", arguments: ["after": GraphQLVariable("after"), "first": GraphQLVariable("LastFMArtistConnection_first")], type: .object(SimilarArtist.selections)),
             ]
 
             public private(set) var resultMap: ResultMap
@@ -17300,7 +17188,7 @@ public enum ApolloStuff {
                     GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
                     GraphQLField("mbid", type: .scalar(String.self)),
                     GraphQLField("name", type: .scalar(String.self)),
-                    GraphQLField("topAlbums", arguments: ["after": GraphQLVariable("after"), "first": GraphQLVariable("first")], type: .object(TopAlbum.selections)),
+                    GraphQLField("topAlbums", arguments: ["after": GraphQLVariable("after"), "first": GraphQLVariable("LastFMAlbumConnection_first")], type: .object(TopAlbum.selections)),
                   ]
 
                   public private(set) var resultMap: ResultMap
@@ -17394,7 +17282,7 @@ public enum ApolloStuff {
 
                       public static let selections: [GraphQLSelection] = [
                         GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
-                        GraphQLField("image", arguments: ["size": GraphQLVariable("size")], type: .scalar(String.self)),
+                        GraphQLField("image", arguments: ["size": GraphQLVariable("URLString_size")], type: .scalar(String.self)),
                       ]
 
                       public private(set) var resultMap: ResultMap
@@ -17489,7 +17377,7 @@ public enum ApolloStuff {
     /// The raw GraphQL definition of this operation.
     public let operationDefinition =
       """
-      query TrendingArtistsListLastFMArtistConnectionTrendingArtistCellLastFMArtist($country: String, $first: Int, $after: String, $size: LastFMImageSize) {
+      query TrendingArtistsListLastFMArtistConnectionTrendingArtistCellLastFMArtist($country: String, $first: Int, $after: String, $LastFMTagConnection_first: Int, $LastFMTrackConnection_first: Int, $LastFMAlbumConnection_first: Int, $size: LastFMImageSize) {
         lastFM {
           __typename
           chart {
@@ -17502,21 +17390,21 @@ public enum ApolloStuff {
                   __typename
                   mbid
                   name
-                  topAlbums(after: $after, first: $first) {
+                  topAlbums(after: $after, first: $LastFMAlbumConnection_first) {
                     __typename
                     nodes {
                       __typename
                       image(size: $size)
                     }
                   }
-                  topTags(after: $after, first: $first) {
+                  topTags(after: $after, first: $LastFMTagConnection_first) {
                     __typename
                     nodes {
                       __typename
                       name
                     }
                   }
-                  topTracks(after: $after, first: $first) {
+                  topTracks(after: $after, first: $LastFMTrackConnection_first) {
                     __typename
                     nodes {
                       __typename
@@ -17541,17 +17429,23 @@ public enum ApolloStuff {
     public var country: String?
     public var first: Int?
     public var after: String?
+    public var LastFMTagConnection_first: Int?
+    public var LastFMTrackConnection_first: Int?
+    public var LastFMAlbumConnection_first: Int?
     public var size: LastFMImageSize?
 
-    public init(country: String? = nil, first: Int? = nil, after: String? = nil, size: LastFMImageSize? = nil) {
+    public init(country: String? = nil, first: Int? = nil, after: String? = nil, LastFMTagConnection_first: Int? = nil, LastFMTrackConnection_first: Int? = nil, LastFMAlbumConnection_first: Int? = nil, size: LastFMImageSize? = nil) {
       self.country = country
       self.first = first
       self.after = after
+      self.LastFMTagConnection_first = LastFMTagConnection_first
+      self.LastFMTrackConnection_first = LastFMTrackConnection_first
+      self.LastFMAlbumConnection_first = LastFMAlbumConnection_first
       self.size = size
     }
 
     public var variables: GraphQLMap? {
-      return ["country": country, "first": first, "after": after, "size": size]
+      return ["country": country, "first": first, "after": after, "LastFMTagConnection_first": LastFMTagConnection_first, "LastFMTrackConnection_first": LastFMTrackConnection_first, "LastFMAlbumConnection_first": LastFMAlbumConnection_first, "size": size]
     }
 
     public struct Data: GraphQLSelectionSet {
@@ -17750,9 +17644,9 @@ public enum ApolloStuff {
                   GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
                   GraphQLField("mbid", type: .scalar(String.self)),
                   GraphQLField("name", type: .scalar(String.self)),
-                  GraphQLField("topAlbums", arguments: ["after": GraphQLVariable("after"), "first": GraphQLVariable("first")], type: .object(TopAlbum.selections)),
-                  GraphQLField("topTags", arguments: ["after": GraphQLVariable("after"), "first": GraphQLVariable("first")], type: .object(TopTag.selections)),
-                  GraphQLField("topTracks", arguments: ["after": GraphQLVariable("after"), "first": GraphQLVariable("first")], type: .object(TopTrack.selections)),
+                  GraphQLField("topAlbums", arguments: ["after": GraphQLVariable("after"), "first": GraphQLVariable("LastFMAlbumConnection_first")], type: .object(TopAlbum.selections)),
+                  GraphQLField("topTags", arguments: ["after": GraphQLVariable("after"), "first": GraphQLVariable("LastFMTagConnection_first")], type: .object(TopTag.selections)),
+                  GraphQLField("topTracks", arguments: ["after": GraphQLVariable("after"), "first": GraphQLVariable("LastFMTrackConnection_first")], type: .object(TopTrack.selections)),
                 ]
 
                 public private(set) var resultMap: ResultMap
@@ -18853,22 +18747,81 @@ public enum ApolloStuff {
     }
   }
 
-  public final class ArtistAlbumListQuery: GraphQLQuery {
+  public final class ArtistDetailViewQuery: GraphQLQuery {
     /// The raw GraphQL definition of this operation.
     public let operationDefinition =
       """
-      query ArtistAlbumList($mbid: MBID!, $type: [ReleaseGroupType], $after: String, $first: Int, $status: [ReleaseStatus], $size: TheAudioDBImageSize) {
+      query ArtistDetailView($mbid: MBID!, $type: [ReleaseGroupType], $after: String, $first: Int, $status: [ReleaseStatus], $ReleaseConnection_first: Int, $size: TheAudioDBImageSize, $LastFMArtistConnection_first: Int, $URLString_size: LastFMImageSize, $LastFMAlbumConnection_first: Int, $lang: String) {
         lookup {
           __typename
           artist(mbid: $mbid) {
             __typename
+            area {
+              __typename
+              name
+            }
+            lastFM {
+              __typename
+              similarArtists(after: $after, first: $LastFMArtistConnection_first) {
+                __typename
+                edges {
+                  __typename
+                  node {
+                    __typename
+                    mbid
+                    name
+                    topAlbums(after: $after, first: $LastFMAlbumConnection_first) {
+                      __typename
+                      nodes {
+                        __typename
+                        image(size: $URLString_size)
+                      }
+                    }
+                  }
+                }
+                pageInfo {
+                  __typename
+                  endCursor
+                  hasNextPage
+                }
+              }
+              topTracks(after: $after, first: $first) {
+                __typename
+                edges {
+                  __typename
+                  node {
+                    __typename
+                    album {
+                      __typename
+                      image(size: $URLString_size)
+                    }
+                    artist {
+                      __typename
+                      name
+                    }
+                    title
+                  }
+                }
+                pageInfo {
+                  __typename
+                  endCursor
+                  hasNextPage
+                }
+              }
+            }
+            lifeSpan {
+              __typename
+              begin
+            }
+            mbid
+            name
             releaseGroups(after: $after, first: $first, type: $type) {
               __typename
               edges {
                 __typename
                 node {
                   __typename
-                  releases(after: $after, first: $first, status: $status, type: $type) {
+                  releases(after: $after, first: $ReleaseConnection_first, status: $status, type: $type) {
                     __typename
                     nodes {
                       __typename
@@ -18888,31 +18841,49 @@ public enum ApolloStuff {
                 hasNextPage
               }
             }
+            theAudioDB {
+              __typename
+              biography(lang: $lang)
+              mood
+              style
+              thumbnail(size: $size)
+            }
+            type
           }
         }
       }
       """
 
-    public let operationName = "ArtistAlbumList"
+    public let operationName = "ArtistDetailView"
 
     public var mbid: String
     public var type: [ReleaseGroupType?]?
     public var after: String?
     public var first: Int?
     public var status: [ReleaseStatus?]?
+    public var ReleaseConnection_first: Int?
     public var size: TheAudioDBImageSize?
+    public var LastFMArtistConnection_first: Int?
+    public var URLString_size: LastFMImageSize?
+    public var LastFMAlbumConnection_first: Int?
+    public var lang: String?
 
-    public init(mbid: String, type: [ReleaseGroupType?]? = nil, after: String? = nil, first: Int? = nil, status: [ReleaseStatus?]? = nil, size: TheAudioDBImageSize? = nil) {
+    public init(mbid: String, type: [ReleaseGroupType?]? = nil, after: String? = nil, first: Int? = nil, status: [ReleaseStatus?]? = nil, ReleaseConnection_first: Int? = nil, size: TheAudioDBImageSize? = nil, LastFMArtistConnection_first: Int? = nil, URLString_size: LastFMImageSize? = nil, LastFMAlbumConnection_first: Int? = nil, lang: String? = nil) {
       self.mbid = mbid
       self.type = type
       self.after = after
       self.first = first
       self.status = status
+      self.ReleaseConnection_first = ReleaseConnection_first
       self.size = size
+      self.LastFMArtistConnection_first = LastFMArtistConnection_first
+      self.URLString_size = URLString_size
+      self.LastFMAlbumConnection_first = LastFMAlbumConnection_first
+      self.lang = lang
     }
 
     public var variables: GraphQLMap? {
-      return ["mbid": mbid, "type": type, "after": after, "first": first, "status": status, "size": size]
+      return ["mbid": mbid, "type": type, "after": after, "first": first, "status": status, "ReleaseConnection_first": ReleaseConnection_first, "size": size, "LastFMArtistConnection_first": LastFMArtistConnection_first, "URLString_size": URLString_size, "LastFMAlbumConnection_first": LastFMAlbumConnection_first, "lang": lang]
     }
 
     public struct Data: GraphQLSelectionSet {
@@ -18984,7 +18955,14 @@ public enum ApolloStuff {
 
           public static let selections: [GraphQLSelection] = [
             GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+            GraphQLField("area", type: .object(Area.selections)),
+            GraphQLField("lastFM", type: .object(LastFm.selections)),
+            GraphQLField("lifeSpan", type: .object(LifeSpan.selections)),
+            GraphQLField("mbid", type: .nonNull(.scalar(String.self))),
+            GraphQLField("name", type: .scalar(String.self)),
             GraphQLField("releaseGroups", arguments: ["after": GraphQLVariable("after"), "first": GraphQLVariable("first"), "type": GraphQLVariable("type")], type: .object(ReleaseGroup.selections)),
+            GraphQLField("theAudioDB", type: .object(TheAudioDb.selections)),
+            GraphQLField("type", type: .scalar(String.self)),
           ]
 
           public private(set) var resultMap: ResultMap
@@ -18993,8 +18971,8 @@ public enum ApolloStuff {
             self.resultMap = unsafeResultMap
           }
 
-          public init(releaseGroups: ReleaseGroup? = nil) {
-            self.init(unsafeResultMap: ["__typename": "Artist", "releaseGroups": releaseGroups.flatMap { (value: ReleaseGroup) -> ResultMap in value.resultMap }])
+          public init(area: Area? = nil, lastFm: LastFm? = nil, lifeSpan: LifeSpan? = nil, mbid: String, name: String? = nil, releaseGroups: ReleaseGroup? = nil, theAudioDb: TheAudioDb? = nil, type: String? = nil) {
+            self.init(unsafeResultMap: ["__typename": "Artist", "area": area.flatMap { (value: Area) -> ResultMap in value.resultMap }, "lastFM": lastFm.flatMap { (value: LastFm) -> ResultMap in value.resultMap }, "lifeSpan": lifeSpan.flatMap { (value: LifeSpan) -> ResultMap in value.resultMap }, "mbid": mbid, "name": name, "releaseGroups": releaseGroups.flatMap { (value: ReleaseGroup) -> ResultMap in value.resultMap }, "theAudioDB": theAudioDb.flatMap { (value: TheAudioDb) -> ResultMap in value.resultMap }, "type": type])
           }
 
           public var __typename: String {
@@ -19006,6 +18984,60 @@ public enum ApolloStuff {
             }
           }
 
+          /// The area with which an artist is primarily identified. It
+          /// is often, but not always, its birth/formation country.
+          public var area: Area? {
+            get {
+              return (resultMap["area"] as? ResultMap).flatMap { Area(unsafeResultMap: $0) }
+            }
+            set {
+              resultMap.updateValue(newValue?.resultMap, forKey: "area")
+            }
+          }
+
+          /// Data about the artist from [Last.fm](https://www.last.fm/), a good source
+          /// for measuring popularity via listener and play counts. This field is
+          /// provided by the Last.fm extension.
+          public var lastFm: LastFm? {
+            get {
+              return (resultMap["lastFM"] as? ResultMap).flatMap { LastFm(unsafeResultMap: $0) }
+            }
+            set {
+              resultMap.updateValue(newValue?.resultMap, forKey: "lastFM")
+            }
+          }
+
+          /// The begin and end dates of the entity’s existence. Its exact
+          /// meaning depends on the type of entity.
+          public var lifeSpan: LifeSpan? {
+            get {
+              return (resultMap["lifeSpan"] as? ResultMap).flatMap { LifeSpan(unsafeResultMap: $0) }
+            }
+            set {
+              resultMap.updateValue(newValue?.resultMap, forKey: "lifeSpan")
+            }
+          }
+
+          /// The MBID of the entity.
+          public var mbid: String {
+            get {
+              return resultMap["mbid"]! as! String
+            }
+            set {
+              resultMap.updateValue(newValue, forKey: "mbid")
+            }
+          }
+
+          /// The official name of the entity.
+          public var name: String? {
+            get {
+              return resultMap["name"] as? String
+            }
+            set {
+              resultMap.updateValue(newValue, forKey: "name")
+            }
+          }
+
           /// A list of release groups linked to this entity.
           public var releaseGroups: ReleaseGroup? {
             get {
@@ -19013,6 +19045,699 @@ public enum ApolloStuff {
             }
             set {
               resultMap.updateValue(newValue?.resultMap, forKey: "releaseGroups")
+            }
+          }
+
+          /// Data about the artist from [TheAudioDB](http://www.theaudiodb.com/), a good
+          /// source of biographical information and images.
+          /// This field is provided by TheAudioDB extension.
+          public var theAudioDb: TheAudioDb? {
+            get {
+              return (resultMap["theAudioDB"] as? ResultMap).flatMap { TheAudioDb(unsafeResultMap: $0) }
+            }
+            set {
+              resultMap.updateValue(newValue?.resultMap, forKey: "theAudioDB")
+            }
+          }
+
+          /// Whether an artist is a person, a group, or something else.
+          public var type: String? {
+            get {
+              return resultMap["type"] as? String
+            }
+            set {
+              resultMap.updateValue(newValue, forKey: "type")
+            }
+          }
+
+          public struct Area: GraphQLSelectionSet {
+            public static let possibleTypes = ["Area"]
+
+            public static let selections: [GraphQLSelection] = [
+              GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+              GraphQLField("name", type: .scalar(String.self)),
+            ]
+
+            public private(set) var resultMap: ResultMap
+
+            public init(unsafeResultMap: ResultMap) {
+              self.resultMap = unsafeResultMap
+            }
+
+            public init(name: String? = nil) {
+              self.init(unsafeResultMap: ["__typename": "Area", "name": name])
+            }
+
+            public var __typename: String {
+              get {
+                return resultMap["__typename"]! as! String
+              }
+              set {
+                resultMap.updateValue(newValue, forKey: "__typename")
+              }
+            }
+
+            /// The official name of the entity.
+            public var name: String? {
+              get {
+                return resultMap["name"] as? String
+              }
+              set {
+                resultMap.updateValue(newValue, forKey: "name")
+              }
+            }
+          }
+
+          public struct LastFm: GraphQLSelectionSet {
+            public static let possibleTypes = ["LastFMArtist"]
+
+            public static let selections: [GraphQLSelection] = [
+              GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+              GraphQLField("similarArtists", arguments: ["after": GraphQLVariable("after"), "first": GraphQLVariable("LastFMArtistConnection_first")], type: .object(SimilarArtist.selections)),
+              GraphQLField("topTracks", arguments: ["after": GraphQLVariable("after"), "first": GraphQLVariable("first")], type: .object(TopTrack.selections)),
+            ]
+
+            public private(set) var resultMap: ResultMap
+
+            public init(unsafeResultMap: ResultMap) {
+              self.resultMap = unsafeResultMap
+            }
+
+            public init(similarArtists: SimilarArtist? = nil, topTracks: TopTrack? = nil) {
+              self.init(unsafeResultMap: ["__typename": "LastFMArtist", "similarArtists": similarArtists.flatMap { (value: SimilarArtist) -> ResultMap in value.resultMap }, "topTracks": topTracks.flatMap { (value: TopTrack) -> ResultMap in value.resultMap }])
+            }
+
+            public var __typename: String {
+              get {
+                return resultMap["__typename"]! as! String
+              }
+              set {
+                resultMap.updateValue(newValue, forKey: "__typename")
+              }
+            }
+
+            /// A list of similar artists.
+            public var similarArtists: SimilarArtist? {
+              get {
+                return (resultMap["similarArtists"] as? ResultMap).flatMap { SimilarArtist(unsafeResultMap: $0) }
+              }
+              set {
+                resultMap.updateValue(newValue?.resultMap, forKey: "similarArtists")
+              }
+            }
+
+            /// A list of the artist’s most popular tracks.
+            public var topTracks: TopTrack? {
+              get {
+                return (resultMap["topTracks"] as? ResultMap).flatMap { TopTrack(unsafeResultMap: $0) }
+              }
+              set {
+                resultMap.updateValue(newValue?.resultMap, forKey: "topTracks")
+              }
+            }
+
+            public struct SimilarArtist: GraphQLSelectionSet {
+              public static let possibleTypes = ["LastFMArtistConnection"]
+
+              public static let selections: [GraphQLSelection] = [
+                GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+                GraphQLField("edges", type: .list(.object(Edge.selections))),
+                GraphQLField("pageInfo", type: .nonNull(.object(PageInfo.selections))),
+              ]
+
+              public private(set) var resultMap: ResultMap
+
+              public init(unsafeResultMap: ResultMap) {
+                self.resultMap = unsafeResultMap
+              }
+
+              public init(edges: [Edge?]? = nil, pageInfo: PageInfo) {
+                self.init(unsafeResultMap: ["__typename": "LastFMArtistConnection", "edges": edges.flatMap { (value: [Edge?]) -> [ResultMap?] in value.map { (value: Edge?) -> ResultMap? in value.flatMap { (value: Edge) -> ResultMap in value.resultMap } } }, "pageInfo": pageInfo.resultMap])
+              }
+
+              public var __typename: String {
+                get {
+                  return resultMap["__typename"]! as! String
+                }
+                set {
+                  resultMap.updateValue(newValue, forKey: "__typename")
+                }
+              }
+
+              /// A list of edges.
+              public var edges: [Edge?]? {
+                get {
+                  return (resultMap["edges"] as? [ResultMap?]).flatMap { (value: [ResultMap?]) -> [Edge?] in value.map { (value: ResultMap?) -> Edge? in value.flatMap { (value: ResultMap) -> Edge in Edge(unsafeResultMap: value) } } }
+                }
+                set {
+                  resultMap.updateValue(newValue.flatMap { (value: [Edge?]) -> [ResultMap?] in value.map { (value: Edge?) -> ResultMap? in value.flatMap { (value: Edge) -> ResultMap in value.resultMap } } }, forKey: "edges")
+                }
+              }
+
+              /// Information to aid in pagination.
+              public var pageInfo: PageInfo {
+                get {
+                  return PageInfo(unsafeResultMap: resultMap["pageInfo"]! as! ResultMap)
+                }
+                set {
+                  resultMap.updateValue(newValue.resultMap, forKey: "pageInfo")
+                }
+              }
+
+              public struct Edge: GraphQLSelectionSet {
+                public static let possibleTypes = ["LastFMArtistEdge"]
+
+                public static let selections: [GraphQLSelection] = [
+                  GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+                  GraphQLField("node", type: .object(Node.selections)),
+                ]
+
+                public private(set) var resultMap: ResultMap
+
+                public init(unsafeResultMap: ResultMap) {
+                  self.resultMap = unsafeResultMap
+                }
+
+                public init(node: Node? = nil) {
+                  self.init(unsafeResultMap: ["__typename": "LastFMArtistEdge", "node": node.flatMap { (value: Node) -> ResultMap in value.resultMap }])
+                }
+
+                public var __typename: String {
+                  get {
+                    return resultMap["__typename"]! as! String
+                  }
+                  set {
+                    resultMap.updateValue(newValue, forKey: "__typename")
+                  }
+                }
+
+                /// The item at the end of the edge.
+                public var node: Node? {
+                  get {
+                    return (resultMap["node"] as? ResultMap).flatMap { Node(unsafeResultMap: $0) }
+                  }
+                  set {
+                    resultMap.updateValue(newValue?.resultMap, forKey: "node")
+                  }
+                }
+
+                public struct Node: GraphQLSelectionSet {
+                  public static let possibleTypes = ["LastFMArtist"]
+
+                  public static let selections: [GraphQLSelection] = [
+                    GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+                    GraphQLField("mbid", type: .scalar(String.self)),
+                    GraphQLField("name", type: .scalar(String.self)),
+                    GraphQLField("topAlbums", arguments: ["after": GraphQLVariable("after"), "first": GraphQLVariable("LastFMAlbumConnection_first")], type: .object(TopAlbum.selections)),
+                  ]
+
+                  public private(set) var resultMap: ResultMap
+
+                  public init(unsafeResultMap: ResultMap) {
+                    self.resultMap = unsafeResultMap
+                  }
+
+                  public init(mbid: String? = nil, name: String? = nil, topAlbums: TopAlbum? = nil) {
+                    self.init(unsafeResultMap: ["__typename": "LastFMArtist", "mbid": mbid, "name": name, "topAlbums": topAlbums.flatMap { (value: TopAlbum) -> ResultMap in value.resultMap }])
+                  }
+
+                  public var __typename: String {
+                    get {
+                      return resultMap["__typename"]! as! String
+                    }
+                    set {
+                      resultMap.updateValue(newValue, forKey: "__typename")
+                    }
+                  }
+
+                  /// The MBID of the corresponding MusicBrainz artist.
+                  public var mbid: String? {
+                    get {
+                      return resultMap["mbid"] as? String
+                    }
+                    set {
+                      resultMap.updateValue(newValue, forKey: "mbid")
+                    }
+                  }
+
+                  /// The name of the artist according to [Last.fm](https://www.last.fm/).
+                  public var name: String? {
+                    get {
+                      return resultMap["name"] as? String
+                    }
+                    set {
+                      resultMap.updateValue(newValue, forKey: "name")
+                    }
+                  }
+
+                  /// A list of the artist’s most popular albums.
+                  public var topAlbums: TopAlbum? {
+                    get {
+                      return (resultMap["topAlbums"] as? ResultMap).flatMap { TopAlbum(unsafeResultMap: $0) }
+                    }
+                    set {
+                      resultMap.updateValue(newValue?.resultMap, forKey: "topAlbums")
+                    }
+                  }
+
+                  public struct TopAlbum: GraphQLSelectionSet {
+                    public static let possibleTypes = ["LastFMAlbumConnection"]
+
+                    public static let selections: [GraphQLSelection] = [
+                      GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+                      GraphQLField("nodes", type: .list(.object(Node.selections))),
+                    ]
+
+                    public private(set) var resultMap: ResultMap
+
+                    public init(unsafeResultMap: ResultMap) {
+                      self.resultMap = unsafeResultMap
+                    }
+
+                    public init(nodes: [Node?]? = nil) {
+                      self.init(unsafeResultMap: ["__typename": "LastFMAlbumConnection", "nodes": nodes.flatMap { (value: [Node?]) -> [ResultMap?] in value.map { (value: Node?) -> ResultMap? in value.flatMap { (value: Node) -> ResultMap in value.resultMap } } }])
+                    }
+
+                    public var __typename: String {
+                      get {
+                        return resultMap["__typename"]! as! String
+                      }
+                      set {
+                        resultMap.updateValue(newValue, forKey: "__typename")
+                      }
+                    }
+
+                    /// A list of nodes in the connection (without going through the `edges` field).
+                    public var nodes: [Node?]? {
+                      get {
+                        return (resultMap["nodes"] as? [ResultMap?]).flatMap { (value: [ResultMap?]) -> [Node?] in value.map { (value: ResultMap?) -> Node? in value.flatMap { (value: ResultMap) -> Node in Node(unsafeResultMap: value) } } }
+                      }
+                      set {
+                        resultMap.updateValue(newValue.flatMap { (value: [Node?]) -> [ResultMap?] in value.map { (value: Node?) -> ResultMap? in value.flatMap { (value: Node) -> ResultMap in value.resultMap } } }, forKey: "nodes")
+                      }
+                    }
+
+                    public struct Node: GraphQLSelectionSet {
+                      public static let possibleTypes = ["LastFMAlbum"]
+
+                      public static let selections: [GraphQLSelection] = [
+                        GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+                        GraphQLField("image", arguments: ["size": GraphQLVariable("URLString_size")], type: .scalar(String.self)),
+                      ]
+
+                      public private(set) var resultMap: ResultMap
+
+                      public init(unsafeResultMap: ResultMap) {
+                        self.resultMap = unsafeResultMap
+                      }
+
+                      public init(image: String? = nil) {
+                        self.init(unsafeResultMap: ["__typename": "LastFMAlbum", "image": image])
+                      }
+
+                      public var __typename: String {
+                        get {
+                          return resultMap["__typename"]! as! String
+                        }
+                        set {
+                          resultMap.updateValue(newValue, forKey: "__typename")
+                        }
+                      }
+
+                      /// An image of the cover artwork of the release.
+                      public var image: String? {
+                        get {
+                          return resultMap["image"] as? String
+                        }
+                        set {
+                          resultMap.updateValue(newValue, forKey: "image")
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+
+              public struct PageInfo: GraphQLSelectionSet {
+                public static let possibleTypes = ["PageInfo"]
+
+                public static let selections: [GraphQLSelection] = [
+                  GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+                  GraphQLField("endCursor", type: .scalar(String.self)),
+                  GraphQLField("hasNextPage", type: .nonNull(.scalar(Bool.self))),
+                ]
+
+                public private(set) var resultMap: ResultMap
+
+                public init(unsafeResultMap: ResultMap) {
+                  self.resultMap = unsafeResultMap
+                }
+
+                public init(endCursor: String? = nil, hasNextPage: Bool) {
+                  self.init(unsafeResultMap: ["__typename": "PageInfo", "endCursor": endCursor, "hasNextPage": hasNextPage])
+                }
+
+                public var __typename: String {
+                  get {
+                    return resultMap["__typename"]! as! String
+                  }
+                  set {
+                    resultMap.updateValue(newValue, forKey: "__typename")
+                  }
+                }
+
+                /// When paginating forwards, the cursor to continue.
+                public var endCursor: String? {
+                  get {
+                    return resultMap["endCursor"] as? String
+                  }
+                  set {
+                    resultMap.updateValue(newValue, forKey: "endCursor")
+                  }
+                }
+
+                /// When paginating forwards, are there more items?
+                public var hasNextPage: Bool {
+                  get {
+                    return resultMap["hasNextPage"]! as! Bool
+                  }
+                  set {
+                    resultMap.updateValue(newValue, forKey: "hasNextPage")
+                  }
+                }
+              }
+            }
+
+            public struct TopTrack: GraphQLSelectionSet {
+              public static let possibleTypes = ["LastFMTrackConnection"]
+
+              public static let selections: [GraphQLSelection] = [
+                GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+                GraphQLField("edges", type: .list(.object(Edge.selections))),
+                GraphQLField("pageInfo", type: .nonNull(.object(PageInfo.selections))),
+              ]
+
+              public private(set) var resultMap: ResultMap
+
+              public init(unsafeResultMap: ResultMap) {
+                self.resultMap = unsafeResultMap
+              }
+
+              public init(edges: [Edge?]? = nil, pageInfo: PageInfo) {
+                self.init(unsafeResultMap: ["__typename": "LastFMTrackConnection", "edges": edges.flatMap { (value: [Edge?]) -> [ResultMap?] in value.map { (value: Edge?) -> ResultMap? in value.flatMap { (value: Edge) -> ResultMap in value.resultMap } } }, "pageInfo": pageInfo.resultMap])
+              }
+
+              public var __typename: String {
+                get {
+                  return resultMap["__typename"]! as! String
+                }
+                set {
+                  resultMap.updateValue(newValue, forKey: "__typename")
+                }
+              }
+
+              /// A list of edges.
+              public var edges: [Edge?]? {
+                get {
+                  return (resultMap["edges"] as? [ResultMap?]).flatMap { (value: [ResultMap?]) -> [Edge?] in value.map { (value: ResultMap?) -> Edge? in value.flatMap { (value: ResultMap) -> Edge in Edge(unsafeResultMap: value) } } }
+                }
+                set {
+                  resultMap.updateValue(newValue.flatMap { (value: [Edge?]) -> [ResultMap?] in value.map { (value: Edge?) -> ResultMap? in value.flatMap { (value: Edge) -> ResultMap in value.resultMap } } }, forKey: "edges")
+                }
+              }
+
+              /// Information to aid in pagination.
+              public var pageInfo: PageInfo {
+                get {
+                  return PageInfo(unsafeResultMap: resultMap["pageInfo"]! as! ResultMap)
+                }
+                set {
+                  resultMap.updateValue(newValue.resultMap, forKey: "pageInfo")
+                }
+              }
+
+              public struct Edge: GraphQLSelectionSet {
+                public static let possibleTypes = ["LastFMTrackEdge"]
+
+                public static let selections: [GraphQLSelection] = [
+                  GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+                  GraphQLField("node", type: .object(Node.selections)),
+                ]
+
+                public private(set) var resultMap: ResultMap
+
+                public init(unsafeResultMap: ResultMap) {
+                  self.resultMap = unsafeResultMap
+                }
+
+                public init(node: Node? = nil) {
+                  self.init(unsafeResultMap: ["__typename": "LastFMTrackEdge", "node": node.flatMap { (value: Node) -> ResultMap in value.resultMap }])
+                }
+
+                public var __typename: String {
+                  get {
+                    return resultMap["__typename"]! as! String
+                  }
+                  set {
+                    resultMap.updateValue(newValue, forKey: "__typename")
+                  }
+                }
+
+                /// The item at the end of the edge.
+                public var node: Node? {
+                  get {
+                    return (resultMap["node"] as? ResultMap).flatMap { Node(unsafeResultMap: $0) }
+                  }
+                  set {
+                    resultMap.updateValue(newValue?.resultMap, forKey: "node")
+                  }
+                }
+
+                public struct Node: GraphQLSelectionSet {
+                  public static let possibleTypes = ["LastFMTrack"]
+
+                  public static let selections: [GraphQLSelection] = [
+                    GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+                    GraphQLField("album", type: .object(Album.selections)),
+                    GraphQLField("artist", type: .object(Artist.selections)),
+                    GraphQLField("title", type: .scalar(String.self)),
+                  ]
+
+                  public private(set) var resultMap: ResultMap
+
+                  public init(unsafeResultMap: ResultMap) {
+                    self.resultMap = unsafeResultMap
+                  }
+
+                  public init(album: Album? = nil, artist: Artist? = nil, title: String? = nil) {
+                    self.init(unsafeResultMap: ["__typename": "LastFMTrack", "album": album.flatMap { (value: Album) -> ResultMap in value.resultMap }, "artist": artist.flatMap { (value: Artist) -> ResultMap in value.resultMap }, "title": title])
+                  }
+
+                  public var __typename: String {
+                    get {
+                      return resultMap["__typename"]! as! String
+                    }
+                    set {
+                      resultMap.updateValue(newValue, forKey: "__typename")
+                    }
+                  }
+
+                  /// The album on which the track appears. This returns the Last.fm album info,
+                  /// not the MusicBrainz release.
+                  public var album: Album? {
+                    get {
+                      return (resultMap["album"] as? ResultMap).flatMap { Album(unsafeResultMap: $0) }
+                    }
+                    set {
+                      resultMap.updateValue(newValue?.resultMap, forKey: "album")
+                    }
+                  }
+
+                  /// The artist who released the track. This returns the Last.fm artist info,
+                  /// not the MusicBrainz artist.
+                  public var artist: Artist? {
+                    get {
+                      return (resultMap["artist"] as? ResultMap).flatMap { Artist(unsafeResultMap: $0) }
+                    }
+                    set {
+                      resultMap.updateValue(newValue?.resultMap, forKey: "artist")
+                    }
+                  }
+
+                  /// The title of the track according to [Last.fm](https://www.last.fm/).
+                  public var title: String? {
+                    get {
+                      return resultMap["title"] as? String
+                    }
+                    set {
+                      resultMap.updateValue(newValue, forKey: "title")
+                    }
+                  }
+
+                  public struct Album: GraphQLSelectionSet {
+                    public static let possibleTypes = ["LastFMAlbum"]
+
+                    public static let selections: [GraphQLSelection] = [
+                      GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+                      GraphQLField("image", arguments: ["size": GraphQLVariable("URLString_size")], type: .scalar(String.self)),
+                    ]
+
+                    public private(set) var resultMap: ResultMap
+
+                    public init(unsafeResultMap: ResultMap) {
+                      self.resultMap = unsafeResultMap
+                    }
+
+                    public init(image: String? = nil) {
+                      self.init(unsafeResultMap: ["__typename": "LastFMAlbum", "image": image])
+                    }
+
+                    public var __typename: String {
+                      get {
+                        return resultMap["__typename"]! as! String
+                      }
+                      set {
+                        resultMap.updateValue(newValue, forKey: "__typename")
+                      }
+                    }
+
+                    /// An image of the cover artwork of the release.
+                    public var image: String? {
+                      get {
+                        return resultMap["image"] as? String
+                      }
+                      set {
+                        resultMap.updateValue(newValue, forKey: "image")
+                      }
+                    }
+                  }
+
+                  public struct Artist: GraphQLSelectionSet {
+                    public static let possibleTypes = ["LastFMArtist"]
+
+                    public static let selections: [GraphQLSelection] = [
+                      GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+                      GraphQLField("name", type: .scalar(String.self)),
+                    ]
+
+                    public private(set) var resultMap: ResultMap
+
+                    public init(unsafeResultMap: ResultMap) {
+                      self.resultMap = unsafeResultMap
+                    }
+
+                    public init(name: String? = nil) {
+                      self.init(unsafeResultMap: ["__typename": "LastFMArtist", "name": name])
+                    }
+
+                    public var __typename: String {
+                      get {
+                        return resultMap["__typename"]! as! String
+                      }
+                      set {
+                        resultMap.updateValue(newValue, forKey: "__typename")
+                      }
+                    }
+
+                    /// The name of the artist according to [Last.fm](https://www.last.fm/).
+                    public var name: String? {
+                      get {
+                        return resultMap["name"] as? String
+                      }
+                      set {
+                        resultMap.updateValue(newValue, forKey: "name")
+                      }
+                    }
+                  }
+                }
+              }
+
+              public struct PageInfo: GraphQLSelectionSet {
+                public static let possibleTypes = ["PageInfo"]
+
+                public static let selections: [GraphQLSelection] = [
+                  GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+                  GraphQLField("endCursor", type: .scalar(String.self)),
+                  GraphQLField("hasNextPage", type: .nonNull(.scalar(Bool.self))),
+                ]
+
+                public private(set) var resultMap: ResultMap
+
+                public init(unsafeResultMap: ResultMap) {
+                  self.resultMap = unsafeResultMap
+                }
+
+                public init(endCursor: String? = nil, hasNextPage: Bool) {
+                  self.init(unsafeResultMap: ["__typename": "PageInfo", "endCursor": endCursor, "hasNextPage": hasNextPage])
+                }
+
+                public var __typename: String {
+                  get {
+                    return resultMap["__typename"]! as! String
+                  }
+                  set {
+                    resultMap.updateValue(newValue, forKey: "__typename")
+                  }
+                }
+
+                /// When paginating forwards, the cursor to continue.
+                public var endCursor: String? {
+                  get {
+                    return resultMap["endCursor"] as? String
+                  }
+                  set {
+                    resultMap.updateValue(newValue, forKey: "endCursor")
+                  }
+                }
+
+                /// When paginating forwards, are there more items?
+                public var hasNextPage: Bool {
+                  get {
+                    return resultMap["hasNextPage"]! as! Bool
+                  }
+                  set {
+                    resultMap.updateValue(newValue, forKey: "hasNextPage")
+                  }
+                }
+              }
+            }
+          }
+
+          public struct LifeSpan: GraphQLSelectionSet {
+            public static let possibleTypes = ["LifeSpan"]
+
+            public static let selections: [GraphQLSelection] = [
+              GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+              GraphQLField("begin", type: .scalar(String.self)),
+            ]
+
+            public private(set) var resultMap: ResultMap
+
+            public init(unsafeResultMap: ResultMap) {
+              self.resultMap = unsafeResultMap
+            }
+
+            public init(begin: String? = nil) {
+              self.init(unsafeResultMap: ["__typename": "LifeSpan", "begin": begin])
+            }
+
+            public var __typename: String {
+              get {
+                return resultMap["__typename"]! as! String
+              }
+              set {
+                resultMap.updateValue(newValue, forKey: "__typename")
+              }
+            }
+
+            /// The start date of the entity’s life span.
+            public var begin: String? {
+              get {
+                return resultMap["begin"] as? String
+              }
+              set {
+                resultMap.updateValue(newValue, forKey: "begin")
+              }
             }
           }
 
@@ -19106,7 +19831,7 @@ public enum ApolloStuff {
 
                 public static let selections: [GraphQLSelection] = [
                   GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
-                  GraphQLField("releases", arguments: ["after": GraphQLVariable("after"), "first": GraphQLVariable("first"), "status": GraphQLVariable("status"), "type": GraphQLVariable("type")], type: .object(Release.selections)),
+                  GraphQLField("releases", arguments: ["after": GraphQLVariable("after"), "first": GraphQLVariable("ReleaseConnection_first"), "status": GraphQLVariable("status"), "type": GraphQLVariable("type")], type: .object(Release.selections)),
                   GraphQLField("theAudioDB", type: .object(TheAudioDb.selections)),
                   GraphQLField("title", type: .scalar(String.self)),
                 ]
@@ -19328,294 +20053,6 @@ public enum ApolloStuff {
               }
             }
           }
-        }
-      }
-    }
-  }
-
-  public final class ArtistDetailViewQuery: GraphQLQuery {
-    /// The raw GraphQL definition of this operation.
-    public let operationDefinition =
-      """
-      query ArtistDetailView($mbid: MBID!, $size: TheAudioDBImageSize, $lang: String) {
-        lookup {
-          __typename
-          artist(mbid: $mbid) {
-            __typename
-            area {
-              __typename
-              name
-            }
-            lifeSpan {
-              __typename
-              begin
-            }
-            mbid
-            name
-            theAudioDB {
-              __typename
-              biography(lang: $lang)
-              mood
-              style
-              thumbnail(size: $size)
-            }
-            type
-          }
-        }
-      }
-      """
-
-    public let operationName = "ArtistDetailView"
-
-    public var mbid: String
-    public var size: TheAudioDBImageSize?
-    public var lang: String?
-
-    public init(mbid: String, size: TheAudioDBImageSize? = nil, lang: String? = nil) {
-      self.mbid = mbid
-      self.size = size
-      self.lang = lang
-    }
-
-    public var variables: GraphQLMap? {
-      return ["mbid": mbid, "size": size, "lang": lang]
-    }
-
-    public struct Data: GraphQLSelectionSet {
-      public static let possibleTypes = ["Query"]
-
-      public static let selections: [GraphQLSelection] = [
-        GraphQLField("lookup", type: .object(Lookup.selections)),
-      ]
-
-      public private(set) var resultMap: ResultMap
-
-      public init(unsafeResultMap: ResultMap) {
-        self.resultMap = unsafeResultMap
-      }
-
-      public init(lookup: Lookup? = nil) {
-        self.init(unsafeResultMap: ["__typename": "Query", "lookup": lookup.flatMap { (value: Lookup) -> ResultMap in value.resultMap }])
-      }
-
-      /// Perform a lookup of a MusicBrainz entity by its MBID.
-      public var lookup: Lookup? {
-        get {
-          return (resultMap["lookup"] as? ResultMap).flatMap { Lookup(unsafeResultMap: $0) }
-        }
-        set {
-          resultMap.updateValue(newValue?.resultMap, forKey: "lookup")
-        }
-      }
-
-      public struct Lookup: GraphQLSelectionSet {
-        public static let possibleTypes = ["LookupQuery"]
-
-        public static let selections: [GraphQLSelection] = [
-          GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
-          GraphQLField("artist", arguments: ["mbid": GraphQLVariable("mbid")], type: .object(Artist.selections)),
-        ]
-
-        public private(set) var resultMap: ResultMap
-
-        public init(unsafeResultMap: ResultMap) {
-          self.resultMap = unsafeResultMap
-        }
-
-        public init(artist: Artist? = nil) {
-          self.init(unsafeResultMap: ["__typename": "LookupQuery", "artist": artist.flatMap { (value: Artist) -> ResultMap in value.resultMap }])
-        }
-
-        public var __typename: String {
-          get {
-            return resultMap["__typename"]! as! String
-          }
-          set {
-            resultMap.updateValue(newValue, forKey: "__typename")
-          }
-        }
-
-        /// Look up a specific artist by its MBID.
-        public var artist: Artist? {
-          get {
-            return (resultMap["artist"] as? ResultMap).flatMap { Artist(unsafeResultMap: $0) }
-          }
-          set {
-            resultMap.updateValue(newValue?.resultMap, forKey: "artist")
-          }
-        }
-
-        public struct Artist: GraphQLSelectionSet {
-          public static let possibleTypes = ["Artist"]
-
-          public static let selections: [GraphQLSelection] = [
-            GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
-            GraphQLField("area", type: .object(Area.selections)),
-            GraphQLField("lifeSpan", type: .object(LifeSpan.selections)),
-            GraphQLField("mbid", type: .nonNull(.scalar(String.self))),
-            GraphQLField("name", type: .scalar(String.self)),
-            GraphQLField("theAudioDB", type: .object(TheAudioDb.selections)),
-            GraphQLField("type", type: .scalar(String.self)),
-          ]
-
-          public private(set) var resultMap: ResultMap
-
-          public init(unsafeResultMap: ResultMap) {
-            self.resultMap = unsafeResultMap
-          }
-
-          public init(area: Area? = nil, lifeSpan: LifeSpan? = nil, mbid: String, name: String? = nil, theAudioDb: TheAudioDb? = nil, type: String? = nil) {
-            self.init(unsafeResultMap: ["__typename": "Artist", "area": area.flatMap { (value: Area) -> ResultMap in value.resultMap }, "lifeSpan": lifeSpan.flatMap { (value: LifeSpan) -> ResultMap in value.resultMap }, "mbid": mbid, "name": name, "theAudioDB": theAudioDb.flatMap { (value: TheAudioDb) -> ResultMap in value.resultMap }, "type": type])
-          }
-
-          public var __typename: String {
-            get {
-              return resultMap["__typename"]! as! String
-            }
-            set {
-              resultMap.updateValue(newValue, forKey: "__typename")
-            }
-          }
-
-          /// The area with which an artist is primarily identified. It
-          /// is often, but not always, its birth/formation country.
-          public var area: Area? {
-            get {
-              return (resultMap["area"] as? ResultMap).flatMap { Area(unsafeResultMap: $0) }
-            }
-            set {
-              resultMap.updateValue(newValue?.resultMap, forKey: "area")
-            }
-          }
-
-          /// The begin and end dates of the entity’s existence. Its exact
-          /// meaning depends on the type of entity.
-          public var lifeSpan: LifeSpan? {
-            get {
-              return (resultMap["lifeSpan"] as? ResultMap).flatMap { LifeSpan(unsafeResultMap: $0) }
-            }
-            set {
-              resultMap.updateValue(newValue?.resultMap, forKey: "lifeSpan")
-            }
-          }
-
-          /// The MBID of the entity.
-          public var mbid: String {
-            get {
-              return resultMap["mbid"]! as! String
-            }
-            set {
-              resultMap.updateValue(newValue, forKey: "mbid")
-            }
-          }
-
-          /// The official name of the entity.
-          public var name: String? {
-            get {
-              return resultMap["name"] as? String
-            }
-            set {
-              resultMap.updateValue(newValue, forKey: "name")
-            }
-          }
-
-          /// Data about the artist from [TheAudioDB](http://www.theaudiodb.com/), a good
-          /// source of biographical information and images.
-          /// This field is provided by TheAudioDB extension.
-          public var theAudioDb: TheAudioDb? {
-            get {
-              return (resultMap["theAudioDB"] as? ResultMap).flatMap { TheAudioDb(unsafeResultMap: $0) }
-            }
-            set {
-              resultMap.updateValue(newValue?.resultMap, forKey: "theAudioDB")
-            }
-          }
-
-          /// Whether an artist is a person, a group, or something else.
-          public var type: String? {
-            get {
-              return resultMap["type"] as? String
-            }
-            set {
-              resultMap.updateValue(newValue, forKey: "type")
-            }
-          }
-
-          public struct Area: GraphQLSelectionSet {
-            public static let possibleTypes = ["Area"]
-
-            public static let selections: [GraphQLSelection] = [
-              GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
-              GraphQLField("name", type: .scalar(String.self)),
-            ]
-
-            public private(set) var resultMap: ResultMap
-
-            public init(unsafeResultMap: ResultMap) {
-              self.resultMap = unsafeResultMap
-            }
-
-            public init(name: String? = nil) {
-              self.init(unsafeResultMap: ["__typename": "Area", "name": name])
-            }
-
-            public var __typename: String {
-              get {
-                return resultMap["__typename"]! as! String
-              }
-              set {
-                resultMap.updateValue(newValue, forKey: "__typename")
-              }
-            }
-
-            /// The official name of the entity.
-            public var name: String? {
-              get {
-                return resultMap["name"] as? String
-              }
-              set {
-                resultMap.updateValue(newValue, forKey: "name")
-              }
-            }
-          }
-
-          public struct LifeSpan: GraphQLSelectionSet {
-            public static let possibleTypes = ["LifeSpan"]
-
-            public static let selections: [GraphQLSelection] = [
-              GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
-              GraphQLField("begin", type: .scalar(String.self)),
-            ]
-
-            public private(set) var resultMap: ResultMap
-
-            public init(unsafeResultMap: ResultMap) {
-              self.resultMap = unsafeResultMap
-            }
-
-            public init(begin: String? = nil) {
-              self.init(unsafeResultMap: ["__typename": "LifeSpan", "begin": begin])
-            }
-
-            public var __typename: String {
-              get {
-                return resultMap["__typename"]! as! String
-              }
-              set {
-                resultMap.updateValue(newValue, forKey: "__typename")
-              }
-            }
-
-            /// The start date of the entity’s life span.
-            public var begin: String? {
-              get {
-                return resultMap["begin"] as? String
-              }
-              set {
-                resultMap.updateValue(newValue, forKey: "begin")
-              }
-            }
-          }
 
           public struct TheAudioDb: GraphQLSelectionSet {
             public static let possibleTypes = ["TheAudioDBArtist"]
@@ -19693,963 +20130,11 @@ public enum ApolloStuff {
     }
   }
 
-  public final class ArtistTopSongsListQuery: GraphQLQuery {
-    /// The raw GraphQL definition of this operation.
-    public let operationDefinition =
-      """
-      query ArtistTopSongsList($mbid: MBID!, $first: Int, $after: String, $size: LastFMImageSize) {
-        lookup {
-          __typename
-          artist(mbid: $mbid) {
-            __typename
-            lastFM {
-              __typename
-              topTracks(after: $after, first: $first) {
-                __typename
-                edges {
-                  __typename
-                  node {
-                    __typename
-                    album {
-                      __typename
-                      image(size: $size)
-                    }
-                    artist {
-                      __typename
-                      name
-                    }
-                    title
-                  }
-                }
-                pageInfo {
-                  __typename
-                  endCursor
-                  hasNextPage
-                }
-              }
-            }
-          }
-        }
-      }
-      """
-
-    public let operationName = "ArtistTopSongsList"
-
-    public var mbid: String
-    public var first: Int?
-    public var after: String?
-    public var size: LastFMImageSize?
-
-    public init(mbid: String, first: Int? = nil, after: String? = nil, size: LastFMImageSize? = nil) {
-      self.mbid = mbid
-      self.first = first
-      self.after = after
-      self.size = size
-    }
-
-    public var variables: GraphQLMap? {
-      return ["mbid": mbid, "first": first, "after": after, "size": size]
-    }
-
-    public struct Data: GraphQLSelectionSet {
-      public static let possibleTypes = ["Query"]
-
-      public static let selections: [GraphQLSelection] = [
-        GraphQLField("lookup", type: .object(Lookup.selections)),
-      ]
-
-      public private(set) var resultMap: ResultMap
-
-      public init(unsafeResultMap: ResultMap) {
-        self.resultMap = unsafeResultMap
-      }
-
-      public init(lookup: Lookup? = nil) {
-        self.init(unsafeResultMap: ["__typename": "Query", "lookup": lookup.flatMap { (value: Lookup) -> ResultMap in value.resultMap }])
-      }
-
-      /// Perform a lookup of a MusicBrainz entity by its MBID.
-      public var lookup: Lookup? {
-        get {
-          return (resultMap["lookup"] as? ResultMap).flatMap { Lookup(unsafeResultMap: $0) }
-        }
-        set {
-          resultMap.updateValue(newValue?.resultMap, forKey: "lookup")
-        }
-      }
-
-      public struct Lookup: GraphQLSelectionSet {
-        public static let possibleTypes = ["LookupQuery"]
-
-        public static let selections: [GraphQLSelection] = [
-          GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
-          GraphQLField("artist", arguments: ["mbid": GraphQLVariable("mbid")], type: .object(Artist.selections)),
-        ]
-
-        public private(set) var resultMap: ResultMap
-
-        public init(unsafeResultMap: ResultMap) {
-          self.resultMap = unsafeResultMap
-        }
-
-        public init(artist: Artist? = nil) {
-          self.init(unsafeResultMap: ["__typename": "LookupQuery", "artist": artist.flatMap { (value: Artist) -> ResultMap in value.resultMap }])
-        }
-
-        public var __typename: String {
-          get {
-            return resultMap["__typename"]! as! String
-          }
-          set {
-            resultMap.updateValue(newValue, forKey: "__typename")
-          }
-        }
-
-        /// Look up a specific artist by its MBID.
-        public var artist: Artist? {
-          get {
-            return (resultMap["artist"] as? ResultMap).flatMap { Artist(unsafeResultMap: $0) }
-          }
-          set {
-            resultMap.updateValue(newValue?.resultMap, forKey: "artist")
-          }
-        }
-
-        public struct Artist: GraphQLSelectionSet {
-          public static let possibleTypes = ["Artist"]
-
-          public static let selections: [GraphQLSelection] = [
-            GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
-            GraphQLField("lastFM", type: .object(LastFm.selections)),
-          ]
-
-          public private(set) var resultMap: ResultMap
-
-          public init(unsafeResultMap: ResultMap) {
-            self.resultMap = unsafeResultMap
-          }
-
-          public init(lastFm: LastFm? = nil) {
-            self.init(unsafeResultMap: ["__typename": "Artist", "lastFM": lastFm.flatMap { (value: LastFm) -> ResultMap in value.resultMap }])
-          }
-
-          public var __typename: String {
-            get {
-              return resultMap["__typename"]! as! String
-            }
-            set {
-              resultMap.updateValue(newValue, forKey: "__typename")
-            }
-          }
-
-          /// Data about the artist from [Last.fm](https://www.last.fm/), a good source
-          /// for measuring popularity via listener and play counts. This field is
-          /// provided by the Last.fm extension.
-          public var lastFm: LastFm? {
-            get {
-              return (resultMap["lastFM"] as? ResultMap).flatMap { LastFm(unsafeResultMap: $0) }
-            }
-            set {
-              resultMap.updateValue(newValue?.resultMap, forKey: "lastFM")
-            }
-          }
-
-          public struct LastFm: GraphQLSelectionSet {
-            public static let possibleTypes = ["LastFMArtist"]
-
-            public static let selections: [GraphQLSelection] = [
-              GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
-              GraphQLField("topTracks", arguments: ["after": GraphQLVariable("after"), "first": GraphQLVariable("first")], type: .object(TopTrack.selections)),
-            ]
-
-            public private(set) var resultMap: ResultMap
-
-            public init(unsafeResultMap: ResultMap) {
-              self.resultMap = unsafeResultMap
-            }
-
-            public init(topTracks: TopTrack? = nil) {
-              self.init(unsafeResultMap: ["__typename": "LastFMArtist", "topTracks": topTracks.flatMap { (value: TopTrack) -> ResultMap in value.resultMap }])
-            }
-
-            public var __typename: String {
-              get {
-                return resultMap["__typename"]! as! String
-              }
-              set {
-                resultMap.updateValue(newValue, forKey: "__typename")
-              }
-            }
-
-            /// A list of the artist’s most popular tracks.
-            public var topTracks: TopTrack? {
-              get {
-                return (resultMap["topTracks"] as? ResultMap).flatMap { TopTrack(unsafeResultMap: $0) }
-              }
-              set {
-                resultMap.updateValue(newValue?.resultMap, forKey: "topTracks")
-              }
-            }
-
-            public struct TopTrack: GraphQLSelectionSet {
-              public static let possibleTypes = ["LastFMTrackConnection"]
-
-              public static let selections: [GraphQLSelection] = [
-                GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
-                GraphQLField("edges", type: .list(.object(Edge.selections))),
-                GraphQLField("pageInfo", type: .nonNull(.object(PageInfo.selections))),
-              ]
-
-              public private(set) var resultMap: ResultMap
-
-              public init(unsafeResultMap: ResultMap) {
-                self.resultMap = unsafeResultMap
-              }
-
-              public init(edges: [Edge?]? = nil, pageInfo: PageInfo) {
-                self.init(unsafeResultMap: ["__typename": "LastFMTrackConnection", "edges": edges.flatMap { (value: [Edge?]) -> [ResultMap?] in value.map { (value: Edge?) -> ResultMap? in value.flatMap { (value: Edge) -> ResultMap in value.resultMap } } }, "pageInfo": pageInfo.resultMap])
-              }
-
-              public var __typename: String {
-                get {
-                  return resultMap["__typename"]! as! String
-                }
-                set {
-                  resultMap.updateValue(newValue, forKey: "__typename")
-                }
-              }
-
-              /// A list of edges.
-              public var edges: [Edge?]? {
-                get {
-                  return (resultMap["edges"] as? [ResultMap?]).flatMap { (value: [ResultMap?]) -> [Edge?] in value.map { (value: ResultMap?) -> Edge? in value.flatMap { (value: ResultMap) -> Edge in Edge(unsafeResultMap: value) } } }
-                }
-                set {
-                  resultMap.updateValue(newValue.flatMap { (value: [Edge?]) -> [ResultMap?] in value.map { (value: Edge?) -> ResultMap? in value.flatMap { (value: Edge) -> ResultMap in value.resultMap } } }, forKey: "edges")
-                }
-              }
-
-              /// Information to aid in pagination.
-              public var pageInfo: PageInfo {
-                get {
-                  return PageInfo(unsafeResultMap: resultMap["pageInfo"]! as! ResultMap)
-                }
-                set {
-                  resultMap.updateValue(newValue.resultMap, forKey: "pageInfo")
-                }
-              }
-
-              public struct Edge: GraphQLSelectionSet {
-                public static let possibleTypes = ["LastFMTrackEdge"]
-
-                public static let selections: [GraphQLSelection] = [
-                  GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
-                  GraphQLField("node", type: .object(Node.selections)),
-                ]
-
-                public private(set) var resultMap: ResultMap
-
-                public init(unsafeResultMap: ResultMap) {
-                  self.resultMap = unsafeResultMap
-                }
-
-                public init(node: Node? = nil) {
-                  self.init(unsafeResultMap: ["__typename": "LastFMTrackEdge", "node": node.flatMap { (value: Node) -> ResultMap in value.resultMap }])
-                }
-
-                public var __typename: String {
-                  get {
-                    return resultMap["__typename"]! as! String
-                  }
-                  set {
-                    resultMap.updateValue(newValue, forKey: "__typename")
-                  }
-                }
-
-                /// The item at the end of the edge.
-                public var node: Node? {
-                  get {
-                    return (resultMap["node"] as? ResultMap).flatMap { Node(unsafeResultMap: $0) }
-                  }
-                  set {
-                    resultMap.updateValue(newValue?.resultMap, forKey: "node")
-                  }
-                }
-
-                public struct Node: GraphQLSelectionSet {
-                  public static let possibleTypes = ["LastFMTrack"]
-
-                  public static let selections: [GraphQLSelection] = [
-                    GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
-                    GraphQLField("album", type: .object(Album.selections)),
-                    GraphQLField("artist", type: .object(Artist.selections)),
-                    GraphQLField("title", type: .scalar(String.self)),
-                  ]
-
-                  public private(set) var resultMap: ResultMap
-
-                  public init(unsafeResultMap: ResultMap) {
-                    self.resultMap = unsafeResultMap
-                  }
-
-                  public init(album: Album? = nil, artist: Artist? = nil, title: String? = nil) {
-                    self.init(unsafeResultMap: ["__typename": "LastFMTrack", "album": album.flatMap { (value: Album) -> ResultMap in value.resultMap }, "artist": artist.flatMap { (value: Artist) -> ResultMap in value.resultMap }, "title": title])
-                  }
-
-                  public var __typename: String {
-                    get {
-                      return resultMap["__typename"]! as! String
-                    }
-                    set {
-                      resultMap.updateValue(newValue, forKey: "__typename")
-                    }
-                  }
-
-                  /// The album on which the track appears. This returns the Last.fm album info,
-                  /// not the MusicBrainz release.
-                  public var album: Album? {
-                    get {
-                      return (resultMap["album"] as? ResultMap).flatMap { Album(unsafeResultMap: $0) }
-                    }
-                    set {
-                      resultMap.updateValue(newValue?.resultMap, forKey: "album")
-                    }
-                  }
-
-                  /// The artist who released the track. This returns the Last.fm artist info,
-                  /// not the MusicBrainz artist.
-                  public var artist: Artist? {
-                    get {
-                      return (resultMap["artist"] as? ResultMap).flatMap { Artist(unsafeResultMap: $0) }
-                    }
-                    set {
-                      resultMap.updateValue(newValue?.resultMap, forKey: "artist")
-                    }
-                  }
-
-                  /// The title of the track according to [Last.fm](https://www.last.fm/).
-                  public var title: String? {
-                    get {
-                      return resultMap["title"] as? String
-                    }
-                    set {
-                      resultMap.updateValue(newValue, forKey: "title")
-                    }
-                  }
-
-                  public struct Album: GraphQLSelectionSet {
-                    public static let possibleTypes = ["LastFMAlbum"]
-
-                    public static let selections: [GraphQLSelection] = [
-                      GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
-                      GraphQLField("image", arguments: ["size": GraphQLVariable("size")], type: .scalar(String.self)),
-                    ]
-
-                    public private(set) var resultMap: ResultMap
-
-                    public init(unsafeResultMap: ResultMap) {
-                      self.resultMap = unsafeResultMap
-                    }
-
-                    public init(image: String? = nil) {
-                      self.init(unsafeResultMap: ["__typename": "LastFMAlbum", "image": image])
-                    }
-
-                    public var __typename: String {
-                      get {
-                        return resultMap["__typename"]! as! String
-                      }
-                      set {
-                        resultMap.updateValue(newValue, forKey: "__typename")
-                      }
-                    }
-
-                    /// An image of the cover artwork of the release.
-                    public var image: String? {
-                      get {
-                        return resultMap["image"] as? String
-                      }
-                      set {
-                        resultMap.updateValue(newValue, forKey: "image")
-                      }
-                    }
-                  }
-
-                  public struct Artist: GraphQLSelectionSet {
-                    public static let possibleTypes = ["LastFMArtist"]
-
-                    public static let selections: [GraphQLSelection] = [
-                      GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
-                      GraphQLField("name", type: .scalar(String.self)),
-                    ]
-
-                    public private(set) var resultMap: ResultMap
-
-                    public init(unsafeResultMap: ResultMap) {
-                      self.resultMap = unsafeResultMap
-                    }
-
-                    public init(name: String? = nil) {
-                      self.init(unsafeResultMap: ["__typename": "LastFMArtist", "name": name])
-                    }
-
-                    public var __typename: String {
-                      get {
-                        return resultMap["__typename"]! as! String
-                      }
-                      set {
-                        resultMap.updateValue(newValue, forKey: "__typename")
-                      }
-                    }
-
-                    /// The name of the artist according to [Last.fm](https://www.last.fm/).
-                    public var name: String? {
-                      get {
-                        return resultMap["name"] as? String
-                      }
-                      set {
-                        resultMap.updateValue(newValue, forKey: "name")
-                      }
-                    }
-                  }
-                }
-              }
-
-              public struct PageInfo: GraphQLSelectionSet {
-                public static let possibleTypes = ["PageInfo"]
-
-                public static let selections: [GraphQLSelection] = [
-                  GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
-                  GraphQLField("endCursor", type: .scalar(String.self)),
-                  GraphQLField("hasNextPage", type: .nonNull(.scalar(Bool.self))),
-                ]
-
-                public private(set) var resultMap: ResultMap
-
-                public init(unsafeResultMap: ResultMap) {
-                  self.resultMap = unsafeResultMap
-                }
-
-                public init(endCursor: String? = nil, hasNextPage: Bool) {
-                  self.init(unsafeResultMap: ["__typename": "PageInfo", "endCursor": endCursor, "hasNextPage": hasNextPage])
-                }
-
-                public var __typename: String {
-                  get {
-                    return resultMap["__typename"]! as! String
-                  }
-                  set {
-                    resultMap.updateValue(newValue, forKey: "__typename")
-                  }
-                }
-
-                /// When paginating forwards, the cursor to continue.
-                public var endCursor: String? {
-                  get {
-                    return resultMap["endCursor"] as? String
-                  }
-                  set {
-                    resultMap.updateValue(newValue, forKey: "endCursor")
-                  }
-                }
-
-                /// When paginating forwards, are there more items?
-                public var hasNextPage: Bool {
-                  get {
-                    return resultMap["hasNextPage"]! as! Bool
-                  }
-                  set {
-                    resultMap.updateValue(newValue, forKey: "hasNextPage")
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-
-  public final class SimilarArtistsListQuery: GraphQLQuery {
-    /// The raw GraphQL definition of this operation.
-    public let operationDefinition =
-      """
-      query SimilarArtistsList($mbid: MBID!, $first: Int, $after: String, $size: LastFMImageSize) {
-        lookup {
-          __typename
-          artist(mbid: $mbid) {
-            __typename
-            lastFM {
-              __typename
-              similarArtists(after: $after, first: $first) {
-                __typename
-                edges {
-                  __typename
-                  node {
-                    __typename
-                    mbid
-                    name
-                    topAlbums(after: $after, first: $first) {
-                      __typename
-                      nodes {
-                        __typename
-                        image(size: $size)
-                      }
-                    }
-                  }
-                }
-                pageInfo {
-                  __typename
-                  endCursor
-                  hasNextPage
-                }
-              }
-            }
-          }
-        }
-      }
-      """
-
-    public let operationName = "SimilarArtistsList"
-
-    public var mbid: String
-    public var first: Int?
-    public var after: String?
-    public var size: LastFMImageSize?
-
-    public init(mbid: String, first: Int? = nil, after: String? = nil, size: LastFMImageSize? = nil) {
-      self.mbid = mbid
-      self.first = first
-      self.after = after
-      self.size = size
-    }
-
-    public var variables: GraphQLMap? {
-      return ["mbid": mbid, "first": first, "after": after, "size": size]
-    }
-
-    public struct Data: GraphQLSelectionSet {
-      public static let possibleTypes = ["Query"]
-
-      public static let selections: [GraphQLSelection] = [
-        GraphQLField("lookup", type: .object(Lookup.selections)),
-      ]
-
-      public private(set) var resultMap: ResultMap
-
-      public init(unsafeResultMap: ResultMap) {
-        self.resultMap = unsafeResultMap
-      }
-
-      public init(lookup: Lookup? = nil) {
-        self.init(unsafeResultMap: ["__typename": "Query", "lookup": lookup.flatMap { (value: Lookup) -> ResultMap in value.resultMap }])
-      }
-
-      /// Perform a lookup of a MusicBrainz entity by its MBID.
-      public var lookup: Lookup? {
-        get {
-          return (resultMap["lookup"] as? ResultMap).flatMap { Lookup(unsafeResultMap: $0) }
-        }
-        set {
-          resultMap.updateValue(newValue?.resultMap, forKey: "lookup")
-        }
-      }
-
-      public struct Lookup: GraphQLSelectionSet {
-        public static let possibleTypes = ["LookupQuery"]
-
-        public static let selections: [GraphQLSelection] = [
-          GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
-          GraphQLField("artist", arguments: ["mbid": GraphQLVariable("mbid")], type: .object(Artist.selections)),
-        ]
-
-        public private(set) var resultMap: ResultMap
-
-        public init(unsafeResultMap: ResultMap) {
-          self.resultMap = unsafeResultMap
-        }
-
-        public init(artist: Artist? = nil) {
-          self.init(unsafeResultMap: ["__typename": "LookupQuery", "artist": artist.flatMap { (value: Artist) -> ResultMap in value.resultMap }])
-        }
-
-        public var __typename: String {
-          get {
-            return resultMap["__typename"]! as! String
-          }
-          set {
-            resultMap.updateValue(newValue, forKey: "__typename")
-          }
-        }
-
-        /// Look up a specific artist by its MBID.
-        public var artist: Artist? {
-          get {
-            return (resultMap["artist"] as? ResultMap).flatMap { Artist(unsafeResultMap: $0) }
-          }
-          set {
-            resultMap.updateValue(newValue?.resultMap, forKey: "artist")
-          }
-        }
-
-        public struct Artist: GraphQLSelectionSet {
-          public static let possibleTypes = ["Artist"]
-
-          public static let selections: [GraphQLSelection] = [
-            GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
-            GraphQLField("lastFM", type: .object(LastFm.selections)),
-          ]
-
-          public private(set) var resultMap: ResultMap
-
-          public init(unsafeResultMap: ResultMap) {
-            self.resultMap = unsafeResultMap
-          }
-
-          public init(lastFm: LastFm? = nil) {
-            self.init(unsafeResultMap: ["__typename": "Artist", "lastFM": lastFm.flatMap { (value: LastFm) -> ResultMap in value.resultMap }])
-          }
-
-          public var __typename: String {
-            get {
-              return resultMap["__typename"]! as! String
-            }
-            set {
-              resultMap.updateValue(newValue, forKey: "__typename")
-            }
-          }
-
-          /// Data about the artist from [Last.fm](https://www.last.fm/), a good source
-          /// for measuring popularity via listener and play counts. This field is
-          /// provided by the Last.fm extension.
-          public var lastFm: LastFm? {
-            get {
-              return (resultMap["lastFM"] as? ResultMap).flatMap { LastFm(unsafeResultMap: $0) }
-            }
-            set {
-              resultMap.updateValue(newValue?.resultMap, forKey: "lastFM")
-            }
-          }
-
-          public struct LastFm: GraphQLSelectionSet {
-            public static let possibleTypes = ["LastFMArtist"]
-
-            public static let selections: [GraphQLSelection] = [
-              GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
-              GraphQLField("similarArtists", arguments: ["after": GraphQLVariable("after"), "first": GraphQLVariable("first")], type: .object(SimilarArtist.selections)),
-            ]
-
-            public private(set) var resultMap: ResultMap
-
-            public init(unsafeResultMap: ResultMap) {
-              self.resultMap = unsafeResultMap
-            }
-
-            public init(similarArtists: SimilarArtist? = nil) {
-              self.init(unsafeResultMap: ["__typename": "LastFMArtist", "similarArtists": similarArtists.flatMap { (value: SimilarArtist) -> ResultMap in value.resultMap }])
-            }
-
-            public var __typename: String {
-              get {
-                return resultMap["__typename"]! as! String
-              }
-              set {
-                resultMap.updateValue(newValue, forKey: "__typename")
-              }
-            }
-
-            /// A list of similar artists.
-            public var similarArtists: SimilarArtist? {
-              get {
-                return (resultMap["similarArtists"] as? ResultMap).flatMap { SimilarArtist(unsafeResultMap: $0) }
-              }
-              set {
-                resultMap.updateValue(newValue?.resultMap, forKey: "similarArtists")
-              }
-            }
-
-            public struct SimilarArtist: GraphQLSelectionSet {
-              public static let possibleTypes = ["LastFMArtistConnection"]
-
-              public static let selections: [GraphQLSelection] = [
-                GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
-                GraphQLField("edges", type: .list(.object(Edge.selections))),
-                GraphQLField("pageInfo", type: .nonNull(.object(PageInfo.selections))),
-              ]
-
-              public private(set) var resultMap: ResultMap
-
-              public init(unsafeResultMap: ResultMap) {
-                self.resultMap = unsafeResultMap
-              }
-
-              public init(edges: [Edge?]? = nil, pageInfo: PageInfo) {
-                self.init(unsafeResultMap: ["__typename": "LastFMArtistConnection", "edges": edges.flatMap { (value: [Edge?]) -> [ResultMap?] in value.map { (value: Edge?) -> ResultMap? in value.flatMap { (value: Edge) -> ResultMap in value.resultMap } } }, "pageInfo": pageInfo.resultMap])
-              }
-
-              public var __typename: String {
-                get {
-                  return resultMap["__typename"]! as! String
-                }
-                set {
-                  resultMap.updateValue(newValue, forKey: "__typename")
-                }
-              }
-
-              /// A list of edges.
-              public var edges: [Edge?]? {
-                get {
-                  return (resultMap["edges"] as? [ResultMap?]).flatMap { (value: [ResultMap?]) -> [Edge?] in value.map { (value: ResultMap?) -> Edge? in value.flatMap { (value: ResultMap) -> Edge in Edge(unsafeResultMap: value) } } }
-                }
-                set {
-                  resultMap.updateValue(newValue.flatMap { (value: [Edge?]) -> [ResultMap?] in value.map { (value: Edge?) -> ResultMap? in value.flatMap { (value: Edge) -> ResultMap in value.resultMap } } }, forKey: "edges")
-                }
-              }
-
-              /// Information to aid in pagination.
-              public var pageInfo: PageInfo {
-                get {
-                  return PageInfo(unsafeResultMap: resultMap["pageInfo"]! as! ResultMap)
-                }
-                set {
-                  resultMap.updateValue(newValue.resultMap, forKey: "pageInfo")
-                }
-              }
-
-              public struct Edge: GraphQLSelectionSet {
-                public static let possibleTypes = ["LastFMArtistEdge"]
-
-                public static let selections: [GraphQLSelection] = [
-                  GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
-                  GraphQLField("node", type: .object(Node.selections)),
-                ]
-
-                public private(set) var resultMap: ResultMap
-
-                public init(unsafeResultMap: ResultMap) {
-                  self.resultMap = unsafeResultMap
-                }
-
-                public init(node: Node? = nil) {
-                  self.init(unsafeResultMap: ["__typename": "LastFMArtistEdge", "node": node.flatMap { (value: Node) -> ResultMap in value.resultMap }])
-                }
-
-                public var __typename: String {
-                  get {
-                    return resultMap["__typename"]! as! String
-                  }
-                  set {
-                    resultMap.updateValue(newValue, forKey: "__typename")
-                  }
-                }
-
-                /// The item at the end of the edge.
-                public var node: Node? {
-                  get {
-                    return (resultMap["node"] as? ResultMap).flatMap { Node(unsafeResultMap: $0) }
-                  }
-                  set {
-                    resultMap.updateValue(newValue?.resultMap, forKey: "node")
-                  }
-                }
-
-                public struct Node: GraphQLSelectionSet {
-                  public static let possibleTypes = ["LastFMArtist"]
-
-                  public static let selections: [GraphQLSelection] = [
-                    GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
-                    GraphQLField("mbid", type: .scalar(String.self)),
-                    GraphQLField("name", type: .scalar(String.self)),
-                    GraphQLField("topAlbums", arguments: ["after": GraphQLVariable("after"), "first": GraphQLVariable("first")], type: .object(TopAlbum.selections)),
-                  ]
-
-                  public private(set) var resultMap: ResultMap
-
-                  public init(unsafeResultMap: ResultMap) {
-                    self.resultMap = unsafeResultMap
-                  }
-
-                  public init(mbid: String? = nil, name: String? = nil, topAlbums: TopAlbum? = nil) {
-                    self.init(unsafeResultMap: ["__typename": "LastFMArtist", "mbid": mbid, "name": name, "topAlbums": topAlbums.flatMap { (value: TopAlbum) -> ResultMap in value.resultMap }])
-                  }
-
-                  public var __typename: String {
-                    get {
-                      return resultMap["__typename"]! as! String
-                    }
-                    set {
-                      resultMap.updateValue(newValue, forKey: "__typename")
-                    }
-                  }
-
-                  /// The MBID of the corresponding MusicBrainz artist.
-                  public var mbid: String? {
-                    get {
-                      return resultMap["mbid"] as? String
-                    }
-                    set {
-                      resultMap.updateValue(newValue, forKey: "mbid")
-                    }
-                  }
-
-                  /// The name of the artist according to [Last.fm](https://www.last.fm/).
-                  public var name: String? {
-                    get {
-                      return resultMap["name"] as? String
-                    }
-                    set {
-                      resultMap.updateValue(newValue, forKey: "name")
-                    }
-                  }
-
-                  /// A list of the artist’s most popular albums.
-                  public var topAlbums: TopAlbum? {
-                    get {
-                      return (resultMap["topAlbums"] as? ResultMap).flatMap { TopAlbum(unsafeResultMap: $0) }
-                    }
-                    set {
-                      resultMap.updateValue(newValue?.resultMap, forKey: "topAlbums")
-                    }
-                  }
-
-                  public struct TopAlbum: GraphQLSelectionSet {
-                    public static let possibleTypes = ["LastFMAlbumConnection"]
-
-                    public static let selections: [GraphQLSelection] = [
-                      GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
-                      GraphQLField("nodes", type: .list(.object(Node.selections))),
-                    ]
-
-                    public private(set) var resultMap: ResultMap
-
-                    public init(unsafeResultMap: ResultMap) {
-                      self.resultMap = unsafeResultMap
-                    }
-
-                    public init(nodes: [Node?]? = nil) {
-                      self.init(unsafeResultMap: ["__typename": "LastFMAlbumConnection", "nodes": nodes.flatMap { (value: [Node?]) -> [ResultMap?] in value.map { (value: Node?) -> ResultMap? in value.flatMap { (value: Node) -> ResultMap in value.resultMap } } }])
-                    }
-
-                    public var __typename: String {
-                      get {
-                        return resultMap["__typename"]! as! String
-                      }
-                      set {
-                        resultMap.updateValue(newValue, forKey: "__typename")
-                      }
-                    }
-
-                    /// A list of nodes in the connection (without going through the `edges` field).
-                    public var nodes: [Node?]? {
-                      get {
-                        return (resultMap["nodes"] as? [ResultMap?]).flatMap { (value: [ResultMap?]) -> [Node?] in value.map { (value: ResultMap?) -> Node? in value.flatMap { (value: ResultMap) -> Node in Node(unsafeResultMap: value) } } }
-                      }
-                      set {
-                        resultMap.updateValue(newValue.flatMap { (value: [Node?]) -> [ResultMap?] in value.map { (value: Node?) -> ResultMap? in value.flatMap { (value: Node) -> ResultMap in value.resultMap } } }, forKey: "nodes")
-                      }
-                    }
-
-                    public struct Node: GraphQLSelectionSet {
-                      public static let possibleTypes = ["LastFMAlbum"]
-
-                      public static let selections: [GraphQLSelection] = [
-                        GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
-                        GraphQLField("image", arguments: ["size": GraphQLVariable("size")], type: .scalar(String.self)),
-                      ]
-
-                      public private(set) var resultMap: ResultMap
-
-                      public init(unsafeResultMap: ResultMap) {
-                        self.resultMap = unsafeResultMap
-                      }
-
-                      public init(image: String? = nil) {
-                        self.init(unsafeResultMap: ["__typename": "LastFMAlbum", "image": image])
-                      }
-
-                      public var __typename: String {
-                        get {
-                          return resultMap["__typename"]! as! String
-                        }
-                        set {
-                          resultMap.updateValue(newValue, forKey: "__typename")
-                        }
-                      }
-
-                      /// An image of the cover artwork of the release.
-                      public var image: String? {
-                        get {
-                          return resultMap["image"] as? String
-                        }
-                        set {
-                          resultMap.updateValue(newValue, forKey: "image")
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-
-              public struct PageInfo: GraphQLSelectionSet {
-                public static let possibleTypes = ["PageInfo"]
-
-                public static let selections: [GraphQLSelection] = [
-                  GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
-                  GraphQLField("endCursor", type: .scalar(String.self)),
-                  GraphQLField("hasNextPage", type: .nonNull(.scalar(Bool.self))),
-                ]
-
-                public private(set) var resultMap: ResultMap
-
-                public init(unsafeResultMap: ResultMap) {
-                  self.resultMap = unsafeResultMap
-                }
-
-                public init(endCursor: String? = nil, hasNextPage: Bool) {
-                  self.init(unsafeResultMap: ["__typename": "PageInfo", "endCursor": endCursor, "hasNextPage": hasNextPage])
-                }
-
-                public var __typename: String {
-                  get {
-                    return resultMap["__typename"]! as! String
-                  }
-                  set {
-                    resultMap.updateValue(newValue, forKey: "__typename")
-                  }
-                }
-
-                /// When paginating forwards, the cursor to continue.
-                public var endCursor: String? {
-                  get {
-                    return resultMap["endCursor"] as? String
-                  }
-                  set {
-                    resultMap.updateValue(newValue, forKey: "endCursor")
-                  }
-                }
-
-                /// When paginating forwards, are there more items?
-                public var hasNextPage: Bool {
-                  get {
-                    return resultMap["hasNextPage"]! as! Bool
-                  }
-                  set {
-                    resultMap.updateValue(newValue, forKey: "hasNextPage")
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-
   public final class TrendingArtistsListQuery: GraphQLQuery {
     /// The raw GraphQL definition of this operation.
     public let operationDefinition =
       """
-      query TrendingArtistsList($country: String, $first: Int, $after: String, $size: LastFMImageSize) {
+      query TrendingArtistsList($country: String, $first: Int, $after: String, $LastFMTagConnection_first: Int, $LastFMTrackConnection_first: Int, $LastFMAlbumConnection_first: Int, $size: LastFMImageSize) {
         lastFM {
           __typename
           chart {
@@ -20662,21 +20147,21 @@ public enum ApolloStuff {
                   __typename
                   mbid
                   name
-                  topAlbums(after: $after, first: $first) {
+                  topAlbums(after: $after, first: $LastFMAlbumConnection_first) {
                     __typename
                     nodes {
                       __typename
                       image(size: $size)
                     }
                   }
-                  topTags(after: $after, first: $first) {
+                  topTags(after: $after, first: $LastFMTagConnection_first) {
                     __typename
                     nodes {
                       __typename
                       name
                     }
                   }
-                  topTracks(after: $after, first: $first) {
+                  topTracks(after: $after, first: $LastFMTrackConnection_first) {
                     __typename
                     nodes {
                       __typename
@@ -20724,17 +20209,23 @@ public enum ApolloStuff {
     public var country: String?
     public var first: Int?
     public var after: String?
+    public var LastFMTagConnection_first: Int?
+    public var LastFMTrackConnection_first: Int?
+    public var LastFMAlbumConnection_first: Int?
     public var size: LastFMImageSize?
 
-    public init(country: String? = nil, first: Int? = nil, after: String? = nil, size: LastFMImageSize? = nil) {
+    public init(country: String? = nil, first: Int? = nil, after: String? = nil, LastFMTagConnection_first: Int? = nil, LastFMTrackConnection_first: Int? = nil, LastFMAlbumConnection_first: Int? = nil, size: LastFMImageSize? = nil) {
       self.country = country
       self.first = first
       self.after = after
+      self.LastFMTagConnection_first = LastFMTagConnection_first
+      self.LastFMTrackConnection_first = LastFMTrackConnection_first
+      self.LastFMAlbumConnection_first = LastFMAlbumConnection_first
       self.size = size
     }
 
     public var variables: GraphQLMap? {
-      return ["country": country, "first": first, "after": after, "size": size]
+      return ["country": country, "first": first, "after": after, "LastFMTagConnection_first": LastFMTagConnection_first, "LastFMTrackConnection_first": LastFMTrackConnection_first, "LastFMAlbumConnection_first": LastFMAlbumConnection_first, "size": size]
     }
 
     public struct Data: GraphQLSelectionSet {
@@ -20945,9 +20436,9 @@ public enum ApolloStuff {
                   GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
                   GraphQLField("mbid", type: .scalar(String.self)),
                   GraphQLField("name", type: .scalar(String.self)),
-                  GraphQLField("topAlbums", arguments: ["after": GraphQLVariable("after"), "first": GraphQLVariable("first")], type: .object(TopAlbum.selections)),
-                  GraphQLField("topTags", arguments: ["after": GraphQLVariable("after"), "first": GraphQLVariable("first")], type: .object(TopTag.selections)),
-                  GraphQLField("topTracks", arguments: ["after": GraphQLVariable("after"), "first": GraphQLVariable("first")], type: .object(TopTrack.selections)),
+                  GraphQLField("topAlbums", arguments: ["after": GraphQLVariable("after"), "first": GraphQLVariable("LastFMAlbumConnection_first")], type: .object(TopAlbum.selections)),
+                  GraphQLField("topTags", arguments: ["after": GraphQLVariable("after"), "first": GraphQLVariable("LastFMTagConnection_first")], type: .object(TopTag.selections)),
+                  GraphQLField("topTracks", arguments: ["after": GraphQLVariable("after"), "first": GraphQLVariable("LastFMTrackConnection_first")], type: .object(TopTrack.selections)),
                 ]
 
                 public private(set) var resultMap: ResultMap
@@ -21577,6 +21068,308 @@ public enum ApolloStuff {
     }
   }
 
+  public struct LastFmTrackConnectionTrendingTrackCellLastFmTrack: GraphQLFragment {
+    /// The raw GraphQL definition of this fragment.
+    public static let fragmentDefinition =
+      """
+      fragment LastFMTrackConnectionTrendingTrackCellLastFMTrack on LastFMTrackConnection {
+        __typename
+        edges {
+          __typename
+          node {
+            __typename
+            album {
+              __typename
+              image
+            }
+            artist {
+              __typename
+              name
+            }
+            title
+          }
+        }
+        pageInfo {
+          __typename
+          endCursor
+          hasNextPage
+        }
+      }
+      """
+
+    public static let possibleTypes = ["LastFMTrackConnection"]
+
+    public static let selections: [GraphQLSelection] = [
+      GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+      GraphQLField("edges", type: .list(.object(Edge.selections))),
+      GraphQLField("pageInfo", type: .nonNull(.object(PageInfo.selections))),
+    ]
+
+    public private(set) var resultMap: ResultMap
+
+    public init(unsafeResultMap: ResultMap) {
+      self.resultMap = unsafeResultMap
+    }
+
+    public init(edges: [Edge?]? = nil, pageInfo: PageInfo) {
+      self.init(unsafeResultMap: ["__typename": "LastFMTrackConnection", "edges": edges.flatMap { (value: [Edge?]) -> [ResultMap?] in value.map { (value: Edge?) -> ResultMap? in value.flatMap { (value: Edge) -> ResultMap in value.resultMap } } }, "pageInfo": pageInfo.resultMap])
+    }
+
+    public var __typename: String {
+      get {
+        return resultMap["__typename"]! as! String
+      }
+      set {
+        resultMap.updateValue(newValue, forKey: "__typename")
+      }
+    }
+
+    /// A list of edges.
+    public var edges: [Edge?]? {
+      get {
+        return (resultMap["edges"] as? [ResultMap?]).flatMap { (value: [ResultMap?]) -> [Edge?] in value.map { (value: ResultMap?) -> Edge? in value.flatMap { (value: ResultMap) -> Edge in Edge(unsafeResultMap: value) } } }
+      }
+      set {
+        resultMap.updateValue(newValue.flatMap { (value: [Edge?]) -> [ResultMap?] in value.map { (value: Edge?) -> ResultMap? in value.flatMap { (value: Edge) -> ResultMap in value.resultMap } } }, forKey: "edges")
+      }
+    }
+
+    /// Information to aid in pagination.
+    public var pageInfo: PageInfo {
+      get {
+        return PageInfo(unsafeResultMap: resultMap["pageInfo"]! as! ResultMap)
+      }
+      set {
+        resultMap.updateValue(newValue.resultMap, forKey: "pageInfo")
+      }
+    }
+
+    public struct Edge: GraphQLSelectionSet {
+      public static let possibleTypes = ["LastFMTrackEdge"]
+
+      public static let selections: [GraphQLSelection] = [
+        GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+        GraphQLField("node", type: .object(Node.selections)),
+      ]
+
+      public private(set) var resultMap: ResultMap
+
+      public init(unsafeResultMap: ResultMap) {
+        self.resultMap = unsafeResultMap
+      }
+
+      public init(node: Node? = nil) {
+        self.init(unsafeResultMap: ["__typename": "LastFMTrackEdge", "node": node.flatMap { (value: Node) -> ResultMap in value.resultMap }])
+      }
+
+      public var __typename: String {
+        get {
+          return resultMap["__typename"]! as! String
+        }
+        set {
+          resultMap.updateValue(newValue, forKey: "__typename")
+        }
+      }
+
+      /// The item at the end of the edge.
+      public var node: Node? {
+        get {
+          return (resultMap["node"] as? ResultMap).flatMap { Node(unsafeResultMap: $0) }
+        }
+        set {
+          resultMap.updateValue(newValue?.resultMap, forKey: "node")
+        }
+      }
+
+      public struct Node: GraphQLSelectionSet {
+        public static let possibleTypes = ["LastFMTrack"]
+
+        public static let selections: [GraphQLSelection] = [
+          GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+          GraphQLField("album", type: .object(Album.selections)),
+          GraphQLField("artist", type: .object(Artist.selections)),
+          GraphQLField("title", type: .scalar(String.self)),
+        ]
+
+        public private(set) var resultMap: ResultMap
+
+        public init(unsafeResultMap: ResultMap) {
+          self.resultMap = unsafeResultMap
+        }
+
+        public init(album: Album? = nil, artist: Artist? = nil, title: String? = nil) {
+          self.init(unsafeResultMap: ["__typename": "LastFMTrack", "album": album.flatMap { (value: Album) -> ResultMap in value.resultMap }, "artist": artist.flatMap { (value: Artist) -> ResultMap in value.resultMap }, "title": title])
+        }
+
+        public var __typename: String {
+          get {
+            return resultMap["__typename"]! as! String
+          }
+          set {
+            resultMap.updateValue(newValue, forKey: "__typename")
+          }
+        }
+
+        /// The album on which the track appears. This returns the Last.fm album info,
+        /// not the MusicBrainz release.
+        public var album: Album? {
+          get {
+            return (resultMap["album"] as? ResultMap).flatMap { Album(unsafeResultMap: $0) }
+          }
+          set {
+            resultMap.updateValue(newValue?.resultMap, forKey: "album")
+          }
+        }
+
+        /// The artist who released the track. This returns the Last.fm artist info,
+        /// not the MusicBrainz artist.
+        public var artist: Artist? {
+          get {
+            return (resultMap["artist"] as? ResultMap).flatMap { Artist(unsafeResultMap: $0) }
+          }
+          set {
+            resultMap.updateValue(newValue?.resultMap, forKey: "artist")
+          }
+        }
+
+        /// The title of the track according to [Last.fm](https://www.last.fm/).
+        public var title: String? {
+          get {
+            return resultMap["title"] as? String
+          }
+          set {
+            resultMap.updateValue(newValue, forKey: "title")
+          }
+        }
+
+        public struct Album: GraphQLSelectionSet {
+          public static let possibleTypes = ["LastFMAlbum"]
+
+          public static let selections: [GraphQLSelection] = [
+            GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+            GraphQLField("image", type: .scalar(String.self)),
+          ]
+
+          public private(set) var resultMap: ResultMap
+
+          public init(unsafeResultMap: ResultMap) {
+            self.resultMap = unsafeResultMap
+          }
+
+          public init(image: String? = nil) {
+            self.init(unsafeResultMap: ["__typename": "LastFMAlbum", "image": image])
+          }
+
+          public var __typename: String {
+            get {
+              return resultMap["__typename"]! as! String
+            }
+            set {
+              resultMap.updateValue(newValue, forKey: "__typename")
+            }
+          }
+
+          /// An image of the cover artwork of the release.
+          public var image: String? {
+            get {
+              return resultMap["image"] as? String
+            }
+            set {
+              resultMap.updateValue(newValue, forKey: "image")
+            }
+          }
+        }
+
+        public struct Artist: GraphQLSelectionSet {
+          public static let possibleTypes = ["LastFMArtist"]
+
+          public static let selections: [GraphQLSelection] = [
+            GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+            GraphQLField("name", type: .scalar(String.self)),
+          ]
+
+          public private(set) var resultMap: ResultMap
+
+          public init(unsafeResultMap: ResultMap) {
+            self.resultMap = unsafeResultMap
+          }
+
+          public init(name: String? = nil) {
+            self.init(unsafeResultMap: ["__typename": "LastFMArtist", "name": name])
+          }
+
+          public var __typename: String {
+            get {
+              return resultMap["__typename"]! as! String
+            }
+            set {
+              resultMap.updateValue(newValue, forKey: "__typename")
+            }
+          }
+
+          /// The name of the artist according to [Last.fm](https://www.last.fm/).
+          public var name: String? {
+            get {
+              return resultMap["name"] as? String
+            }
+            set {
+              resultMap.updateValue(newValue, forKey: "name")
+            }
+          }
+        }
+      }
+    }
+
+    public struct PageInfo: GraphQLSelectionSet {
+      public static let possibleTypes = ["PageInfo"]
+
+      public static let selections: [GraphQLSelection] = [
+        GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+        GraphQLField("endCursor", type: .scalar(String.self)),
+        GraphQLField("hasNextPage", type: .nonNull(.scalar(Bool.self))),
+      ]
+
+      public private(set) var resultMap: ResultMap
+
+      public init(unsafeResultMap: ResultMap) {
+        self.resultMap = unsafeResultMap
+      }
+
+      public init(endCursor: String? = nil, hasNextPage: Bool) {
+        self.init(unsafeResultMap: ["__typename": "PageInfo", "endCursor": endCursor, "hasNextPage": hasNextPage])
+      }
+
+      public var __typename: String {
+        get {
+          return resultMap["__typename"]! as! String
+        }
+        set {
+          resultMap.updateValue(newValue, forKey: "__typename")
+        }
+      }
+
+      /// When paginating forwards, the cursor to continue.
+      public var endCursor: String? {
+        get {
+          return resultMap["endCursor"] as? String
+        }
+        set {
+          resultMap.updateValue(newValue, forKey: "endCursor")
+        }
+      }
+
+      /// When paginating forwards, are there more items?
+      public var hasNextPage: Bool {
+        get {
+          return resultMap["hasNextPage"]! as! Bool
+        }
+        set {
+          resultMap.updateValue(newValue, forKey: "hasNextPage")
+        }
+      }
+    }
+  }
+
   public struct ReleaseGroupConnectionArtistAlbumCellReleaseGroup: GraphQLFragment {
     /// The raw GraphQL definition of this fragment.
     public static let fragmentDefinition =
@@ -21865,308 +21658,6 @@ public enum ApolloStuff {
             }
             set {
               resultMap.updateValue(newValue, forKey: "frontImage")
-            }
-          }
-        }
-      }
-    }
-
-    public struct PageInfo: GraphQLSelectionSet {
-      public static let possibleTypes = ["PageInfo"]
-
-      public static let selections: [GraphQLSelection] = [
-        GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
-        GraphQLField("endCursor", type: .scalar(String.self)),
-        GraphQLField("hasNextPage", type: .nonNull(.scalar(Bool.self))),
-      ]
-
-      public private(set) var resultMap: ResultMap
-
-      public init(unsafeResultMap: ResultMap) {
-        self.resultMap = unsafeResultMap
-      }
-
-      public init(endCursor: String? = nil, hasNextPage: Bool) {
-        self.init(unsafeResultMap: ["__typename": "PageInfo", "endCursor": endCursor, "hasNextPage": hasNextPage])
-      }
-
-      public var __typename: String {
-        get {
-          return resultMap["__typename"]! as! String
-        }
-        set {
-          resultMap.updateValue(newValue, forKey: "__typename")
-        }
-      }
-
-      /// When paginating forwards, the cursor to continue.
-      public var endCursor: String? {
-        get {
-          return resultMap["endCursor"] as? String
-        }
-        set {
-          resultMap.updateValue(newValue, forKey: "endCursor")
-        }
-      }
-
-      /// When paginating forwards, are there more items?
-      public var hasNextPage: Bool {
-        get {
-          return resultMap["hasNextPage"]! as! Bool
-        }
-        set {
-          resultMap.updateValue(newValue, forKey: "hasNextPage")
-        }
-      }
-    }
-  }
-
-  public struct LastFmTrackConnectionTrendingTrackCellLastFmTrack: GraphQLFragment {
-    /// The raw GraphQL definition of this fragment.
-    public static let fragmentDefinition =
-      """
-      fragment LastFMTrackConnectionTrendingTrackCellLastFMTrack on LastFMTrackConnection {
-        __typename
-        edges {
-          __typename
-          node {
-            __typename
-            album {
-              __typename
-              image
-            }
-            artist {
-              __typename
-              name
-            }
-            title
-          }
-        }
-        pageInfo {
-          __typename
-          endCursor
-          hasNextPage
-        }
-      }
-      """
-
-    public static let possibleTypes = ["LastFMTrackConnection"]
-
-    public static let selections: [GraphQLSelection] = [
-      GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
-      GraphQLField("edges", type: .list(.object(Edge.selections))),
-      GraphQLField("pageInfo", type: .nonNull(.object(PageInfo.selections))),
-    ]
-
-    public private(set) var resultMap: ResultMap
-
-    public init(unsafeResultMap: ResultMap) {
-      self.resultMap = unsafeResultMap
-    }
-
-    public init(edges: [Edge?]? = nil, pageInfo: PageInfo) {
-      self.init(unsafeResultMap: ["__typename": "LastFMTrackConnection", "edges": edges.flatMap { (value: [Edge?]) -> [ResultMap?] in value.map { (value: Edge?) -> ResultMap? in value.flatMap { (value: Edge) -> ResultMap in value.resultMap } } }, "pageInfo": pageInfo.resultMap])
-    }
-
-    public var __typename: String {
-      get {
-        return resultMap["__typename"]! as! String
-      }
-      set {
-        resultMap.updateValue(newValue, forKey: "__typename")
-      }
-    }
-
-    /// A list of edges.
-    public var edges: [Edge?]? {
-      get {
-        return (resultMap["edges"] as? [ResultMap?]).flatMap { (value: [ResultMap?]) -> [Edge?] in value.map { (value: ResultMap?) -> Edge? in value.flatMap { (value: ResultMap) -> Edge in Edge(unsafeResultMap: value) } } }
-      }
-      set {
-        resultMap.updateValue(newValue.flatMap { (value: [Edge?]) -> [ResultMap?] in value.map { (value: Edge?) -> ResultMap? in value.flatMap { (value: Edge) -> ResultMap in value.resultMap } } }, forKey: "edges")
-      }
-    }
-
-    /// Information to aid in pagination.
-    public var pageInfo: PageInfo {
-      get {
-        return PageInfo(unsafeResultMap: resultMap["pageInfo"]! as! ResultMap)
-      }
-      set {
-        resultMap.updateValue(newValue.resultMap, forKey: "pageInfo")
-      }
-    }
-
-    public struct Edge: GraphQLSelectionSet {
-      public static let possibleTypes = ["LastFMTrackEdge"]
-
-      public static let selections: [GraphQLSelection] = [
-        GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
-        GraphQLField("node", type: .object(Node.selections)),
-      ]
-
-      public private(set) var resultMap: ResultMap
-
-      public init(unsafeResultMap: ResultMap) {
-        self.resultMap = unsafeResultMap
-      }
-
-      public init(node: Node? = nil) {
-        self.init(unsafeResultMap: ["__typename": "LastFMTrackEdge", "node": node.flatMap { (value: Node) -> ResultMap in value.resultMap }])
-      }
-
-      public var __typename: String {
-        get {
-          return resultMap["__typename"]! as! String
-        }
-        set {
-          resultMap.updateValue(newValue, forKey: "__typename")
-        }
-      }
-
-      /// The item at the end of the edge.
-      public var node: Node? {
-        get {
-          return (resultMap["node"] as? ResultMap).flatMap { Node(unsafeResultMap: $0) }
-        }
-        set {
-          resultMap.updateValue(newValue?.resultMap, forKey: "node")
-        }
-      }
-
-      public struct Node: GraphQLSelectionSet {
-        public static let possibleTypes = ["LastFMTrack"]
-
-        public static let selections: [GraphQLSelection] = [
-          GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
-          GraphQLField("album", type: .object(Album.selections)),
-          GraphQLField("artist", type: .object(Artist.selections)),
-          GraphQLField("title", type: .scalar(String.self)),
-        ]
-
-        public private(set) var resultMap: ResultMap
-
-        public init(unsafeResultMap: ResultMap) {
-          self.resultMap = unsafeResultMap
-        }
-
-        public init(album: Album? = nil, artist: Artist? = nil, title: String? = nil) {
-          self.init(unsafeResultMap: ["__typename": "LastFMTrack", "album": album.flatMap { (value: Album) -> ResultMap in value.resultMap }, "artist": artist.flatMap { (value: Artist) -> ResultMap in value.resultMap }, "title": title])
-        }
-
-        public var __typename: String {
-          get {
-            return resultMap["__typename"]! as! String
-          }
-          set {
-            resultMap.updateValue(newValue, forKey: "__typename")
-          }
-        }
-
-        /// The album on which the track appears. This returns the Last.fm album info,
-        /// not the MusicBrainz release.
-        public var album: Album? {
-          get {
-            return (resultMap["album"] as? ResultMap).flatMap { Album(unsafeResultMap: $0) }
-          }
-          set {
-            resultMap.updateValue(newValue?.resultMap, forKey: "album")
-          }
-        }
-
-        /// The artist who released the track. This returns the Last.fm artist info,
-        /// not the MusicBrainz artist.
-        public var artist: Artist? {
-          get {
-            return (resultMap["artist"] as? ResultMap).flatMap { Artist(unsafeResultMap: $0) }
-          }
-          set {
-            resultMap.updateValue(newValue?.resultMap, forKey: "artist")
-          }
-        }
-
-        /// The title of the track according to [Last.fm](https://www.last.fm/).
-        public var title: String? {
-          get {
-            return resultMap["title"] as? String
-          }
-          set {
-            resultMap.updateValue(newValue, forKey: "title")
-          }
-        }
-
-        public struct Album: GraphQLSelectionSet {
-          public static let possibleTypes = ["LastFMAlbum"]
-
-          public static let selections: [GraphQLSelection] = [
-            GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
-            GraphQLField("image", type: .scalar(String.self)),
-          ]
-
-          public private(set) var resultMap: ResultMap
-
-          public init(unsafeResultMap: ResultMap) {
-            self.resultMap = unsafeResultMap
-          }
-
-          public init(image: String? = nil) {
-            self.init(unsafeResultMap: ["__typename": "LastFMAlbum", "image": image])
-          }
-
-          public var __typename: String {
-            get {
-              return resultMap["__typename"]! as! String
-            }
-            set {
-              resultMap.updateValue(newValue, forKey: "__typename")
-            }
-          }
-
-          /// An image of the cover artwork of the release.
-          public var image: String? {
-            get {
-              return resultMap["image"] as? String
-            }
-            set {
-              resultMap.updateValue(newValue, forKey: "image")
-            }
-          }
-        }
-
-        public struct Artist: GraphQLSelectionSet {
-          public static let possibleTypes = ["LastFMArtist"]
-
-          public static let selections: [GraphQLSelection] = [
-            GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
-            GraphQLField("name", type: .scalar(String.self)),
-          ]
-
-          public private(set) var resultMap: ResultMap
-
-          public init(unsafeResultMap: ResultMap) {
-            self.resultMap = unsafeResultMap
-          }
-
-          public init(name: String? = nil) {
-            self.init(unsafeResultMap: ["__typename": "LastFMArtist", "name": name])
-          }
-
-          public var __typename: String {
-            get {
-              return resultMap["__typename"]! as! String
-            }
-            set {
-              resultMap.updateValue(newValue, forKey: "__typename")
-            }
-          }
-
-          /// The name of the artist according to [Last.fm](https://www.last.fm/).
-          public var name: String? {
-            get {
-              return resultMap["name"] as? String
-            }
-            set {
-              resultMap.updateValue(newValue, forKey: "name")
             }
           }
         }

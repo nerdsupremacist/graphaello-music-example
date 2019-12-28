@@ -17,13 +17,13 @@ struct TrendingArtistCell: View {
     @GraphQL(Music.LastFMArtist.name)
     var name: String?
 
-    @GraphQL(Music.LastFMArtist.topTags.nodes._forEach(\.name))
+    @GraphQL(Music.LastFMArtist.topTags(first: .value(3)).nodes._forEach(\.name))
     var tags: [String?]?
 
-    @GraphQL(Music.LastFMArtist.topAlbums.nodes._forEach(\.image))
+    @GraphQL(Music.LastFMArtist.topAlbums(first: .value(4)).nodes._forEach(\.image))
     var images: [String?]?
 
-    @GraphQL(Music.LastFMArtist.topTracks.nodes._forEach(\.title))
+    @GraphQL(Music.LastFMArtist.topTracks(first: .value(1)).nodes._forEach(\.title))
     var mostFamousSongs: [String?]?
 
     var body: some View {

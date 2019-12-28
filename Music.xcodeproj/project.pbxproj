@@ -57,6 +57,7 @@
 		0E96235123B5B071003DE485 /* ArtistMetadata.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArtistMetadata.swift; sourceTree = "<group>"; };
 		0E96235323B616DB003DE485 /* AlbumDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlbumDetailView.swift; sourceTree = "<group>"; };
 		0E96235523B62498003DE485 /* AlbumTrackCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlbumTrackCell.swift; sourceTree = "<group>"; };
+		0E96235723B651E6003DE485 /* FancyScrollView */ = {isa = PBXFileReference; lastKnownFileType = folder; name = FancyScrollView; path = ../../FancyScrollView; sourceTree = "<group>"; };
 		0EB5889B23B5704200FAFDF2 /* URLImage+artwork.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "URLImage+artwork.swift"; sourceTree = "<group>"; };
 		0ECD147023AEF7E500ABD3F4 /* Music.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Music.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		0ECD147323AEF7E500ABD3F4 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -103,6 +104,7 @@
 		0ECD146723AEF7E500ABD3F4 = {
 			isa = PBXGroup;
 			children = (
+				0E96235723B651E6003DE485 /* FancyScrollView */,
 				0ECD147223AEF7E500ABD3F4 /* Music */,
 				0ECD147123AEF7E500ABD3F4 /* Products */,
 				09179EAD39F6553EA7218C86 /* Graphaello.swift */,
@@ -283,7 +285,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "if ! type \"graphaello\" > /dev/null; then\n  echo \"warning: graphaello is not installed on your machine. Your project won't be updated automatically\"\n  exit 0\nfi\ngraphaello codegen --project $PROJECT_FILE_PATH --apollo derivedData\n";
+			shellScript = "if ! type \"graphaello\" > /dev/null; then\n  echo \"warning: graphaello is not installed on your machine. Your project won't be updated automatically\"\n  exit 0\nfi\n#graphaello codegen --project $PROJECT_FILE_PATH --apollo derivedData\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 

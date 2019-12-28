@@ -11,9 +11,7 @@ import SwiftUI
 
 struct ArtistAlbumList: View {
     let api: Music
-
-    @GraphQL(Music.lookup.artist.releaseGroups)
-    var albums: Paging<ArtistAlbumCell.ReleaseGroup>?
+    let albums: Paging<ArtistAlbumCell.ReleaseGroup>?
 
     var body: some View {
         albums.map { albums in

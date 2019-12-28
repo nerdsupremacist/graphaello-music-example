@@ -22,6 +22,12 @@ struct ArtistDetailView: View {
     @GraphQL(Music.lookup.artist.theAudioDb.thumbnail)
     var image: String?
 
+    @GraphQL(Music.lookup.artist.lastFm.topTracks(first: .value(5)))
+    var topSongs: Paging<TrendingTrackCell.LastFMTrack>?
+
+    @GraphQL(Music.lookup.artist.releaseGroups(type: .value([.album]), first: .value(5)))
+    var albums: Paging<ArtistAlbumCell.ReleaseGroup>?
+
     @GraphQL(Music.lookup.artist.theAudioDb.biography)
     var bio: String?
 
@@ -40,8 +46,10 @@ struct ArtistDetailView: View {
     @GraphQL(Music.lookup.artist.theAudioDb.mood)
     var mood: String?
 
+    @GraphQL(Music.lookup.artist.lastFm.similarArtists(first: .value(3)))
+    var similarArtists: Paging<SimilarArtistCell.LastFMArtist>?
+
     var body: some View {
-        
         FancyScrollView(title: name ?? "",
                         headerHeight: 350,
                         scrollUpHeaderBehavior: .parallax,
@@ -57,19 +65,11 @@ struct ArtistDetailView: View {
             id.map { id in
                 VStack(alignment: .leading, spacing: 16) {
                     ArtistInfoSection("Top Songs") {
-                        api.artistTopSongsList(mbid: id, first: 5)
+                        ArtistTopSongsList(tracks: self.topSongs)
                     }
 
                     ArtistInfoSection("Albums") {
-                        api.artistAlbumList(mbid: id, type: [.album], first: 3)
-                    }
-
-                    ArtistInfoSection("EPs") {
-                        api.artistAlbumList(mbid: id, type: [.ep], first: 3)
-                    }
-
-                    ArtistInfoSection("Singles") {
-                        api.artistAlbumList(mbid: id, type: [.single], first: 3)
+                        ArtistAlbumList(api: self.api, albums: self.albums)
                     }
 
                     VStack(spacing: 16) {
@@ -92,7 +92,7 @@ struct ArtistDetailView: View {
                             .padding(.horizontal, 16)
 
                         ArtistInfoSection("Similar Artists") {
-                            api.similarArtistsList(mbid: id, first: 4)
+                            SimilarArtistsList(api: self.api, artists: self.similarArtists)
                         }
                     }
                     .padding(.vertical, 16)

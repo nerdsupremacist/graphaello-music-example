@@ -10,8 +10,7 @@ import Foundation
 import SwiftUI
 
 struct ArtistTopSongsList: View {
-    @GraphQL(Music.lookup.artist.lastFm.topTracks)
-    var tracks: Paging<TrendingTrackCell.LastFMTrack>?
+    let tracks: Paging<TrendingTrackCell.LastFMTrack>?
 
     var body: some View {
         tracks.map { tracks in

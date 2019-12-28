@@ -11,9 +11,7 @@ import SwiftUI
 
 struct SimilarArtistsList: View {
     let api: Music
-
-    @GraphQL(Music.lookup.artist.lastFm.similarArtists)
-    var artists: Paging<SimilarArtistCell.LastFMArtist>?
+    let artists: Paging<SimilarArtistCell.LastFMArtist>?
 
     var body: some View {
         artists.map { artists in

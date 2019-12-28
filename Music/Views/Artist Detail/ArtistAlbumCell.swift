@@ -21,7 +21,7 @@ struct ArtistAlbumCell: View {
     @GraphQL(Music.ReleaseGroup.theAudioDb.frontImage)
     var discImage: String?
 
-    @GraphQL(Music.ReleaseGroup.releases(status: .value([.official])).nodes._forEach(\.mbid))
+    @GraphQL(Music.ReleaseGroup.releases(type: .value([.album]), status: .value([.official])).nodes._forEach(\.mbid))
     var releaseIds: [String?]?
 
     var body: some View {

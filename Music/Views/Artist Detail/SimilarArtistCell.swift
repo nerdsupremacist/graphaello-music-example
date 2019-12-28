@@ -18,7 +18,7 @@ struct SimilarArtistCell: View {
     @GraphQL(Music.LastFMArtist.name)
     var name: String?
 
-    @GraphQL(Music.LastFMArtist.topAlbums.nodes._forEach(\.image))
+    @GraphQL(Music.LastFMArtist.topAlbums(first: .value(1)).nodes._forEach(\.image))
     var images: [String?]?
 
     var body: some View {
