@@ -11,11 +11,19 @@ import SwiftUI
 import FancyScrollView
 
 struct AlbumDetailView: View {
+    let api: Music
+
     @GraphQL(Music.lookup.release.title)
     var title: String?
 
     @GraphQL(Music.lookup.release.coverArtArchive.front)
     var cover: String?
+
+    @GraphQL(Music.lookup.release.artistCredits._forEach(\.artist))
+    var artists: [AlbumArtistCreditButton.Artist?]?
+
+    @GraphQL(Music.lookup.release.discogs.genres)
+    var genres: [String]?
 
     @GraphQL(Music.lookup.release.media._forEach(\.tracks))
     var media: [[AlbumTrackCell.Track?]?]?
@@ -35,8 +43,18 @@ struct AlbumDetailView: View {
                             .cornerRadius(5)
                             .frame(width: 150, height: 150)
 
-                        VStack {
+                        VStack(alignment: .leading) {
                             self.title.map { Text($0).font(.headline).fontWeight(.bold) }
+
+                            self.artists.map { artists in
+                                ForEach(artists.compactMap { $0 }, id: \.name) { artist in
+                                    AlbumArtistCreditButton(api: self.api,
+                                                            artist: artist)
+                                }
+                            }
+
+                            self.genres?.first.map { Text($0).font(.callout) }
+
                             Spacer()
                         }
 

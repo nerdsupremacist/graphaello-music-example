@@ -14650,6 +14650,36 @@ var node: FragmentPath<Music.DiscogsRelease?> { .init() }
 
 
 
+// MARK: - AlbumArtistCreditButton
+
+
+extension ApolloStuff.AlbumArtistCreditButtonArtist : Fragment {
+    typealias UnderlyingType = Music.Artist
+}
+
+
+extension AlbumArtistCreditButton {
+    
+    typealias Artist = ApolloStuff.AlbumArtistCreditButtonArtist
+    
+    
+    
+    init(api: Music
+, artist: Artist
+) {
+        self.init(api: api
+, id: GraphQL(artist.mbid)
+, name: GraphQL(artist.name)
+)
+    }
+}
+
+
+
+
+
+
+
 // MARK: - AlbumDetailView
 
 
@@ -14660,10 +14690,14 @@ extension AlbumDetailView {
     typealias Data = ApolloStuff.AlbumDetailViewQuery.Data
     
     
-    init(data: Data
+    init(api: Music
+, data: Data
 ) {
-        self.init(title: GraphQL(data.lookup?.release?.title)
+        self.init(api: api
+, title: GraphQL(data.lookup?.release?.title)
 , cover: GraphQL(data.lookup?.release?.coverArtArchive?.front)
+, artists: GraphQL(data.lookup?.release?.artistCredits?.map { $0?.artist?.fragments.albumArtistCreditButtonArtist })
+, genres: GraphQL(data.lookup?.release?.discogs?.genres)
 , media: GraphQL(data.lookup?.release?.media?.map { $0?.tracks?.map { $0?.fragments.albumTrackCellTrack } })
 )
     }
@@ -14680,7 +14714,8 @@ extension Music {
 , size: .init(size)
 )) { data in
         
-            AlbumDetailView(data: data
+            AlbumDetailView(api: self
+, data: data
 )
         }
     }
@@ -14789,23 +14824,23 @@ extension Music {
     
     func artistDetailView(mbid: String
 , after: String? = nil
-, lang: String? = "en"
-, size: Music.TheAudioDBImageSize? = Music.TheAudioDBImageSize.full
-, urlStringSize: Music.LastFMImageSize? = nil
 , releaseConnectionFirst: Int? = nil
+, size: Music.TheAudioDBImageSize? = Music.TheAudioDBImageSize.full
+, lang: String? = "en"
+, urlStringSize: Music.LastFMImageSize? = nil
 ) -> some View {
         return QueryRenderer(client: client,
                              query: ApolloStuff.ArtistDetailViewQuery(mbid: mbid
 , type: [.album]
 , after: after
 , first: 5
-, lang: lang
-, size: .init(size)
-, LastFMArtistConnection_first: 3
-, LastFMAlbumConnection_first: 1
-, URLString_size: .init(urlStringSize)
 , status: [.official]
 , ReleaseConnection_first: releaseConnectionFirst
+, size: .init(size)
+, lang: lang
+, LastFMArtistConnection_first: 3
+, URLString_size: .init(urlStringSize)
+, LastFMAlbumConnection_first: 1
 )) { data in
         
             ArtistDetailView(api: self
@@ -15143,10 +15178,10 @@ extension Music {
                              query: ApolloStuff.TrendingArtistsListQuery(country: country
 , first: first
 , after: after
-, size: .init(size)
-, LastFMTagConnection_first: 3
 , LastFMAlbumConnection_first: 4
+, LastFMTagConnection_first: 3
 , LastFMTrackConnection_first: 1
+, size: .init(size)
 )) { data in
         
             TrendingArtistsList(api: self
@@ -15154,8 +15189,8 @@ extension Music {
     self.client.fetch(query: ApolloStuff.TrendingArtistsListLastFmArtistConnectionTrendingArtistCellLastFmArtistQuery(country: country
 , first: _pageSize ?? first
 , after: _cursor
-, LastFMTagConnection_first: 3
 , LastFMAlbumConnection_first: 4
+, LastFMTagConnection_first: 3
 , LastFMTrackConnection_first: 1
 , size: .init(size)
 )) { result in
@@ -17376,7 +17411,7 @@ public enum ApolloStuff {
     /// The raw GraphQL definition of this operation.
     public let operationDefinition: String =
       """
-      query TrendingArtistsListLastFMArtistConnectionTrendingArtistCellLastFMArtist($country: String, $first: Int, $after: String, $LastFMTagConnection_first: Int, $LastFMAlbumConnection_first: Int, $LastFMTrackConnection_first: Int, $size: LastFMImageSize) {
+      query TrendingArtistsListLastFMArtistConnectionTrendingArtistCellLastFMArtist($country: String, $first: Int, $after: String, $LastFMAlbumConnection_first: Int, $LastFMTagConnection_first: Int, $LastFMTrackConnection_first: Int, $size: LastFMImageSize) {
         lastFM {
           __typename
           chart {
@@ -17428,23 +17463,23 @@ public enum ApolloStuff {
     public var country: String?
     public var first: Int?
     public var after: String?
-    public var LastFMTagConnection_first: Int?
     public var LastFMAlbumConnection_first: Int?
+    public var LastFMTagConnection_first: Int?
     public var LastFMTrackConnection_first: Int?
     public var size: LastFMImageSize?
 
-    public init(country: String? = nil, first: Int? = nil, after: String? = nil, LastFMTagConnection_first: Int? = nil, LastFMAlbumConnection_first: Int? = nil, LastFMTrackConnection_first: Int? = nil, size: LastFMImageSize? = nil) {
+    public init(country: String? = nil, first: Int? = nil, after: String? = nil, LastFMAlbumConnection_first: Int? = nil, LastFMTagConnection_first: Int? = nil, LastFMTrackConnection_first: Int? = nil, size: LastFMImageSize? = nil) {
       self.country = country
       self.first = first
       self.after = after
-      self.LastFMTagConnection_first = LastFMTagConnection_first
       self.LastFMAlbumConnection_first = LastFMAlbumConnection_first
+      self.LastFMTagConnection_first = LastFMTagConnection_first
       self.LastFMTrackConnection_first = LastFMTrackConnection_first
       self.size = size
     }
 
     public var variables: GraphQLMap? {
-      return ["country": country, "first": first, "after": after, "LastFMTagConnection_first": LastFMTagConnection_first, "LastFMAlbumConnection_first": LastFMAlbumConnection_first, "LastFMTrackConnection_first": LastFMTrackConnection_first, "size": size]
+      return ["country": country, "first": first, "after": after, "LastFMAlbumConnection_first": LastFMAlbumConnection_first, "LastFMTagConnection_first": LastFMTagConnection_first, "LastFMTrackConnection_first": LastFMTrackConnection_first, "size": size]
     }
 
     public struct Data: GraphQLSelectionSet {
@@ -18447,9 +18482,20 @@ public enum ApolloStuff {
           __typename
           release(mbid: $mbid) {
             __typename
+            artistCredits {
+              __typename
+              artist {
+                __typename
+                ...AlbumArtistCreditButtonArtist
+              }
+            }
             coverArtArchive {
               __typename
               front(size: $size)
+            }
+            discogs {
+              __typename
+              genres
             }
             media {
               __typename
@@ -18466,7 +18512,7 @@ public enum ApolloStuff {
 
     public let operationName: String = "AlbumDetailView"
 
-    public var queryDocument: String { return operationDefinition.appending(AlbumTrackCellTrack.fragmentDefinition) }
+    public var queryDocument: String { return operationDefinition.appending(AlbumArtistCreditButtonArtist.fragmentDefinition).appending(AlbumTrackCellTrack.fragmentDefinition) }
 
     public var mbid: String
     public var size: CoverArtArchiveImageSize?
@@ -18549,7 +18595,9 @@ public enum ApolloStuff {
 
           public static let selections: [GraphQLSelection] = [
             GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+            GraphQLField("artistCredits", type: .list(.object(ArtistCredit.selections))),
             GraphQLField("coverArtArchive", type: .object(CoverArtArchive.selections)),
+            GraphQLField("discogs", type: .object(Discog.selections)),
             GraphQLField("media", type: .list(.object(Medium.selections))),
             GraphQLField("title", type: .scalar(String.self)),
           ]
@@ -18560,8 +18608,8 @@ public enum ApolloStuff {
             self.resultMap = unsafeResultMap
           }
 
-          public init(coverArtArchive: CoverArtArchive? = nil, media: [Medium?]? = nil, title: String? = nil) {
-            self.init(unsafeResultMap: ["__typename": "Release", "coverArtArchive": coverArtArchive.flatMap { (value: CoverArtArchive) -> ResultMap in value.resultMap }, "media": media.flatMap { (value: [Medium?]) -> [ResultMap?] in value.map { (value: Medium?) -> ResultMap? in value.flatMap { (value: Medium) -> ResultMap in value.resultMap } } }, "title": title])
+          public init(artistCredits: [ArtistCredit?]? = nil, coverArtArchive: CoverArtArchive? = nil, discogs: Discog? = nil, media: [Medium?]? = nil, title: String? = nil) {
+            self.init(unsafeResultMap: ["__typename": "Release", "artistCredits": artistCredits.flatMap { (value: [ArtistCredit?]) -> [ResultMap?] in value.map { (value: ArtistCredit?) -> ResultMap? in value.flatMap { (value: ArtistCredit) -> ResultMap in value.resultMap } } }, "coverArtArchive": coverArtArchive.flatMap { (value: CoverArtArchive) -> ResultMap in value.resultMap }, "discogs": discogs.flatMap { (value: Discog) -> ResultMap in value.resultMap }, "media": media.flatMap { (value: [Medium?]) -> [ResultMap?] in value.map { (value: Medium?) -> ResultMap? in value.flatMap { (value: Medium) -> ResultMap in value.resultMap } } }, "title": title])
           }
 
           public var __typename: String {
@@ -18570,6 +18618,16 @@ public enum ApolloStuff {
             }
             set {
               resultMap.updateValue(newValue, forKey: "__typename")
+            }
+          }
+
+          /// The main credited artist(s).
+          public var artistCredits: [ArtistCredit?]? {
+            get {
+              return (resultMap["artistCredits"] as? [ResultMap?]).flatMap { (value: [ResultMap?]) -> [ArtistCredit?] in value.map { (value: ResultMap?) -> ArtistCredit? in value.flatMap { (value: ResultMap) -> ArtistCredit in ArtistCredit(unsafeResultMap: value) } } }
+            }
+            set {
+              resultMap.updateValue(newValue.flatMap { (value: [ArtistCredit?]) -> [ResultMap?] in value.map { (value: ArtistCredit?) -> ResultMap? in value.flatMap { (value: ArtistCredit) -> ResultMap in value.resultMap } } }, forKey: "artistCredits")
             }
           }
 
@@ -18582,6 +18640,16 @@ public enum ApolloStuff {
             }
             set {
               resultMap.updateValue(newValue?.resultMap, forKey: "coverArtArchive")
+            }
+          }
+
+          /// Information about the release on Discogs.
+          public var discogs: Discog? {
+            get {
+              return (resultMap["discogs"] as? ResultMap).flatMap { Discog(unsafeResultMap: $0) }
+            }
+            set {
+              resultMap.updateValue(newValue?.resultMap, forKey: "discogs")
             }
           }
 
@@ -18602,6 +18670,99 @@ public enum ApolloStuff {
             }
             set {
               resultMap.updateValue(newValue, forKey: "title")
+            }
+          }
+
+          public struct ArtistCredit: GraphQLSelectionSet {
+            public static let possibleTypes: [String] = ["ArtistCredit"]
+
+            public static let selections: [GraphQLSelection] = [
+              GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+              GraphQLField("artist", type: .object(Artist.selections)),
+            ]
+
+            public private(set) var resultMap: ResultMap
+
+            public init(unsafeResultMap: ResultMap) {
+              self.resultMap = unsafeResultMap
+            }
+
+            public init(artist: Artist? = nil) {
+              self.init(unsafeResultMap: ["__typename": "ArtistCredit", "artist": artist.flatMap { (value: Artist) -> ResultMap in value.resultMap }])
+            }
+
+            public var __typename: String {
+              get {
+                return resultMap["__typename"]! as! String
+              }
+              set {
+                resultMap.updateValue(newValue, forKey: "__typename")
+              }
+            }
+
+            /// The entity representing the artist referenced in the
+            /// credits.
+            public var artist: Artist? {
+              get {
+                return (resultMap["artist"] as? ResultMap).flatMap { Artist(unsafeResultMap: $0) }
+              }
+              set {
+                resultMap.updateValue(newValue?.resultMap, forKey: "artist")
+              }
+            }
+
+            public struct Artist: GraphQLSelectionSet {
+              public static let possibleTypes: [String] = ["Artist"]
+
+              public static let selections: [GraphQLSelection] = [
+                GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+                GraphQLFragmentSpread(AlbumArtistCreditButtonArtist.self),
+              ]
+
+              public private(set) var resultMap: ResultMap
+
+              public init(unsafeResultMap: ResultMap) {
+                self.resultMap = unsafeResultMap
+              }
+
+              public init(mbid: String, name: String? = nil) {
+                self.init(unsafeResultMap: ["__typename": "Artist", "mbid": mbid, "name": name])
+              }
+
+              public var __typename: String {
+                get {
+                  return resultMap["__typename"]! as! String
+                }
+                set {
+                  resultMap.updateValue(newValue, forKey: "__typename")
+                }
+              }
+
+              public var fragments: Fragments {
+                get {
+                  return Fragments(unsafeResultMap: resultMap)
+                }
+                set {
+                  resultMap += newValue.resultMap
+                }
+              }
+
+              public struct Fragments {
+                public private(set) var resultMap: ResultMap
+
+                public init(unsafeResultMap: ResultMap) {
+                  self.resultMap = unsafeResultMap
+                }
+
+                public var albumArtistCreditButtonArtist: AlbumArtistCreditButtonArtist {
+                  get {
+                    return AlbumArtistCreditButtonArtist(unsafeResultMap: resultMap)
+                  }
+                  set {
+                    resultMap += newValue.resultMap
+                  }
+                }
+              }
             }
           }
 
@@ -18646,6 +18807,44 @@ public enum ApolloStuff {
               }
               set {
                 resultMap.updateValue(newValue, forKey: "front")
+              }
+            }
+          }
+
+          public struct Discog: GraphQLSelectionSet {
+            public static let possibleTypes: [String] = ["DiscogsRelease"]
+
+            public static let selections: [GraphQLSelection] = [
+              GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+              GraphQLField("genres", type: .nonNull(.list(.nonNull(.scalar(String.self))))),
+            ]
+
+            public private(set) var resultMap: ResultMap
+
+            public init(unsafeResultMap: ResultMap) {
+              self.resultMap = unsafeResultMap
+            }
+
+            public init(genres: [String]) {
+              self.init(unsafeResultMap: ["__typename": "DiscogsRelease", "genres": genres])
+            }
+
+            public var __typename: String {
+              get {
+                return resultMap["__typename"]! as! String
+              }
+              set {
+                resultMap.updateValue(newValue, forKey: "__typename")
+              }
+            }
+
+            /// The primary musical genres of the release (e.g. “Electronic”).
+            public var genres: [String] {
+              get {
+                return resultMap["genres"]! as! [String]
+              }
+              set {
+                resultMap.updateValue(newValue, forKey: "genres")
               }
             }
           }
@@ -18750,7 +18949,7 @@ public enum ApolloStuff {
     /// The raw GraphQL definition of this operation.
     public let operationDefinition: String =
       """
-      query ArtistDetailView($mbid: MBID!, $type: [ReleaseGroupType], $after: String, $first: Int, $lang: String, $size: TheAudioDBImageSize, $LastFMArtistConnection_first: Int, $LastFMAlbumConnection_first: Int, $URLString_size: LastFMImageSize, $status: [ReleaseStatus], $ReleaseConnection_first: Int) {
+      query ArtistDetailView($mbid: MBID!, $type: [ReleaseGroupType], $after: String, $first: Int, $status: [ReleaseStatus], $ReleaseConnection_first: Int, $size: TheAudioDBImageSize, $lang: String, $LastFMArtistConnection_first: Int, $URLString_size: LastFMImageSize, $LastFMAlbumConnection_first: Int) {
         lookup {
           __typename
           artist(mbid: $mbid) {
@@ -18858,30 +19057,30 @@ public enum ApolloStuff {
     public var type: [ReleaseGroupType?]?
     public var after: String?
     public var first: Int?
-    public var lang: String?
-    public var size: TheAudioDBImageSize?
-    public var LastFMArtistConnection_first: Int?
-    public var LastFMAlbumConnection_first: Int?
-    public var URLString_size: LastFMImageSize?
     public var status: [ReleaseStatus?]?
     public var ReleaseConnection_first: Int?
+    public var size: TheAudioDBImageSize?
+    public var lang: String?
+    public var LastFMArtistConnection_first: Int?
+    public var URLString_size: LastFMImageSize?
+    public var LastFMAlbumConnection_first: Int?
 
-    public init(mbid: String, type: [ReleaseGroupType?]? = nil, after: String? = nil, first: Int? = nil, lang: String? = nil, size: TheAudioDBImageSize? = nil, LastFMArtistConnection_first: Int? = nil, LastFMAlbumConnection_first: Int? = nil, URLString_size: LastFMImageSize? = nil, status: [ReleaseStatus?]? = nil, ReleaseConnection_first: Int? = nil) {
+    public init(mbid: String, type: [ReleaseGroupType?]? = nil, after: String? = nil, first: Int? = nil, status: [ReleaseStatus?]? = nil, ReleaseConnection_first: Int? = nil, size: TheAudioDBImageSize? = nil, lang: String? = nil, LastFMArtistConnection_first: Int? = nil, URLString_size: LastFMImageSize? = nil, LastFMAlbumConnection_first: Int? = nil) {
       self.mbid = mbid
       self.type = type
       self.after = after
       self.first = first
-      self.lang = lang
-      self.size = size
-      self.LastFMArtistConnection_first = LastFMArtistConnection_first
-      self.LastFMAlbumConnection_first = LastFMAlbumConnection_first
-      self.URLString_size = URLString_size
       self.status = status
       self.ReleaseConnection_first = ReleaseConnection_first
+      self.size = size
+      self.lang = lang
+      self.LastFMArtistConnection_first = LastFMArtistConnection_first
+      self.URLString_size = URLString_size
+      self.LastFMAlbumConnection_first = LastFMAlbumConnection_first
     }
 
     public var variables: GraphQLMap? {
-      return ["mbid": mbid, "type": type, "after": after, "first": first, "lang": lang, "size": size, "LastFMArtistConnection_first": LastFMArtistConnection_first, "LastFMAlbumConnection_first": LastFMAlbumConnection_first, "URLString_size": URLString_size, "status": status, "ReleaseConnection_first": ReleaseConnection_first]
+      return ["mbid": mbid, "type": type, "after": after, "first": first, "status": status, "ReleaseConnection_first": ReleaseConnection_first, "size": size, "lang": lang, "LastFMArtistConnection_first": LastFMArtistConnection_first, "URLString_size": URLString_size, "LastFMAlbumConnection_first": LastFMAlbumConnection_first]
     }
 
     public struct Data: GraphQLSelectionSet {
@@ -20121,7 +20320,7 @@ public enum ApolloStuff {
     /// The raw GraphQL definition of this operation.
     public let operationDefinition: String =
       """
-      query TrendingArtistsList($country: String, $first: Int, $after: String, $size: LastFMImageSize, $LastFMTagConnection_first: Int, $LastFMAlbumConnection_first: Int, $LastFMTrackConnection_first: Int) {
+      query TrendingArtistsList($country: String, $first: Int, $after: String, $LastFMAlbumConnection_first: Int, $LastFMTagConnection_first: Int, $LastFMTrackConnection_first: Int, $size: LastFMImageSize) {
         lastFM {
           __typename
           chart {
@@ -20196,23 +20395,23 @@ public enum ApolloStuff {
     public var country: String?
     public var first: Int?
     public var after: String?
-    public var size: LastFMImageSize?
-    public var LastFMTagConnection_first: Int?
     public var LastFMAlbumConnection_first: Int?
+    public var LastFMTagConnection_first: Int?
     public var LastFMTrackConnection_first: Int?
+    public var size: LastFMImageSize?
 
-    public init(country: String? = nil, first: Int? = nil, after: String? = nil, size: LastFMImageSize? = nil, LastFMTagConnection_first: Int? = nil, LastFMAlbumConnection_first: Int? = nil, LastFMTrackConnection_first: Int? = nil) {
+    public init(country: String? = nil, first: Int? = nil, after: String? = nil, LastFMAlbumConnection_first: Int? = nil, LastFMTagConnection_first: Int? = nil, LastFMTrackConnection_first: Int? = nil, size: LastFMImageSize? = nil) {
       self.country = country
       self.first = first
       self.after = after
-      self.size = size
-      self.LastFMTagConnection_first = LastFMTagConnection_first
       self.LastFMAlbumConnection_first = LastFMAlbumConnection_first
+      self.LastFMTagConnection_first = LastFMTagConnection_first
       self.LastFMTrackConnection_first = LastFMTrackConnection_first
+      self.size = size
     }
 
     public var variables: GraphQLMap? {
-      return ["country": country, "first": first, "after": after, "size": size, "LastFMTagConnection_first": LastFMTagConnection_first, "LastFMAlbumConnection_first": LastFMAlbumConnection_first, "LastFMTrackConnection_first": LastFMTrackConnection_first]
+      return ["country": country, "first": first, "after": after, "LastFMAlbumConnection_first": LastFMAlbumConnection_first, "LastFMTagConnection_first": LastFMTagConnection_first, "LastFMTrackConnection_first": LastFMTrackConnection_first, "size": size]
     }
 
     public struct Data: GraphQLSelectionSet {
@@ -22485,6 +22684,65 @@ public enum ApolloStuff {
         set {
           resultMap.updateValue(newValue, forKey: "hasNextPage")
         }
+      }
+    }
+  }
+
+  public struct AlbumArtistCreditButtonArtist: GraphQLFragment {
+    /// The raw GraphQL definition of this fragment.
+    public static let fragmentDefinition: String =
+      """
+      fragment AlbumArtistCreditButtonArtist on Artist {
+        __typename
+        mbid
+        name
+      }
+      """
+
+    public static let possibleTypes: [String] = ["Artist"]
+
+    public static let selections: [GraphQLSelection] = [
+      GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+      GraphQLField("mbid", type: .nonNull(.scalar(String.self))),
+      GraphQLField("name", type: .scalar(String.self)),
+    ]
+
+    public private(set) var resultMap: ResultMap
+
+    public init(unsafeResultMap: ResultMap) {
+      self.resultMap = unsafeResultMap
+    }
+
+    public init(mbid: String, name: String? = nil) {
+      self.init(unsafeResultMap: ["__typename": "Artist", "mbid": mbid, "name": name])
+    }
+
+    public var __typename: String {
+      get {
+        return resultMap["__typename"]! as! String
+      }
+      set {
+        resultMap.updateValue(newValue, forKey: "__typename")
+      }
+    }
+
+    /// The MBID of the entity.
+    public var mbid: String {
+      get {
+        return resultMap["mbid"]! as! String
+      }
+      set {
+        resultMap.updateValue(newValue, forKey: "mbid")
+      }
+    }
+
+    /// The official name of the entity.
+    public var name: String? {
+      get {
+        return resultMap["name"] as? String
+      }
+      set {
+        resultMap.updateValue(newValue, forKey: "name")
       }
     }
   }
