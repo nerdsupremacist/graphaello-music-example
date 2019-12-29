@@ -31,8 +31,12 @@ struct AlbumDetailView: View {
     @GraphQL(Music.lookup.release.media._forEach(\.tracks))
     var media: [[AlbumTrackCell.Track?]?]?
 
+    @GraphQL(Music.lookup.release.lastFm.playCount)
+    var playCount: Double?
+
     var body: some View {
         let media = self.media?.compactMap { $0?.compactMap { $0 } } ?? []
+        let trackCount = media.reduce(0) { $0 + $1.count }
         let info = [genres?.first, date?.year.map(String.init)].compactMap { $0 }.joined(separator: " · ")
 
         return GeometryReader { geometry in
@@ -74,7 +78,9 @@ struct AlbumDetailView: View {
                         VStack {
                             ForEach(media[mediaIndex].indices) { trackIndex in
                                 VStack {
-                                    AlbumTrackCell(track: media[mediaIndex][trackIndex])
+                                    AlbumTrackCell(albumTrackCount: trackCount,
+                                                   playCountForAlbum: self.playCount,
+                                                   track: media[mediaIndex][trackIndex])
 
                                     Divider()
                                 }

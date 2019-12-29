@@ -10,6 +10,9 @@ import Foundation
 import SwiftUI
 
 struct AlbumTrackCell: View {
+    let albumTrackCount: Int
+    let playCountForAlbum: Double?
+
     @GraphQL(Music.Track.position)
     var position: Int?
 
@@ -19,17 +22,41 @@ struct AlbumTrackCell: View {
     @GraphQL(Music.Track.recording.artistCredits)
     var credits: [AlbumTrackCellCredit.ArtistCredit?]?
 
+    @GraphQL(Music.Track.recording.lastFm.playCount)
+    var playCount: Double?
+
     var body: some View {
+        let isPopular: Bool? = playCountForAlbum.map { playCountForAlbum in
+            playCount.map { playCount in
+                if playCount < playCountForAlbum {
+                    return playCount > 0.1 * playCountForAlbum
+                } else {
+                    return playCount > 0.1 * playCountForAlbum * Double(albumTrackCount)
+                }
+            } ?? false
+        }
+
         let credits = self.credits?
             .compactMap { $0 }
             .map { credit in
                 [credit.name, credit.joinPhrase]
                     .compactMap { $0 }
                     .filter { $0 != "" }
-                    .joined(separator: " ")
+                    .joined(separator: "")
             } ?? []
 
         return HStack(alignment: .top) {
+            isPopular.map { isPopular in
+                isPopular ?
+                    AnyView(
+                        Image(systemName: "star.fill")
+                            .resizable()
+                            .foregroundColor(.secondary)
+                            .frame(width: 14, height: 14)
+                            .padding(.top, 2)
+                    ) : AnyView(Color.clear.frame(width: 14))
+            }
+
             position.map { Text(String($0)).foregroundColor(.secondary) }
 
             VStack(alignment: .leading) {
@@ -38,7 +65,7 @@ struct AlbumTrackCell: View {
                         .foregroundColor(.primary)
                 }
                 credits.count > 1 ?
-                    Text(credits.joined(separator: " "))
+                    Text(credits.joined(separator: ""))
                         .font(.body)
                         .foregroundColor(.secondary) : nil
             }

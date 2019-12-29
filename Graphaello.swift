@@ -2612,7 +2612,7 @@ enum Rating: Target {
 static var voteCount: Path<Int> { .init() }
 
 
-static var value: Path<Float?> { .init() }
+static var value: Path<Double?> { .init() }
 
 
     
@@ -3582,13 +3582,13 @@ static var description: Path<String?> { .init() }
 static var review: Path<String?> { .init() }
 
 
-static var salesCount: Path<Float?> { .init() }
+static var salesCount: Path<Double?> { .init() }
 
 
-static var score: Path<Float?> { .init() }
+static var score: Path<Double?> { .init() }
 
 
-static var scoreVotes: Path<Float?> { .init() }
+static var scoreVotes: Path<Double?> { .init() }
 
 
 static func discImage(size: GraphQLArgument<Music.TheAudioDBImageSize?> = .argument
@@ -3703,11 +3703,11 @@ static var forSaleCount: Path<Int?> { .init() }
 
 
 static func lowestPrice(currency: GraphQLArgument<String?> = .argument
-) -> Path<Float?> {
+) -> Path<Double?> {
     return .init()
 }
 
-static var lowestPrice: Path<Float?> { .init() }
+static var lowestPrice: Path<Double?> { .init() }
 
 
 static var year: Path<Int?> { .init() }
@@ -3944,11 +3944,11 @@ static var forSaleCount: Path<Int?> { .init() }
 
 
 static func lowestPrice(currency: GraphQLArgument<String?> = .argument
-) -> Path<Float?> {
+) -> Path<Double?> {
     return .init()
 }
 
-static var lowestPrice: Path<Float?> { .init() }
+static var lowestPrice: Path<Double?> { .init() }
 
 
 static var year: Path<Int?> { .init() }
@@ -4071,7 +4071,7 @@ enum DiscogsRating: Target {
 static var voteCount: Path<Int> { .init() }
 
 
-static var value: Path<Float?> { .init() }
+static var value: Path<Double?> { .init() }
 
 
     
@@ -4499,10 +4499,10 @@ static func image(size: GraphQLArgument<Music.LastFMImageSize?> = .argument
 static var image: Path<String?> { .init() }
 
 
-static var listenerCount: Path<Float?> { .init() }
+static var listenerCount: Path<Double?> { .init() }
 
 
-static var playCount: Path<Float?> { .init() }
+static var playCount: Path<Double?> { .init() }
 
 
 static func description(lang: GraphQLArgument<String?> = .argument
@@ -4625,10 +4625,10 @@ static func image(size: GraphQLArgument<Music.LastFMImageSize?> = .argument
 static var image: Path<String?> { .init() }
 
 
-static var listenerCount: Path<Float?> { .init() }
+static var listenerCount: Path<Double?> { .init() }
 
 
-static var playCount: Path<Float?> { .init() }
+static var playCount: Path<Double?> { .init() }
 
 
 static func similarArtists(first: GraphQLArgument<Int?> = .argument
@@ -4731,7 +4731,7 @@ static var node: FragmentPath<Music.LastFMArtist?> { .init() }
 static var cursor: Path<String> { .init() }
 
 
-static var matchScore: Path<Float?> { .init() }
+static var matchScore: Path<Double?> { .init() }
 
 
     
@@ -4930,7 +4930,7 @@ static var node: FragmentPath<Music.LastFMTrack?> { .init() }
 static var cursor: Path<String> { .init() }
 
 
-static var matchScore: Path<Float?> { .init() }
+static var matchScore: Path<Double?> { .init() }
 
 
     
@@ -4964,10 +4964,10 @@ static var url: Path<String> { .init() }
 static var duration: Path<String?> { .init() }
 
 
-static var listenerCount: Path<Float?> { .init() }
+static var listenerCount: Path<Double?> { .init() }
 
 
-static var playCount: Path<Float?> { .init() }
+static var playCount: Path<Double?> { .init() }
 
 
 static func description(lang: GraphQLArgument<String?> = .argument
@@ -5291,19 +5291,19 @@ enum SpotifyAudioFeatures: Target {
 
     
     
-static var acousticness: Path<Float> { .init() }
+static var acousticness: Path<Double> { .init() }
 
 
-static var danceability: Path<Float> { .init() }
+static var danceability: Path<Double> { .init() }
 
 
 static var duration: Path<String> { .init() }
 
 
-static var energy: Path<Float> { .init() }
+static var energy: Path<Double> { .init() }
 
 
-static var instrumentalness: Path<Float> { .init() }
+static var instrumentalness: Path<Double> { .init() }
 
 
 static var key: Path<Int> { .init() }
@@ -5312,25 +5312,25 @@ static var key: Path<Int> { .init() }
 static var keyName: Path<String> { .init() }
 
 
-static var liveness: Path<Float> { .init() }
+static var liveness: Path<Double> { .init() }
 
 
-static var loudness: Path<Float> { .init() }
+static var loudness: Path<Double> { .init() }
 
 
 static var mode: FragmentPath<Music.SpotifyTrackMode> { .init() }
 
 
-static var speechiness: Path<Float> { .init() }
+static var speechiness: Path<Double> { .init() }
 
 
-static var tempo: Path<Float> { .init() }
+static var tempo: Path<Double> { .init() }
 
 
-static var timeSignature: Path<Float> { .init() }
+static var timeSignature: Path<Double> { .init() }
 
 
-static var valence: Path<Float> { .init() }
+static var valence: Path<Double> { .init() }
 
 
     
@@ -5475,10 +5475,10 @@ static func thumbnail(size: GraphQLArgument<Music.TheAudioDBImageSize?> = .argum
 static var thumbnail: Path<String?> { .init() }
 
 
-static var score: Path<Float?> { .init() }
+static var score: Path<Double?> { .init() }
 
 
-static var scoreVotes: Path<Float?> { .init() }
+static var scoreVotes: Path<Double?> { .init() }
 
 
 static var trackNumber: Path<Int?> { .init() }
@@ -5535,16 +5535,16 @@ static func screenshots(size: GraphQLArgument<Music.TheAudioDBImageSize?> = .arg
 static var screenshots: Path<[String?]> { .init() }
 
 
-static var viewCount: Path<Float?> { .init() }
+static var viewCount: Path<Double?> { .init() }
 
 
-static var likeCount: Path<Float?> { .init() }
+static var likeCount: Path<Double?> { .init() }
 
 
-static var dislikeCount: Path<Float?> { .init() }
+static var dislikeCount: Path<Double?> { .init() }
 
 
-static var commentCount: Path<Float?> { .init() }
+static var commentCount: Path<Double?> { .init() }
 
 
     
@@ -9575,7 +9575,7 @@ extension GraphQLFragmentPath where UnderlyingType == Music.Rating {
 var voteCount: Path<Int> { .init() }
 
 
-var value: Path<Float?> { .init() }
+var value: Path<Double?> { .init() }
 
 
     
@@ -9588,7 +9588,7 @@ extension GraphQLFragmentPath where UnderlyingType == Music.Rating? {
 var voteCount: Path<Int?> { .init() }
 
 
-var value: Path<Float?> { .init() }
+var value: Path<Double?> { .init() }
 
 
     
@@ -10905,13 +10905,13 @@ var description: Path<String?> { .init() }
 var review: Path<String?> { .init() }
 
 
-var salesCount: Path<Float?> { .init() }
+var salesCount: Path<Double?> { .init() }
 
 
-var score: Path<Float?> { .init() }
+var score: Path<Double?> { .init() }
 
 
-var scoreVotes: Path<Float?> { .init() }
+var scoreVotes: Path<Double?> { .init() }
 
 
 func discImage(size: GraphQLArgument<Music.TheAudioDBImageSize?> = .argument
@@ -10985,13 +10985,13 @@ var description: Path<String?> { .init() }
 var review: Path<String?> { .init() }
 
 
-var salesCount: Path<Float?> { .init() }
+var salesCount: Path<Double?> { .init() }
 
 
-var score: Path<Float?> { .init() }
+var score: Path<Double?> { .init() }
 
 
-var scoreVotes: Path<Float?> { .init() }
+var scoreVotes: Path<Double?> { .init() }
 
 
 func discImage(size: GraphQLArgument<Music.TheAudioDBImageSize?> = .argument
@@ -11086,11 +11086,11 @@ var forSaleCount: Path<Int?> { .init() }
 
 
 func lowestPrice(currency: GraphQLArgument<String?> = .argument
-) -> Path<Float?> {
+) -> Path<Double?> {
     return .init()
 }
 
-var lowestPrice: Path<Float?> { .init() }
+var lowestPrice: Path<Double?> { .init() }
 
 
 var year: Path<Int?> { .init() }
@@ -11137,11 +11137,11 @@ var forSaleCount: Path<Int?> { .init() }
 
 
 func lowestPrice(currency: GraphQLArgument<String?> = .argument
-) -> Path<Float?> {
+) -> Path<Double?> {
     return .init()
 }
 
-var lowestPrice: Path<Float?> { .init() }
+var lowestPrice: Path<Double?> { .init() }
 
 
 var year: Path<Int?> { .init() }
@@ -11413,11 +11413,11 @@ var forSaleCount: Path<Int?> { .init() }
 
 
 func lowestPrice(currency: GraphQLArgument<String?> = .argument
-) -> Path<Float?> {
+) -> Path<Double?> {
     return .init()
 }
 
-var lowestPrice: Path<Float?> { .init() }
+var lowestPrice: Path<Double?> { .init() }
 
 
 var year: Path<Int?> { .init() }
@@ -11479,11 +11479,11 @@ var forSaleCount: Path<Int?> { .init() }
 
 
 func lowestPrice(currency: GraphQLArgument<String?> = .argument
-) -> Path<Float?> {
+) -> Path<Double?> {
     return .init()
 }
 
-var lowestPrice: Path<Float?> { .init() }
+var lowestPrice: Path<Double?> { .init() }
 
 
 var year: Path<Int?> { .init() }
@@ -11617,7 +11617,7 @@ extension GraphQLFragmentPath where UnderlyingType == Music.DiscogsRating {
 var voteCount: Path<Int> { .init() }
 
 
-var value: Path<Float?> { .init() }
+var value: Path<Double?> { .init() }
 
 
     
@@ -11630,7 +11630,7 @@ extension GraphQLFragmentPath where UnderlyingType == Music.DiscogsRating? {
 var voteCount: Path<Int?> { .init() }
 
 
-var value: Path<Float?> { .init() }
+var value: Path<Double?> { .init() }
 
 
     
@@ -12195,10 +12195,10 @@ func image(size: GraphQLArgument<Music.LastFMImageSize?> = .argument
 var image: Path<String?> { .init() }
 
 
-var listenerCount: Path<Float?> { .init() }
+var listenerCount: Path<Double?> { .init() }
 
 
-var playCount: Path<Float?> { .init() }
+var playCount: Path<Double?> { .init() }
 
 
 func description(lang: GraphQLArgument<String?> = .argument
@@ -12245,10 +12245,10 @@ func image(size: GraphQLArgument<Music.LastFMImageSize?> = .argument
 var image: Path<String?> { .init() }
 
 
-var listenerCount: Path<Float?> { .init() }
+var listenerCount: Path<Double?> { .init() }
 
 
-var playCount: Path<Float?> { .init() }
+var playCount: Path<Double?> { .init() }
 
 
 func description(lang: GraphQLArgument<String?> = .argument
@@ -12355,10 +12355,10 @@ func image(size: GraphQLArgument<Music.LastFMImageSize?> = .argument
 var image: Path<String?> { .init() }
 
 
-var listenerCount: Path<Float?> { .init() }
+var listenerCount: Path<Double?> { .init() }
 
 
-var playCount: Path<Float?> { .init() }
+var playCount: Path<Double?> { .init() }
 
 
 func similarArtists(first: GraphQLArgument<Int?> = .argument
@@ -12429,10 +12429,10 @@ func image(size: GraphQLArgument<Music.LastFMImageSize?> = .argument
 var image: Path<String?> { .init() }
 
 
-var listenerCount: Path<Float?> { .init() }
+var listenerCount: Path<Double?> { .init() }
 
 
-var playCount: Path<Float?> { .init() }
+var playCount: Path<Double?> { .init() }
 
 
 func similarArtists(first: GraphQLArgument<Int?> = .argument
@@ -12530,7 +12530,7 @@ var node: FragmentPath<Music.LastFMArtist?> { .init() }
 var cursor: Path<String> { .init() }
 
 
-var matchScore: Path<Float?> { .init() }
+var matchScore: Path<Double?> { .init() }
 
 
     
@@ -12546,7 +12546,7 @@ var node: FragmentPath<Music.LastFMArtist?> { .init() }
 var cursor: Path<String?> { .init() }
 
 
-var matchScore: Path<Float?> { .init() }
+var matchScore: Path<Double?> { .init() }
 
 
     
@@ -12760,7 +12760,7 @@ var node: FragmentPath<Music.LastFMTrack?> { .init() }
 var cursor: Path<String> { .init() }
 
 
-var matchScore: Path<Float?> { .init() }
+var matchScore: Path<Double?> { .init() }
 
 
     
@@ -12776,7 +12776,7 @@ var node: FragmentPath<Music.LastFMTrack?> { .init() }
 var cursor: Path<String?> { .init() }
 
 
-var matchScore: Path<Float?> { .init() }
+var matchScore: Path<Double?> { .init() }
 
 
     
@@ -12798,10 +12798,10 @@ var url: Path<String> { .init() }
 var duration: Path<String?> { .init() }
 
 
-var listenerCount: Path<Float?> { .init() }
+var listenerCount: Path<Double?> { .init() }
 
 
-var playCount: Path<Float?> { .init() }
+var playCount: Path<Double?> { .init() }
 
 
 func description(lang: GraphQLArgument<String?> = .argument
@@ -12855,10 +12855,10 @@ var url: Path<String?> { .init() }
 var duration: Path<String?> { .init() }
 
 
-var listenerCount: Path<Float?> { .init() }
+var listenerCount: Path<Double?> { .init() }
 
 
-var playCount: Path<Float?> { .init() }
+var playCount: Path<Double?> { .init() }
 
 
 func description(lang: GraphQLArgument<String?> = .argument
@@ -13288,19 +13288,19 @@ var musicBrainz: FragmentPath<Music.Recording?> { .init() }
 
 extension GraphQLFragmentPath where UnderlyingType == Music.SpotifyAudioFeatures {
     
-var acousticness: Path<Float> { .init() }
+var acousticness: Path<Double> { .init() }
 
 
-var danceability: Path<Float> { .init() }
+var danceability: Path<Double> { .init() }
 
 
 var duration: Path<String> { .init() }
 
 
-var energy: Path<Float> { .init() }
+var energy: Path<Double> { .init() }
 
 
-var instrumentalness: Path<Float> { .init() }
+var instrumentalness: Path<Double> { .init() }
 
 
 var key: Path<Int> { .init() }
@@ -13309,25 +13309,25 @@ var key: Path<Int> { .init() }
 var keyName: Path<String> { .init() }
 
 
-var liveness: Path<Float> { .init() }
+var liveness: Path<Double> { .init() }
 
 
-var loudness: Path<Float> { .init() }
+var loudness: Path<Double> { .init() }
 
 
 var mode: FragmentPath<Music.SpotifyTrackMode> { .init() }
 
 
-var speechiness: Path<Float> { .init() }
+var speechiness: Path<Double> { .init() }
 
 
-var tempo: Path<Float> { .init() }
+var tempo: Path<Double> { .init() }
 
 
-var timeSignature: Path<Float> { .init() }
+var timeSignature: Path<Double> { .init() }
 
 
-var valence: Path<Float> { .init() }
+var valence: Path<Double> { .init() }
 
 
     
@@ -13337,19 +13337,19 @@ var valence: Path<Float> { .init() }
 
 extension GraphQLFragmentPath where UnderlyingType == Music.SpotifyAudioFeatures? {
     
-var acousticness: Path<Float?> { .init() }
+var acousticness: Path<Double?> { .init() }
 
 
-var danceability: Path<Float?> { .init() }
+var danceability: Path<Double?> { .init() }
 
 
 var duration: Path<String?> { .init() }
 
 
-var energy: Path<Float?> { .init() }
+var energy: Path<Double?> { .init() }
 
 
-var instrumentalness: Path<Float?> { .init() }
+var instrumentalness: Path<Double?> { .init() }
 
 
 var key: Path<Int?> { .init() }
@@ -13358,25 +13358,25 @@ var key: Path<Int?> { .init() }
 var keyName: Path<String?> { .init() }
 
 
-var liveness: Path<Float?> { .init() }
+var liveness: Path<Double?> { .init() }
 
 
-var loudness: Path<Float?> { .init() }
+var loudness: Path<Double?> { .init() }
 
 
 var mode: FragmentPath<Music.SpotifyTrackMode?> { .init() }
 
 
-var speechiness: Path<Float?> { .init() }
+var speechiness: Path<Double?> { .init() }
 
 
-var tempo: Path<Float?> { .init() }
+var tempo: Path<Double?> { .init() }
 
 
-var timeSignature: Path<Float?> { .init() }
+var timeSignature: Path<Double?> { .init() }
 
 
-var valence: Path<Float?> { .init() }
+var valence: Path<Double?> { .init() }
 
 
     
@@ -13495,10 +13495,10 @@ func thumbnail(size: GraphQLArgument<Music.TheAudioDBImageSize?> = .argument
 var thumbnail: Path<String?> { .init() }
 
 
-var score: Path<Float?> { .init() }
+var score: Path<Double?> { .init() }
 
 
-var scoreVotes: Path<Float?> { .init() }
+var scoreVotes: Path<Double?> { .init() }
 
 
 var trackNumber: Path<Int?> { .init() }
@@ -13551,10 +13551,10 @@ func thumbnail(size: GraphQLArgument<Music.TheAudioDBImageSize?> = .argument
 var thumbnail: Path<String?> { .init() }
 
 
-var score: Path<Float?> { .init() }
+var score: Path<Double?> { .init() }
 
 
-var scoreVotes: Path<Float?> { .init() }
+var scoreVotes: Path<Double?> { .init() }
 
 
 var trackNumber: Path<Int?> { .init() }
@@ -13599,16 +13599,16 @@ func screenshots(size: GraphQLArgument<Music.TheAudioDBImageSize?> = .argument
 var screenshots: Path<[String?]> { .init() }
 
 
-var viewCount: Path<Float?> { .init() }
+var viewCount: Path<Double?> { .init() }
 
 
-var likeCount: Path<Float?> { .init() }
+var likeCount: Path<Double?> { .init() }
 
 
-var dislikeCount: Path<Float?> { .init() }
+var dislikeCount: Path<Double?> { .init() }
 
 
-var commentCount: Path<Float?> { .init() }
+var commentCount: Path<Double?> { .init() }
 
 
     
@@ -13635,16 +13635,16 @@ func screenshots(size: GraphQLArgument<Music.TheAudioDBImageSize?> = .argument
 var screenshots: Path<[String?]?> { .init() }
 
 
-var viewCount: Path<Float?> { .init() }
+var viewCount: Path<Double?> { .init() }
 
 
-var likeCount: Path<Float?> { .init() }
+var likeCount: Path<Double?> { .init() }
 
 
-var dislikeCount: Path<Float?> { .init() }
+var dislikeCount: Path<Double?> { .init() }
 
 
-var commentCount: Path<Float?> { .init() }
+var commentCount: Path<Double?> { .init() }
 
 
     
@@ -14700,6 +14700,7 @@ extension AlbumDetailView {
 , genres: GraphQL(data.lookup?.release?.discogs?.genres)
 , date: GraphQL(data.lookup?.release?.date)
 , media: GraphQL(data.lookup?.release?.media?.map { $0?.tracks?.map { $0?.fragments.albumTrackCellTrack } })
+, playCount: GraphQL(data.lookup?.release?.lastFm?.playCount)
 )
     }
 }
@@ -14740,11 +14741,16 @@ extension AlbumTrackCell {
     
     
     
-    init(track: Track
+    init(albumTrackCount: Int
+, playCountForAlbum: Double?
+, track: Track
 ) {
-        self.init(position: GraphQL(track.position)
+        self.init(albumTrackCount: albumTrackCount
+, playCountForAlbum: playCountForAlbum
+, position: GraphQL(track.position)
 , title: GraphQL(track.title)
 , credits: GraphQL(track.recording?.artistCredits?.map { $0?.fragments.albumTrackCellCreditArtistCredit })
+, playCount: GraphQL(track.recording?.lastFm?.playCount)
 )
     }
 }
@@ -14852,23 +14858,23 @@ extension Music {
     
     func artistDetailView(mbid: String
 , after: String? = nil
-, releaseConnectionFirst: Int? = nil
-, size: Music.TheAudioDBImageSize? = Music.TheAudioDBImageSize.full
-, urlStringSize: Music.LastFMImageSize? = nil
 , lang: String? = "en"
+, size: Music.TheAudioDBImageSize? = Music.TheAudioDBImageSize.full
+, releaseConnectionFirst: Int? = nil
+, urlStringSize: Music.LastFMImageSize? = nil
 ) -> some View {
         return QueryRenderer(client: client,
                              query: ApolloStuff.ArtistDetailViewQuery(mbid: mbid
 , type: [.album]
 , after: after
 , first: 5
+, lang: lang
+, size: .init(size)
 , status: [.official]
 , ReleaseConnection_first: releaseConnectionFirst
-, size: .init(size)
 , LastFMArtistConnection_first: 3
-, URLString_size: .init(urlStringSize)
 , LastFMAlbumConnection_first: 1
-, lang: lang
+, URLString_size: .init(urlStringSize)
 )) { data in
         
             ArtistDetailView(api: self
@@ -15206,9 +15212,9 @@ extension Music {
                              query: ApolloStuff.TrendingArtistsListQuery(country: country
 , first: first
 , after: after
-, LastFMAlbumConnection_first: 4
 , LastFMTagConnection_first: 3
 , LastFMTrackConnection_first: 1
+, LastFMAlbumConnection_first: 4
 , size: .init(size)
 )) { data in
         
@@ -15217,9 +15223,9 @@ extension Music {
     self.client.fetch(query: ApolloStuff.TrendingArtistsListLastFmArtistConnectionTrendingArtistCellLastFmArtistQuery(country: country
 , first: _pageSize ?? first
 , after: _cursor
-, LastFMAlbumConnection_first: 4
 , LastFMTagConnection_first: 3
 , LastFMTrackConnection_first: 1
+, LastFMAlbumConnection_first: 4
 , size: .init(size)
 )) { result in
         _completion(result.map { $0.data?.lastFm?.chart.topArtists?.fragments.lastFmArtistConnectionTrendingArtistCellLastFmArtist })
@@ -17405,7 +17411,7 @@ public enum ApolloStuff {
     /// The raw GraphQL definition of this operation.
     public let operationDefinition: String =
       """
-      query TrendingArtistsListLastFMArtistConnectionTrendingArtistCellLastFMArtist($country: String, $first: Int, $after: String, $LastFMAlbumConnection_first: Int, $LastFMTagConnection_first: Int, $LastFMTrackConnection_first: Int, $size: LastFMImageSize) {
+      query TrendingArtistsListLastFMArtistConnectionTrendingArtistCellLastFMArtist($country: String, $first: Int, $after: String, $LastFMTagConnection_first: Int, $LastFMTrackConnection_first: Int, $LastFMAlbumConnection_first: Int, $size: LastFMImageSize) {
         lastFM {
           __typename
           chart {
@@ -17457,23 +17463,23 @@ public enum ApolloStuff {
     public var country: String?
     public var first: Int?
     public var after: String?
-    public var LastFMAlbumConnection_first: Int?
     public var LastFMTagConnection_first: Int?
     public var LastFMTrackConnection_first: Int?
+    public var LastFMAlbumConnection_first: Int?
     public var size: LastFMImageSize?
 
-    public init(country: String? = nil, first: Int? = nil, after: String? = nil, LastFMAlbumConnection_first: Int? = nil, LastFMTagConnection_first: Int? = nil, LastFMTrackConnection_first: Int? = nil, size: LastFMImageSize? = nil) {
+    public init(country: String? = nil, first: Int? = nil, after: String? = nil, LastFMTagConnection_first: Int? = nil, LastFMTrackConnection_first: Int? = nil, LastFMAlbumConnection_first: Int? = nil, size: LastFMImageSize? = nil) {
       self.country = country
       self.first = first
       self.after = after
-      self.LastFMAlbumConnection_first = LastFMAlbumConnection_first
       self.LastFMTagConnection_first = LastFMTagConnection_first
       self.LastFMTrackConnection_first = LastFMTrackConnection_first
+      self.LastFMAlbumConnection_first = LastFMAlbumConnection_first
       self.size = size
     }
 
     public var variables: GraphQLMap? {
-      return ["country": country, "first": first, "after": after, "LastFMAlbumConnection_first": LastFMAlbumConnection_first, "LastFMTagConnection_first": LastFMTagConnection_first, "LastFMTrackConnection_first": LastFMTrackConnection_first, "size": size]
+      return ["country": country, "first": first, "after": after, "LastFMTagConnection_first": LastFMTagConnection_first, "LastFMTrackConnection_first": LastFMTrackConnection_first, "LastFMAlbumConnection_first": LastFMAlbumConnection_first, "size": size]
     }
 
     public struct Data: GraphQLSelectionSet {
@@ -18504,6 +18510,10 @@ public enum ApolloStuff {
                 url
               }
             }
+            lastFM {
+              __typename
+              playCount
+            }
             media {
               __typename
               tracks {
@@ -18603,6 +18613,7 @@ public enum ApolloStuff {
             GraphQLField("artistCredits", type: .list(.object(ArtistCredit.selections))),
             GraphQLField("date", type: .scalar(String.self)),
             GraphQLField("discogs", type: .object(Discog.selections)),
+            GraphQLField("lastFM", type: .object(LastFm.selections)),
             GraphQLField("media", type: .list(.object(Medium.selections))),
             GraphQLField("title", type: .scalar(String.self)),
           ]
@@ -18613,8 +18624,8 @@ public enum ApolloStuff {
             self.resultMap = unsafeResultMap
           }
 
-          public init(artistCredits: [ArtistCredit?]? = nil, date: String? = nil, discogs: Discog? = nil, media: [Medium?]? = nil, title: String? = nil) {
-            self.init(unsafeResultMap: ["__typename": "Release", "artistCredits": artistCredits.flatMap { (value: [ArtistCredit?]) -> [ResultMap?] in value.map { (value: ArtistCredit?) -> ResultMap? in value.flatMap { (value: ArtistCredit) -> ResultMap in value.resultMap } } }, "date": date, "discogs": discogs.flatMap { (value: Discog) -> ResultMap in value.resultMap }, "media": media.flatMap { (value: [Medium?]) -> [ResultMap?] in value.map { (value: Medium?) -> ResultMap? in value.flatMap { (value: Medium) -> ResultMap in value.resultMap } } }, "title": title])
+          public init(artistCredits: [ArtistCredit?]? = nil, date: String? = nil, discogs: Discog? = nil, lastFm: LastFm? = nil, media: [Medium?]? = nil, title: String? = nil) {
+            self.init(unsafeResultMap: ["__typename": "Release", "artistCredits": artistCredits.flatMap { (value: [ArtistCredit?]) -> [ResultMap?] in value.map { (value: ArtistCredit?) -> ResultMap? in value.flatMap { (value: ArtistCredit) -> ResultMap in value.resultMap } } }, "date": date, "discogs": discogs.flatMap { (value: Discog) -> ResultMap in value.resultMap }, "lastFM": lastFm.flatMap { (value: LastFm) -> ResultMap in value.resultMap }, "media": media.flatMap { (value: [Medium?]) -> [ResultMap?] in value.map { (value: Medium?) -> ResultMap? in value.flatMap { (value: Medium) -> ResultMap in value.resultMap } } }, "title": title])
           }
 
           public var __typename: String {
@@ -18655,6 +18666,18 @@ public enum ApolloStuff {
             }
             set {
               resultMap.updateValue(newValue?.resultMap, forKey: "discogs")
+            }
+          }
+
+          /// Data about the release from [Last.fm](https://www.last.fm/), a good source
+          /// for measuring popularity via listener and play counts. This field is
+          /// provided by the Last.fm extension.
+          public var lastFm: LastFm? {
+            get {
+              return (resultMap["lastFM"] as? ResultMap).flatMap { LastFm(unsafeResultMap: $0) }
+            }
+            set {
+              resultMap.updateValue(newValue?.resultMap, forKey: "lastFM")
             }
           }
 
@@ -18858,6 +18881,44 @@ public enum ApolloStuff {
             }
           }
 
+          public struct LastFm: GraphQLSelectionSet {
+            public static let possibleTypes: [String] = ["LastFMAlbum"]
+
+            public static let selections: [GraphQLSelection] = [
+              GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+              GraphQLField("playCount", type: .scalar(Double.self)),
+            ]
+
+            public private(set) var resultMap: ResultMap
+
+            public init(unsafeResultMap: ResultMap) {
+              self.resultMap = unsafeResultMap
+            }
+
+            public init(playCount: Double? = nil) {
+              self.init(unsafeResultMap: ["__typename": "LastFMAlbum", "playCount": playCount])
+            }
+
+            public var __typename: String {
+              get {
+                return resultMap["__typename"]! as! String
+              }
+              set {
+                resultMap.updateValue(newValue, forKey: "__typename")
+              }
+            }
+
+            /// The number of plays recorded for the album.
+            public var playCount: Double? {
+              get {
+                return resultMap["playCount"] as? Double
+              }
+              set {
+                resultMap.updateValue(newValue, forKey: "playCount")
+              }
+            }
+          }
+
           public struct Medium: GraphQLSelectionSet {
             public static let possibleTypes: [String] = ["Medium"]
 
@@ -18954,7 +19015,7 @@ public enum ApolloStuff {
     /// The raw GraphQL definition of this operation.
     public let operationDefinition: String =
       """
-      query ArtistDetailView($mbid: MBID!, $type: [ReleaseGroupType], $after: String, $first: Int, $status: [ReleaseStatus], $ReleaseConnection_first: Int, $size: TheAudioDBImageSize, $LastFMArtistConnection_first: Int, $URLString_size: LastFMImageSize, $LastFMAlbumConnection_first: Int, $lang: String) {
+      query ArtistDetailView($mbid: MBID!, $type: [ReleaseGroupType], $after: String, $first: Int, $lang: String, $size: TheAudioDBImageSize, $status: [ReleaseStatus], $ReleaseConnection_first: Int, $LastFMArtistConnection_first: Int, $LastFMAlbumConnection_first: Int, $URLString_size: LastFMImageSize) {
         lookup {
           __typename
           artist(mbid: $mbid) {
@@ -19063,30 +19124,30 @@ public enum ApolloStuff {
     public var type: [ReleaseGroupType?]?
     public var after: String?
     public var first: Int?
+    public var lang: String?
+    public var size: TheAudioDBImageSize?
     public var status: [ReleaseStatus?]?
     public var ReleaseConnection_first: Int?
-    public var size: TheAudioDBImageSize?
     public var LastFMArtistConnection_first: Int?
-    public var URLString_size: LastFMImageSize?
     public var LastFMAlbumConnection_first: Int?
-    public var lang: String?
+    public var URLString_size: LastFMImageSize?
 
-    public init(mbid: String, type: [ReleaseGroupType?]? = nil, after: String? = nil, first: Int? = nil, status: [ReleaseStatus?]? = nil, ReleaseConnection_first: Int? = nil, size: TheAudioDBImageSize? = nil, LastFMArtistConnection_first: Int? = nil, URLString_size: LastFMImageSize? = nil, LastFMAlbumConnection_first: Int? = nil, lang: String? = nil) {
+    public init(mbid: String, type: [ReleaseGroupType?]? = nil, after: String? = nil, first: Int? = nil, lang: String? = nil, size: TheAudioDBImageSize? = nil, status: [ReleaseStatus?]? = nil, ReleaseConnection_first: Int? = nil, LastFMArtistConnection_first: Int? = nil, LastFMAlbumConnection_first: Int? = nil, URLString_size: LastFMImageSize? = nil) {
       self.mbid = mbid
       self.type = type
       self.after = after
       self.first = first
+      self.lang = lang
+      self.size = size
       self.status = status
       self.ReleaseConnection_first = ReleaseConnection_first
-      self.size = size
       self.LastFMArtistConnection_first = LastFMArtistConnection_first
-      self.URLString_size = URLString_size
       self.LastFMAlbumConnection_first = LastFMAlbumConnection_first
-      self.lang = lang
+      self.URLString_size = URLString_size
     }
 
     public var variables: GraphQLMap? {
-      return ["mbid": mbid, "type": type, "after": after, "first": first, "status": status, "ReleaseConnection_first": ReleaseConnection_first, "size": size, "LastFMArtistConnection_first": LastFMArtistConnection_first, "URLString_size": URLString_size, "LastFMAlbumConnection_first": LastFMAlbumConnection_first, "lang": lang]
+      return ["mbid": mbid, "type": type, "after": after, "first": first, "lang": lang, "size": size, "status": status, "ReleaseConnection_first": ReleaseConnection_first, "LastFMArtistConnection_first": LastFMArtistConnection_first, "LastFMAlbumConnection_first": LastFMAlbumConnection_first, "URLString_size": URLString_size]
     }
 
     public struct Data: GraphQLSelectionSet {
@@ -20337,7 +20398,7 @@ public enum ApolloStuff {
     /// The raw GraphQL definition of this operation.
     public let operationDefinition: String =
       """
-      query TrendingArtistsList($country: String, $first: Int, $after: String, $LastFMAlbumConnection_first: Int, $LastFMTagConnection_first: Int, $LastFMTrackConnection_first: Int, $size: LastFMImageSize) {
+      query TrendingArtistsList($country: String, $first: Int, $after: String, $LastFMTagConnection_first: Int, $LastFMTrackConnection_first: Int, $LastFMAlbumConnection_first: Int, $size: LastFMImageSize) {
         lastFM {
           __typename
           chart {
@@ -20413,23 +20474,23 @@ public enum ApolloStuff {
     public var country: String?
     public var first: Int?
     public var after: String?
-    public var LastFMAlbumConnection_first: Int?
     public var LastFMTagConnection_first: Int?
     public var LastFMTrackConnection_first: Int?
+    public var LastFMAlbumConnection_first: Int?
     public var size: LastFMImageSize?
 
-    public init(country: String? = nil, first: Int? = nil, after: String? = nil, LastFMAlbumConnection_first: Int? = nil, LastFMTagConnection_first: Int? = nil, LastFMTrackConnection_first: Int? = nil, size: LastFMImageSize? = nil) {
+    public init(country: String? = nil, first: Int? = nil, after: String? = nil, LastFMTagConnection_first: Int? = nil, LastFMTrackConnection_first: Int? = nil, LastFMAlbumConnection_first: Int? = nil, size: LastFMImageSize? = nil) {
       self.country = country
       self.first = first
       self.after = after
-      self.LastFMAlbumConnection_first = LastFMAlbumConnection_first
       self.LastFMTagConnection_first = LastFMTagConnection_first
       self.LastFMTrackConnection_first = LastFMTrackConnection_first
+      self.LastFMAlbumConnection_first = LastFMAlbumConnection_first
       self.size = size
     }
 
     public var variables: GraphQLMap? {
-      return ["country": country, "first": first, "after": after, "LastFMAlbumConnection_first": LastFMAlbumConnection_first, "LastFMTagConnection_first": LastFMTagConnection_first, "LastFMTrackConnection_first": LastFMTrackConnection_first, "size": size]
+      return ["country": country, "first": first, "after": after, "LastFMTagConnection_first": LastFMTagConnection_first, "LastFMTrackConnection_first": LastFMTrackConnection_first, "LastFMAlbumConnection_first": LastFMAlbumConnection_first, "size": size]
     }
 
     public struct Data: GraphQLSelectionSet {
@@ -22801,6 +22862,10 @@ public enum ApolloStuff {
             __typename
             ...AlbumTrackCellCreditArtistCredit
           }
+          lastFM {
+            __typename
+            playCount
+          }
         }
         title
       }
@@ -22871,6 +22936,7 @@ public enum ApolloStuff {
       public static let selections: [GraphQLSelection] = [
         GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
         GraphQLField("artistCredits", type: .list(.object(ArtistCredit.selections))),
+        GraphQLField("lastFM", type: .object(LastFm.selections)),
       ]
 
       public private(set) var resultMap: ResultMap
@@ -22879,8 +22945,8 @@ public enum ApolloStuff {
         self.resultMap = unsafeResultMap
       }
 
-      public init(artistCredits: [ArtistCredit?]? = nil) {
-        self.init(unsafeResultMap: ["__typename": "Recording", "artistCredits": artistCredits.flatMap { (value: [ArtistCredit?]) -> [ResultMap?] in value.map { (value: ArtistCredit?) -> ResultMap? in value.flatMap { (value: ArtistCredit) -> ResultMap in value.resultMap } } }])
+      public init(artistCredits: [ArtistCredit?]? = nil, lastFm: LastFm? = nil) {
+        self.init(unsafeResultMap: ["__typename": "Recording", "artistCredits": artistCredits.flatMap { (value: [ArtistCredit?]) -> [ResultMap?] in value.map { (value: ArtistCredit?) -> ResultMap? in value.flatMap { (value: ArtistCredit) -> ResultMap in value.resultMap } } }, "lastFM": lastFm.flatMap { (value: LastFm) -> ResultMap in value.resultMap }])
       }
 
       public var __typename: String {
@@ -22899,6 +22965,18 @@ public enum ApolloStuff {
         }
         set {
           resultMap.updateValue(newValue.flatMap { (value: [ArtistCredit?]) -> [ResultMap?] in value.map { (value: ArtistCredit?) -> ResultMap? in value.flatMap { (value: ArtistCredit) -> ResultMap in value.resultMap } } }, forKey: "artistCredits")
+        }
+      }
+
+      /// Data about the recording from [Last.fm](https://www.last.fm/), a good
+      /// source for measuring popularity via listener and play counts. This field
+      /// is provided by the Last.fm extension.
+      public var lastFm: LastFm? {
+        get {
+          return (resultMap["lastFM"] as? ResultMap).flatMap { LastFm(unsafeResultMap: $0) }
+        }
+        set {
+          resultMap.updateValue(newValue?.resultMap, forKey: "lastFM")
         }
       }
 
@@ -22952,6 +23030,44 @@ public enum ApolloStuff {
             set {
               resultMap += newValue.resultMap
             }
+          }
+        }
+      }
+
+      public struct LastFm: GraphQLSelectionSet {
+        public static let possibleTypes: [String] = ["LastFMTrack"]
+
+        public static let selections: [GraphQLSelection] = [
+          GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+          GraphQLField("playCount", type: .scalar(Double.self)),
+        ]
+
+        public private(set) var resultMap: ResultMap
+
+        public init(unsafeResultMap: ResultMap) {
+          self.resultMap = unsafeResultMap
+        }
+
+        public init(playCount: Double? = nil) {
+          self.init(unsafeResultMap: ["__typename": "LastFMTrack", "playCount": playCount])
+        }
+
+        public var __typename: String {
+          get {
+            return resultMap["__typename"]! as! String
+          }
+          set {
+            resultMap.updateValue(newValue, forKey: "__typename")
+          }
+        }
+
+        /// The number of plays recorded for the track.
+        public var playCount: Double? {
+          get {
+            return resultMap["playCount"] as? Double
+          }
+          set {
+            resultMap.updateValue(newValue, forKey: "playCount")
           }
         }
       }
