@@ -10,18 +10,19 @@ import Foundation
 import SwiftUI
 
 struct ArtistTopSongsList: View {
+    let api: Music
     let tracks: Paging<TrendingTrackCell.LastFMTrack>?
 
     var body: some View {
         tracks.map { tracks in
             VStack {
                 ForEach(tracks.values, id: \.title) { track in
-                    TrendingTrackCell(lastFmTrack: track)
+                    TrendingTrackCell(api: self.api, lastFmTrack: track)
                 }
 
                 HStack {
                     Spacer()
-                    NavigationLink(destination: TopSongsList(paging: tracks)) {
+                    NavigationLink(destination: TopSongsList(api: api, paging: tracks)) {
                         Text("More")
                             .foregroundColor(.orange)
                             .font(.callout)

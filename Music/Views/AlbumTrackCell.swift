@@ -16,8 +16,20 @@ struct AlbumTrackCell: View {
     @GraphQL(Music.Track.title)
     var title: String?
 
+    @GraphQL(Music.Track.recording.artistCredits)
+    var credits: [AlbumTrackCellCredit.ArtistCredit?]?
+
     var body: some View {
-        HStack {
+        let credits = self.credits?
+            .compactMap { $0 }
+            .map { credit in
+                [credit.name, credit.joinPhrase]
+                    .compactMap { $0 }
+                    .filter { $0 != "" }
+                    .joined(separator: " ")
+            } ?? []
+
+        return HStack(alignment: .top) {
             position.map { Text(String($0)).foregroundColor(.secondary) }
 
             VStack(alignment: .leading) {
@@ -25,12 +37,20 @@ struct AlbumTrackCell: View {
                     Text(title)
                         .foregroundColor(.primary)
                 }
-//                artist.map { artist in
-////                    Text(artist)
-//                        .foregroundColor(.secondary)
-//                }
+                credits.count > 1 ?
+                    Text(credits.joined(separator: " "))
+                        .font(.body)
+                        .foregroundColor(.secondary) : nil
             }
             Spacer()
         }
     }
+}
+
+struct AlbumTrackCellCredit {
+    @GraphQL(Music.ArtistCredit.name)
+    var name: String?
+
+    @GraphQL(Music.ArtistCredit.joinPhrase)
+    var joinPhrase: String?
 }

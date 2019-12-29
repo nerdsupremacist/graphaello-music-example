@@ -16,8 +16,8 @@ struct AlbumDetailView: View {
     @GraphQL(Music.lookup.release.title)
     var title: String?
 
-    @GraphQL(Music.lookup.release.coverArtArchive.front)
-    var cover: String?
+    @GraphQL(Music.lookup.release.discogs.images._forEach(\.url))
+    var covers: [String]?
 
     @GraphQL(Music.lookup.release.artistCredits._forEach(\.artist))
     var artists: [AlbumArtistCreditButton.Artist?]?
@@ -25,11 +25,15 @@ struct AlbumDetailView: View {
     @GraphQL(Music.lookup.release.discogs.genres)
     var genres: [String]?
 
+    @GraphQL(Music.lookup.release.date)
+    var date: String?
+
     @GraphQL(Music.lookup.release.media._forEach(\.tracks))
     var media: [[AlbumTrackCell.Track?]?]?
 
     var body: some View {
         let media = self.media?.compactMap { $0?.compactMap { $0 } } ?? []
+        let info = [genres?.first, date?.year.map(String.init)].compactMap { $0 }.joined(separator: " · ")
 
         return GeometryReader { geometry in
             FancyScrollView(
@@ -39,12 +43,12 @@ struct AlbumDetailView: View {
                 header: {
                     HStack(spacing: 8) {
                         Image
-                            .artwork(self.cover.flatMap(URL.init(string:)))
+                            .artwork(self.covers?.first.flatMap(URL.init(string:)))
                             .cornerRadius(5)
                             .frame(width: 150, height: 150)
 
                         VStack(alignment: .leading) {
-                            self.title.map { Text($0).font(.headline).fontWeight(.bold) }
+                            self.title.map { Text($0).font(.headline).fontWeight(.bold).foregroundColor(.primary) }
 
                             self.artists.map { artists in
                                 ForEach(artists.compactMap { $0 }, id: \.name) { artist in
@@ -53,7 +57,7 @@ struct AlbumDetailView: View {
                                 }
                             }
 
-                            self.genres?.first.map { Text($0).font(.callout) }
+                            !info.isEmpty ? Text(info).font(.callout).foregroundColor(.secondary) : nil
 
                             Spacer()
                         }
@@ -85,4 +89,21 @@ struct AlbumDetailView: View {
             }
         }
     }
+}
+
+extension String {
+
+    private static let dateFormatter: DateFormatter = {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "YYYY-MM-DD"
+        return dateFormatter
+    }()
+
+    fileprivate var year: Int? {
+        return String
+            .dateFormatter
+            .date(from: self)
+            .map { Calendar.current.component(.year, from: $0) }
+    }
+
 }

@@ -10,12 +10,13 @@ import Foundation
 import SwiftUI
 
 struct TopSongsList: View {
+    let api: Music
     let paging: Paging<TrendingTrackCell.LastFMTrack>
 
     var body: some View {
         List {
             PagingView(paging, pageSize: 20) {
-                TrendingTrackCell(lastFmTrack: $0)
+                TrendingTrackCell(api: self.api, lastFmTrack: $0)
             }
             .animation(nil)
         }

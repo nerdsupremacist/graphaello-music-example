@@ -10,6 +10,8 @@ import Foundation
 import SwiftUI
 
 struct TrendingTrackCell: View {
+    let api: Music
+
     @GraphQL(Music.LastFMTrack.title)
     var title: String?
 
@@ -19,8 +21,11 @@ struct TrendingTrackCell: View {
     @GraphQL(Music.LastFMTrack.album.image)
     var image: String?
 
+    @GraphQL(Music.LastFMTrack.album.mbid)
+    var albumId: String?
+
     var body: some View {
-        HStack {
+        let stack = HStack {
             Image.artwork(image.flatMap(URL.init(string:)))
                 .frame(width: 50)
             
@@ -36,5 +41,13 @@ struct TrendingTrackCell: View {
             }
             Spacer()
         }
+
+        guard let albumId = albumId else {
+            return AnyView(stack)
+        }
+
+        return AnyView(
+            NavigationLink(destination: api.albumDetailView(mbid: albumId)) { stack }
+        )
     }
 }

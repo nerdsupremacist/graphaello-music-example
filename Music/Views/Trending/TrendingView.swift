@@ -30,7 +30,7 @@ struct TrendingArtistsList: View {
                 tracks.map { tracks in
                     VStack {
                         ForEach(tracks.values, id: \.title) { track in
-                            TrendingTrackCell(lastFmTrack: track)
+                            TrendingTrackCell(api: self.api, lastFmTrack: track)
                         }
                     }
                 }
@@ -38,7 +38,7 @@ struct TrendingArtistsList: View {
                 tracks.map { tracks in
                     HStack {
                         Spacer()
-                        NavigationLink(destination: TopSongsList(paging: tracks)) {
+                        NavigationLink(destination: TopSongsList(api: api, paging: tracks)) {
                             Text("More")
                                 .foregroundColor(.orange)
                                 .font(.callout)

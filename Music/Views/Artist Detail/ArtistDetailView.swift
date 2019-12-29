@@ -61,7 +61,7 @@ struct ArtistDetailView: View {
 
             VStack(alignment: .leading, spacing: 16) {
                 ArtistInfoSection("Top Songs") {
-                    ArtistTopSongsList(tracks: self.topSongs)
+                    ArtistTopSongsList(api: self.api, tracks: self.topSongs)
                 }
 
                 ArtistInfoSection("Albums") {
