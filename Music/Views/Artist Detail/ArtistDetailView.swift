@@ -24,6 +24,9 @@ struct ArtistDetailView: View {
 
     @GraphQL(Music.lookup.artist.releaseGroups(type: .value([.album]), first: .value(5)))
     var albums: Paging<ArtistAlbumCell.ReleaseGroup>?
+    
+    @GraphQL(Music.lookup.artist.releaseGroups(type: .value([.single]), first: .value(5)))
+    var singles: Paging<ArtistAlbumCell.ReleaseGroup>?
 
     @GraphQL(Music.lookup.artist.theAudioDb.biography)
     var bio: String?
@@ -66,6 +69,10 @@ struct ArtistDetailView: View {
 
                 ArtistInfoSection("Albums") {
                     ArtistAlbumList(api: self.api, albums: self.albums)
+                }
+                
+                ArtistInfoSection("Singles") {
+                    ArtistAlbumList(api: self.api, albums: self.singles)
                 }
 
                 VStack(spacing: 16) {
