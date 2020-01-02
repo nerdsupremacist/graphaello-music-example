@@ -14650,6 +14650,96 @@ var node: FragmentPath<Music.DiscogsRelease?> { .init() }
 
 
 
+// MARK: - AlbumArtistCreditButton
+
+
+extension ApolloStuff.AlbumArtistCreditButtonArtist : Fragment {
+    typealias UnderlyingType = Music.Artist
+}
+
+
+extension AlbumArtistCreditButton {
+    
+    typealias Artist = ApolloStuff.AlbumArtistCreditButtonArtist
+    
+    
+    
+    init(api: Music
+, artist: Artist
+) {
+        self.init(api: api
+, id: GraphQL(artist.mbid)
+, name: GraphQL(artist.name)
+)
+    }
+}
+
+
+
+
+
+
+
+// MARK: - AlbumTrackCellCredit
+
+
+extension ApolloStuff.AlbumTrackCellCreditArtistCredit : Fragment {
+    typealias UnderlyingType = Music.ArtistCredit
+}
+
+
+extension AlbumTrackCellCredit {
+    
+    typealias ArtistCredit = ApolloStuff.AlbumTrackCellCreditArtistCredit
+    
+    
+    
+    init(artistCredit: ArtistCredit
+) {
+        self.init(name: GraphQL(artistCredit.name)
+, joinPhrase: GraphQL(artistCredit.joinPhrase)
+)
+    }
+}
+
+
+
+
+
+
+
+// MARK: - ArtistAlbumCell
+
+
+extension ApolloStuff.ArtistAlbumCellReleaseGroup : Fragment {
+    typealias UnderlyingType = Music.ReleaseGroup
+}
+
+
+extension ArtistAlbumCell {
+    
+    typealias ReleaseGroup = ApolloStuff.ArtistAlbumCellReleaseGroup
+    
+    
+    
+    init(api: Music
+, releaseGroup: ReleaseGroup
+) {
+        self.init(api: api
+, title: GraphQL(releaseGroup.title)
+, cover: GraphQL(releaseGroup.theAudioDb?.frontImage)
+, discImage: GraphQL(releaseGroup.theAudioDb?.frontImage)
+, releaseIds: GraphQL(releaseGroup.releases?.nodes?.map { $0?.mbid })
+)
+    }
+}
+
+
+
+
+
+
+
 // MARK: - SimilarArtistCell
 
 
@@ -14736,34 +14826,6 @@ extension TrendingTrackCell {
 , artist: GraphQL(lastFmTrack.artist?.name)
 , image: GraphQL(lastFmTrack.album?.image)
 , albumId: GraphQL(lastFmTrack.album?.mbid)
-)
-    }
-}
-
-
-
-
-
-
-
-// MARK: - AlbumTrackCellCredit
-
-
-extension ApolloStuff.AlbumTrackCellCreditArtistCredit : Fragment {
-    typealias UnderlyingType = Music.ArtistCredit
-}
-
-
-extension AlbumTrackCellCredit {
-    
-    typealias ArtistCredit = ApolloStuff.AlbumTrackCellCreditArtistCredit
-    
-    
-    
-    init(artistCredit: ArtistCredit
-) {
-        self.init(name: GraphQL(artistCredit.name)
-, joinPhrase: GraphQL(artistCredit.joinPhrase)
 )
     }
 }
@@ -14976,58 +15038,30 @@ extension ApolloStuff.TrendingArtistsListTracksLastFmTrackConnectionTrendingTrac
 
 
 
-// MARK: - ArtistAlbumCell
+// MARK: - AlbumTrackCell
 
 
-extension ApolloStuff.ArtistAlbumCellReleaseGroup : Fragment {
-    typealias UnderlyingType = Music.ReleaseGroup
+extension ApolloStuff.AlbumTrackCellTrack : Fragment {
+    typealias UnderlyingType = Music.Track
 }
 
 
-extension ArtistAlbumCell {
+extension AlbumTrackCell {
     
-    typealias ReleaseGroup = ApolloStuff.ArtistAlbumCellReleaseGroup
+    typealias Track = ApolloStuff.AlbumTrackCellTrack
     
     
     
-    init(api: Music
-, releaseGroup: ReleaseGroup
+    init(albumTrackCount: Int
+, playCountForAlbum: Double?
+, track: Track
 ) {
-        self.init(api: api
-, title: GraphQL(releaseGroup.title)
-, cover: GraphQL(releaseGroup.theAudioDb?.frontImage)
-, discImage: GraphQL(releaseGroup.theAudioDb?.frontImage)
-, releaseIds: GraphQL(releaseGroup.releases?.nodes?.map { $0?.mbid })
-)
-    }
-}
-
-
-
-
-
-
-
-// MARK: - AlbumArtistCreditButton
-
-
-extension ApolloStuff.AlbumArtistCreditButtonArtist : Fragment {
-    typealias UnderlyingType = Music.Artist
-}
-
-
-extension AlbumArtistCreditButton {
-    
-    typealias Artist = ApolloStuff.AlbumArtistCreditButtonArtist
-    
-    
-    
-    init(api: Music
-, artist: Artist
-) {
-        self.init(api: api
-, id: GraphQL(artist.mbid)
-, name: GraphQL(artist.name)
+        self.init(albumTrackCount: albumTrackCount
+, playCountForAlbum: playCountForAlbum
+, position: GraphQL(track.position)
+, title: GraphQL(track.title)
+, credits: GraphQL(track.recording?.artistCredits?.map { $0?.fragments.albumTrackCellCreditArtistCredit })
+, playCount: GraphQL(track.recording?.lastFm?.playCount)
 )
     }
 }
@@ -15108,7 +15142,7 @@ extension Music {
     }
 }
 
-, albums: data.lookup?.artist?.releaseGroups?.fragments.releaseGroupConnectionArtistAlbumCellReleaseGroup.paging { _cursor, _pageSize, _completion in
+, albums: data.lookup?.artist?.releaseGroups1?.fragments.releaseGroupConnectionArtistAlbumCellReleaseGroup.paging { _cursor, _pageSize, _completion in
     self.client.fetch(query: ApolloStuff.ArtistDetailViewAlbumsReleaseGroupConnectionArtistAlbumCellReleaseGroupQuery(mbid: mbid
 , type: [.album]
 , after: _cursor
@@ -15117,11 +15151,11 @@ extension Music {
 , status: [.official]
 , ReleaseConnection_first: releaseConnectionFirst
 )) { result in
-        _completion(result.map { $0.data?.lookup?.artist?.releaseGroups?.fragments.releaseGroupConnectionArtistAlbumCellReleaseGroup })
+        _completion(result.map { $0.data?.lookup?.artist?.releaseGroups1?.fragments.releaseGroupConnectionArtistAlbumCellReleaseGroup })
     }
 }
 
-, singles: data.lookup?.artist?.releaseGroups1?.fragments.releaseGroupConnectionArtistAlbumCellReleaseGroup.paging { _cursor, _pageSize, _completion in
+, singles: data.lookup?.artist?.releaseGroups?.fragments.releaseGroupConnectionArtistAlbumCellReleaseGroup.paging { _cursor, _pageSize, _completion in
     self.client.fetch(query: ApolloStuff.ArtistDetailViewSinglesReleaseGroupConnectionArtistAlbumCellReleaseGroupQuery(mbid: mbid
 , ReleaseGroupConnection_type: [.single]
 , after: _cursor
@@ -15131,7 +15165,7 @@ extension Music {
 , status: [.official]
 , ReleaseConnection_first: releaseConnectionFirst
 )) { result in
-        _completion(result.map { $0.data?.lookup?.artist?.releaseGroups1?.fragments.releaseGroupConnectionArtistAlbumCellReleaseGroup })
+        _completion(result.map { $0.data?.lookup?.artist?.releaseGroups?.fragments.releaseGroupConnectionArtistAlbumCellReleaseGroup })
     }
 }
 
@@ -15249,7 +15283,7 @@ extension ApolloStuff.ArtistDetailViewTopSongsLastFmTrackConnectionTrendingTrack
     }
 }
 
-extension ApolloStuff.ArtistDetailViewAlbumsReleaseGroupConnectionArtistAlbumCellReleaseGroupQuery.Data.Lookup.Artist.ReleaseGroup {
+extension ApolloStuff.ArtistDetailViewAlbumsReleaseGroupConnectionArtistAlbumCellReleaseGroupQuery.Data.Lookup.Artist.ReleaseGroups1 {
     public struct Fragments {
         public private(set) var resultMap: ResultMap
 
@@ -15268,7 +15302,7 @@ extension ApolloStuff.ArtistDetailViewAlbumsReleaseGroupConnectionArtistAlbumCel
     }
 }
 
-extension ApolloStuff.ArtistDetailViewSinglesReleaseGroupConnectionArtistAlbumCellReleaseGroupQuery.Data.Lookup.Artist.ReleaseGroups1 {
+extension ApolloStuff.ArtistDetailViewSinglesReleaseGroupConnectionArtistAlbumCellReleaseGroupQuery.Data.Lookup.Artist.ReleaseGroup {
     public struct Fragments {
         public private(set) var resultMap: ResultMap
 
@@ -15371,7 +15405,7 @@ extension ApolloStuff.ArtistDetailViewTopSongsLastFmTrackConnectionTrendingTrack
 
 }
 
-extension ApolloStuff.ArtistDetailViewAlbumsReleaseGroupConnectionArtistAlbumCellReleaseGroupQuery.Data.Lookup.Artist.ReleaseGroup.Fragments {
+extension ApolloStuff.ArtistDetailViewAlbumsReleaseGroupConnectionArtistAlbumCellReleaseGroupQuery.Data.Lookup.Artist.ReleaseGroups1.Fragments {
 
     public var releaseGroupConnectionArtistAlbumCellReleaseGroup: ApolloStuff.ReleaseGroupConnectionArtistAlbumCellReleaseGroup {
         get {
@@ -15384,7 +15418,7 @@ extension ApolloStuff.ArtistDetailViewAlbumsReleaseGroupConnectionArtistAlbumCel
 
 }
 
-extension ApolloStuff.ArtistDetailViewSinglesReleaseGroupConnectionArtistAlbumCellReleaseGroupQuery.Data.Lookup.Artist.ReleaseGroups1.Fragments {
+extension ApolloStuff.ArtistDetailViewSinglesReleaseGroupConnectionArtistAlbumCellReleaseGroupQuery.Data.Lookup.Artist.ReleaseGroup.Fragments {
 
     public var releaseGroupConnectionArtistAlbumCellReleaseGroup: ApolloStuff.ReleaseGroupConnectionArtistAlbumCellReleaseGroup {
         get {
@@ -15409,40 +15443,6 @@ extension ApolloStuff.ArtistDetailViewSimilarArtistsLastFmArtistConnectionSimila
     }
 
 }
-
-
-
-// MARK: - AlbumTrackCell
-
-
-extension ApolloStuff.AlbumTrackCellTrack : Fragment {
-    typealias UnderlyingType = Music.Track
-}
-
-
-extension AlbumTrackCell {
-    
-    typealias Track = ApolloStuff.AlbumTrackCellTrack
-    
-    
-    
-    init(albumTrackCount: Int
-, playCountForAlbum: Double?
-, track: Track
-) {
-        self.init(albumTrackCount: albumTrackCount
-, playCountForAlbum: playCountForAlbum
-, position: GraphQL(track.position)
-, title: GraphQL(track.title)
-, credits: GraphQL(track.recording?.artistCredits?.map { $0?.fragments.albumTrackCellCreditArtistCredit })
-, playCount: GraphQL(track.recording?.lastFm?.playCount)
-)
-    }
-}
-
-
-
-
 
 
 
@@ -17616,7 +17616,7 @@ public enum ApolloStuff {
           __typename
           artist(mbid: $mbid) {
             __typename
-            releaseGroups(after: $after, first: $first, type: $type) {
+            releaseGroups1: releaseGroups(after: $after, first: $first, type: $type) {
               __typename
               edges {
                 __typename
@@ -17740,7 +17740,7 @@ public enum ApolloStuff {
 
           public static let selections: [GraphQLSelection] = [
             GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
-            GraphQLField("releaseGroups", arguments: ["after": GraphQLVariable("after"), "first": GraphQLVariable("first"), "type": GraphQLVariable("type")], type: .object(ReleaseGroup.selections)),
+            GraphQLField("releaseGroups", alias: "releaseGroups1", arguments: ["after": GraphQLVariable("after"), "first": GraphQLVariable("first"), "type": GraphQLVariable("type")], type: .object(ReleaseGroups1.selections)),
           ]
 
           public private(set) var resultMap: ResultMap
@@ -17749,8 +17749,8 @@ public enum ApolloStuff {
             self.resultMap = unsafeResultMap
           }
 
-          public init(releaseGroups: ReleaseGroup? = nil) {
-            self.init(unsafeResultMap: ["__typename": "Artist", "releaseGroups": releaseGroups.flatMap { (value: ReleaseGroup) -> ResultMap in value.resultMap }])
+          public init(releaseGroups1: ReleaseGroups1? = nil) {
+            self.init(unsafeResultMap: ["__typename": "Artist", "releaseGroups1": releaseGroups1.flatMap { (value: ReleaseGroups1) -> ResultMap in value.resultMap }])
           }
 
           public var __typename: String {
@@ -17763,16 +17763,16 @@ public enum ApolloStuff {
           }
 
           /// A list of release groups linked to this entity.
-          public var releaseGroups: ReleaseGroup? {
+          public var releaseGroups1: ReleaseGroups1? {
             get {
-              return (resultMap["releaseGroups"] as? ResultMap).flatMap { ReleaseGroup(unsafeResultMap: $0) }
+              return (resultMap["releaseGroups1"] as? ResultMap).flatMap { ReleaseGroups1(unsafeResultMap: $0) }
             }
             set {
-              resultMap.updateValue(newValue?.resultMap, forKey: "releaseGroups")
+              resultMap.updateValue(newValue?.resultMap, forKey: "releaseGroups1")
             }
           }
 
-          public struct ReleaseGroup: GraphQLSelectionSet {
+          public struct ReleaseGroups1: GraphQLSelectionSet {
             public static let possibleTypes = ["ReleaseGroupConnection"]
 
             public static let selections: [GraphQLSelection] = [
@@ -18098,7 +18098,7 @@ public enum ApolloStuff {
           __typename
           artist(mbid: $mbid) {
             __typename
-            releaseGroups1: releaseGroups(after: $after, first: $first, type: $ReleaseGroupConnection_type) {
+            releaseGroups(after: $after, first: $first, type: $ReleaseGroupConnection_type) {
               __typename
               edges {
                 __typename
@@ -18224,7 +18224,7 @@ public enum ApolloStuff {
 
           public static let selections: [GraphQLSelection] = [
             GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
-            GraphQLField("releaseGroups", alias: "releaseGroups1", arguments: ["after": GraphQLVariable("after"), "first": GraphQLVariable("first"), "type": GraphQLVariable("ReleaseGroupConnection_type")], type: .object(ReleaseGroups1.selections)),
+            GraphQLField("releaseGroups", arguments: ["after": GraphQLVariable("after"), "first": GraphQLVariable("first"), "type": GraphQLVariable("ReleaseGroupConnection_type")], type: .object(ReleaseGroup.selections)),
           ]
 
           public private(set) var resultMap: ResultMap
@@ -18233,8 +18233,8 @@ public enum ApolloStuff {
             self.resultMap = unsafeResultMap
           }
 
-          public init(releaseGroups1: ReleaseGroups1? = nil) {
-            self.init(unsafeResultMap: ["__typename": "Artist", "releaseGroups1": releaseGroups1.flatMap { (value: ReleaseGroups1) -> ResultMap in value.resultMap }])
+          public init(releaseGroups: ReleaseGroup? = nil) {
+            self.init(unsafeResultMap: ["__typename": "Artist", "releaseGroups": releaseGroups.flatMap { (value: ReleaseGroup) -> ResultMap in value.resultMap }])
           }
 
           public var __typename: String {
@@ -18247,16 +18247,16 @@ public enum ApolloStuff {
           }
 
           /// A list of release groups linked to this entity.
-          public var releaseGroups1: ReleaseGroups1? {
+          public var releaseGroups: ReleaseGroup? {
             get {
-              return (resultMap["releaseGroups1"] as? ResultMap).flatMap { ReleaseGroups1(unsafeResultMap: $0) }
+              return (resultMap["releaseGroups"] as? ResultMap).flatMap { ReleaseGroup(unsafeResultMap: $0) }
             }
             set {
-              resultMap.updateValue(newValue?.resultMap, forKey: "releaseGroups1")
+              resultMap.updateValue(newValue?.resultMap, forKey: "releaseGroups")
             }
           }
 
-          public struct ReleaseGroups1: GraphQLSelectionSet {
+          public struct ReleaseGroup: GraphQLSelectionSet {
             public static let possibleTypes = ["ReleaseGroupConnection"]
 
             public static let selections: [GraphQLSelection] = [
@@ -20068,7 +20068,7 @@ public enum ApolloStuff {
               begin
             }
             name
-            releaseGroups1: releaseGroups(after: $after, first: $first, type: $ReleaseGroupConnection_type) {
+            releaseGroups1: releaseGroups(after: $after, first: $first, type: $type) {
               __typename
               edges {
                 __typename
@@ -20094,7 +20094,7 @@ public enum ApolloStuff {
                 hasNextPage
               }
             }
-            releaseGroups(after: $after, first: $first, type: $type) {
+            releaseGroups(after: $after, first: $first, type: $ReleaseGroupConnection_type) {
               __typename
               edges {
                 __typename
@@ -20240,8 +20240,8 @@ public enum ApolloStuff {
             GraphQLField("lastFM", type: .object(LastFm.selections)),
             GraphQLField("lifeSpan", type: .object(LifeSpan.selections)),
             GraphQLField("name", type: .scalar(String.self)),
-            GraphQLField("releaseGroups", alias: "releaseGroups1", arguments: ["after": GraphQLVariable("after"), "first": GraphQLVariable("first"), "type": GraphQLVariable("ReleaseGroupConnection_type")], type: .object(ReleaseGroups1.selections)),
-            GraphQLField("releaseGroups", arguments: ["after": GraphQLVariable("after"), "first": GraphQLVariable("first"), "type": GraphQLVariable("type")], type: .object(ReleaseGroup.selections)),
+            GraphQLField("releaseGroups", alias: "releaseGroups1", arguments: ["after": GraphQLVariable("after"), "first": GraphQLVariable("first"), "type": GraphQLVariable("type")], type: .object(ReleaseGroups1.selections)),
+            GraphQLField("releaseGroups", arguments: ["after": GraphQLVariable("after"), "first": GraphQLVariable("first"), "type": GraphQLVariable("ReleaseGroupConnection_type")], type: .object(ReleaseGroup.selections)),
             GraphQLField("theAudioDB", type: .object(TheAudioDb.selections)),
             GraphQLField("type", type: .scalar(String.self)),
           ]
@@ -23707,6 +23707,323 @@ public enum ApolloStuff {
     }
   }
 
+  public struct AlbumArtistCreditButtonArtist: GraphQLFragment {
+    /// The raw GraphQL definition of this fragment.
+    public static let fragmentDefinition =
+      """
+      fragment AlbumArtistCreditButtonArtist on Artist {
+        __typename
+        mbid
+        name
+      }
+      """
+
+    public static let possibleTypes = ["Artist"]
+
+    public static let selections: [GraphQLSelection] = [
+      GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+      GraphQLField("mbid", type: .nonNull(.scalar(String.self))),
+      GraphQLField("name", type: .scalar(String.self)),
+    ]
+
+    public private(set) var resultMap: ResultMap
+
+    public init(unsafeResultMap: ResultMap) {
+      self.resultMap = unsafeResultMap
+    }
+
+    public init(mbid: String, name: String? = nil) {
+      self.init(unsafeResultMap: ["__typename": "Artist", "mbid": mbid, "name": name])
+    }
+
+    public var __typename: String {
+      get {
+        return resultMap["__typename"]! as! String
+      }
+      set {
+        resultMap.updateValue(newValue, forKey: "__typename")
+      }
+    }
+
+    /// The MBID of the entity.
+    public var mbid: String {
+      get {
+        return resultMap["mbid"]! as! String
+      }
+      set {
+        resultMap.updateValue(newValue, forKey: "mbid")
+      }
+    }
+
+    /// The official name of the entity.
+    public var name: String? {
+      get {
+        return resultMap["name"] as? String
+      }
+      set {
+        resultMap.updateValue(newValue, forKey: "name")
+      }
+    }
+  }
+
+  public struct AlbumTrackCellCreditArtistCredit: GraphQLFragment {
+    /// The raw GraphQL definition of this fragment.
+    public static let fragmentDefinition =
+      """
+      fragment AlbumTrackCellCreditArtistCredit on ArtistCredit {
+        __typename
+        joinPhrase
+        name
+      }
+      """
+
+    public static let possibleTypes = ["ArtistCredit"]
+
+    public static let selections: [GraphQLSelection] = [
+      GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+      GraphQLField("joinPhrase", type: .scalar(String.self)),
+      GraphQLField("name", type: .scalar(String.self)),
+    ]
+
+    public private(set) var resultMap: ResultMap
+
+    public init(unsafeResultMap: ResultMap) {
+      self.resultMap = unsafeResultMap
+    }
+
+    public init(joinPhrase: String? = nil, name: String? = nil) {
+      self.init(unsafeResultMap: ["__typename": "ArtistCredit", "joinPhrase": joinPhrase, "name": name])
+    }
+
+    public var __typename: String {
+      get {
+        return resultMap["__typename"]! as! String
+      }
+      set {
+        resultMap.updateValue(newValue, forKey: "__typename")
+      }
+    }
+
+    /// Join phrases might include words and/or punctuation to
+    /// separate artist names as they appear on the release, track, etc.
+    public var joinPhrase: String? {
+      get {
+        return resultMap["joinPhrase"] as? String
+      }
+      set {
+        resultMap.updateValue(newValue, forKey: "joinPhrase")
+      }
+    }
+
+    /// The name of the artist as credited in the specific release,
+    /// track, etc.
+    public var name: String? {
+      get {
+        return resultMap["name"] as? String
+      }
+      set {
+        resultMap.updateValue(newValue, forKey: "name")
+      }
+    }
+  }
+
+  public struct ArtistAlbumCellReleaseGroup: GraphQLFragment {
+    /// The raw GraphQL definition of this fragment.
+    public static let fragmentDefinition =
+      """
+      fragment ArtistAlbumCellReleaseGroup on ReleaseGroup {
+        __typename
+        releases {
+          __typename
+          nodes {
+            __typename
+            mbid
+          }
+        }
+        theAudioDB {
+          __typename
+          frontImage
+        }
+        title
+      }
+      """
+
+    public static let possibleTypes = ["ReleaseGroup"]
+
+    public static let selections: [GraphQLSelection] = [
+      GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+      GraphQLField("releases", type: .object(Release.selections)),
+      GraphQLField("theAudioDB", type: .object(TheAudioDb.selections)),
+      GraphQLField("title", type: .scalar(String.self)),
+    ]
+
+    public private(set) var resultMap: ResultMap
+
+    public init(unsafeResultMap: ResultMap) {
+      self.resultMap = unsafeResultMap
+    }
+
+    public init(releases: Release? = nil, theAudioDb: TheAudioDb? = nil, title: String? = nil) {
+      self.init(unsafeResultMap: ["__typename": "ReleaseGroup", "releases": releases.flatMap { (value: Release) -> ResultMap in value.resultMap }, "theAudioDB": theAudioDb.flatMap { (value: TheAudioDb) -> ResultMap in value.resultMap }, "title": title])
+    }
+
+    public var __typename: String {
+      get {
+        return resultMap["__typename"]! as! String
+      }
+      set {
+        resultMap.updateValue(newValue, forKey: "__typename")
+      }
+    }
+
+    /// A list of releases linked to this entity.
+    public var releases: Release? {
+      get {
+        return (resultMap["releases"] as? ResultMap).flatMap { Release(unsafeResultMap: $0) }
+      }
+      set {
+        resultMap.updateValue(newValue?.resultMap, forKey: "releases")
+      }
+    }
+
+    /// Data about the release group from [TheAudioDB](http://www.theaudiodb.com/),
+    /// a good source of descriptive information, reviews, and images.
+    /// This field is provided by TheAudioDB extension.
+    public var theAudioDb: TheAudioDb? {
+      get {
+        return (resultMap["theAudioDB"] as? ResultMap).flatMap { TheAudioDb(unsafeResultMap: $0) }
+      }
+      set {
+        resultMap.updateValue(newValue?.resultMap, forKey: "theAudioDB")
+      }
+    }
+
+    /// The official title of the entity.
+    public var title: String? {
+      get {
+        return resultMap["title"] as? String
+      }
+      set {
+        resultMap.updateValue(newValue, forKey: "title")
+      }
+    }
+
+    public struct Release: GraphQLSelectionSet {
+      public static let possibleTypes = ["ReleaseConnection"]
+
+      public static let selections: [GraphQLSelection] = [
+        GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+        GraphQLField("nodes", type: .list(.object(Node.selections))),
+      ]
+
+      public private(set) var resultMap: ResultMap
+
+      public init(unsafeResultMap: ResultMap) {
+        self.resultMap = unsafeResultMap
+      }
+
+      public init(nodes: [Node?]? = nil) {
+        self.init(unsafeResultMap: ["__typename": "ReleaseConnection", "nodes": nodes.flatMap { (value: [Node?]) -> [ResultMap?] in value.map { (value: Node?) -> ResultMap? in value.flatMap { (value: Node) -> ResultMap in value.resultMap } } }])
+      }
+
+      public var __typename: String {
+        get {
+          return resultMap["__typename"]! as! String
+        }
+        set {
+          resultMap.updateValue(newValue, forKey: "__typename")
+        }
+      }
+
+      /// A list of nodes in the connection (without going through the
+      /// `edges` field).
+      public var nodes: [Node?]? {
+        get {
+          return (resultMap["nodes"] as? [ResultMap?]).flatMap { (value: [ResultMap?]) -> [Node?] in value.map { (value: ResultMap?) -> Node? in value.flatMap { (value: ResultMap) -> Node in Node(unsafeResultMap: value) } } }
+        }
+        set {
+          resultMap.updateValue(newValue.flatMap { (value: [Node?]) -> [ResultMap?] in value.map { (value: Node?) -> ResultMap? in value.flatMap { (value: Node) -> ResultMap in value.resultMap } } }, forKey: "nodes")
+        }
+      }
+
+      public struct Node: GraphQLSelectionSet {
+        public static let possibleTypes = ["Release"]
+
+        public static let selections: [GraphQLSelection] = [
+          GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+          GraphQLField("mbid", type: .nonNull(.scalar(String.self))),
+        ]
+
+        public private(set) var resultMap: ResultMap
+
+        public init(unsafeResultMap: ResultMap) {
+          self.resultMap = unsafeResultMap
+        }
+
+        public init(mbid: String) {
+          self.init(unsafeResultMap: ["__typename": "Release", "mbid": mbid])
+        }
+
+        public var __typename: String {
+          get {
+            return resultMap["__typename"]! as! String
+          }
+          set {
+            resultMap.updateValue(newValue, forKey: "__typename")
+          }
+        }
+
+        /// The MBID of the entity.
+        public var mbid: String {
+          get {
+            return resultMap["mbid"]! as! String
+          }
+          set {
+            resultMap.updateValue(newValue, forKey: "mbid")
+          }
+        }
+      }
+    }
+
+    public struct TheAudioDb: GraphQLSelectionSet {
+      public static let possibleTypes = ["TheAudioDBAlbum"]
+
+      public static let selections: [GraphQLSelection] = [
+        GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+        GraphQLField("frontImage", type: .scalar(String.self)),
+      ]
+
+      public private(set) var resultMap: ResultMap
+
+      public init(unsafeResultMap: ResultMap) {
+        self.resultMap = unsafeResultMap
+      }
+
+      public init(frontImage: String? = nil) {
+        self.init(unsafeResultMap: ["__typename": "TheAudioDBAlbum", "frontImage": frontImage])
+      }
+
+      public var __typename: String {
+        get {
+          return resultMap["__typename"]! as! String
+        }
+        set {
+          resultMap.updateValue(newValue, forKey: "__typename")
+        }
+      }
+
+      /// An image of the front of the album packaging.
+      public var frontImage: String? {
+        get {
+          return resultMap["frontImage"] as? String
+        }
+        set {
+          resultMap.updateValue(newValue, forKey: "frontImage")
+        }
+      }
+    }
+  }
+
   public struct SimilarArtistCellLastFmArtist: GraphQLFragment {
     /// The raw GraphQL definition of this fragment.
     public static let fragmentDefinition =
@@ -24364,323 +24681,6 @@ public enum ApolloStuff {
         set {
           resultMap.updateValue(newValue, forKey: "name")
         }
-      }
-    }
-  }
-
-  public struct AlbumTrackCellCreditArtistCredit: GraphQLFragment {
-    /// The raw GraphQL definition of this fragment.
-    public static let fragmentDefinition =
-      """
-      fragment AlbumTrackCellCreditArtistCredit on ArtistCredit {
-        __typename
-        joinPhrase
-        name
-      }
-      """
-
-    public static let possibleTypes = ["ArtistCredit"]
-
-    public static let selections: [GraphQLSelection] = [
-      GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
-      GraphQLField("joinPhrase", type: .scalar(String.self)),
-      GraphQLField("name", type: .scalar(String.self)),
-    ]
-
-    public private(set) var resultMap: ResultMap
-
-    public init(unsafeResultMap: ResultMap) {
-      self.resultMap = unsafeResultMap
-    }
-
-    public init(joinPhrase: String? = nil, name: String? = nil) {
-      self.init(unsafeResultMap: ["__typename": "ArtistCredit", "joinPhrase": joinPhrase, "name": name])
-    }
-
-    public var __typename: String {
-      get {
-        return resultMap["__typename"]! as! String
-      }
-      set {
-        resultMap.updateValue(newValue, forKey: "__typename")
-      }
-    }
-
-    /// Join phrases might include words and/or punctuation to
-    /// separate artist names as they appear on the release, track, etc.
-    public var joinPhrase: String? {
-      get {
-        return resultMap["joinPhrase"] as? String
-      }
-      set {
-        resultMap.updateValue(newValue, forKey: "joinPhrase")
-      }
-    }
-
-    /// The name of the artist as credited in the specific release,
-    /// track, etc.
-    public var name: String? {
-      get {
-        return resultMap["name"] as? String
-      }
-      set {
-        resultMap.updateValue(newValue, forKey: "name")
-      }
-    }
-  }
-
-  public struct ArtistAlbumCellReleaseGroup: GraphQLFragment {
-    /// The raw GraphQL definition of this fragment.
-    public static let fragmentDefinition =
-      """
-      fragment ArtistAlbumCellReleaseGroup on ReleaseGroup {
-        __typename
-        releases {
-          __typename
-          nodes {
-            __typename
-            mbid
-          }
-        }
-        theAudioDB {
-          __typename
-          frontImage
-        }
-        title
-      }
-      """
-
-    public static let possibleTypes = ["ReleaseGroup"]
-
-    public static let selections: [GraphQLSelection] = [
-      GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
-      GraphQLField("releases", type: .object(Release.selections)),
-      GraphQLField("theAudioDB", type: .object(TheAudioDb.selections)),
-      GraphQLField("title", type: .scalar(String.self)),
-    ]
-
-    public private(set) var resultMap: ResultMap
-
-    public init(unsafeResultMap: ResultMap) {
-      self.resultMap = unsafeResultMap
-    }
-
-    public init(releases: Release? = nil, theAudioDb: TheAudioDb? = nil, title: String? = nil) {
-      self.init(unsafeResultMap: ["__typename": "ReleaseGroup", "releases": releases.flatMap { (value: Release) -> ResultMap in value.resultMap }, "theAudioDB": theAudioDb.flatMap { (value: TheAudioDb) -> ResultMap in value.resultMap }, "title": title])
-    }
-
-    public var __typename: String {
-      get {
-        return resultMap["__typename"]! as! String
-      }
-      set {
-        resultMap.updateValue(newValue, forKey: "__typename")
-      }
-    }
-
-    /// A list of releases linked to this entity.
-    public var releases: Release? {
-      get {
-        return (resultMap["releases"] as? ResultMap).flatMap { Release(unsafeResultMap: $0) }
-      }
-      set {
-        resultMap.updateValue(newValue?.resultMap, forKey: "releases")
-      }
-    }
-
-    /// Data about the release group from [TheAudioDB](http://www.theaudiodb.com/),
-    /// a good source of descriptive information, reviews, and images.
-    /// This field is provided by TheAudioDB extension.
-    public var theAudioDb: TheAudioDb? {
-      get {
-        return (resultMap["theAudioDB"] as? ResultMap).flatMap { TheAudioDb(unsafeResultMap: $0) }
-      }
-      set {
-        resultMap.updateValue(newValue?.resultMap, forKey: "theAudioDB")
-      }
-    }
-
-    /// The official title of the entity.
-    public var title: String? {
-      get {
-        return resultMap["title"] as? String
-      }
-      set {
-        resultMap.updateValue(newValue, forKey: "title")
-      }
-    }
-
-    public struct Release: GraphQLSelectionSet {
-      public static let possibleTypes = ["ReleaseConnection"]
-
-      public static let selections: [GraphQLSelection] = [
-        GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
-        GraphQLField("nodes", type: .list(.object(Node.selections))),
-      ]
-
-      public private(set) var resultMap: ResultMap
-
-      public init(unsafeResultMap: ResultMap) {
-        self.resultMap = unsafeResultMap
-      }
-
-      public init(nodes: [Node?]? = nil) {
-        self.init(unsafeResultMap: ["__typename": "ReleaseConnection", "nodes": nodes.flatMap { (value: [Node?]) -> [ResultMap?] in value.map { (value: Node?) -> ResultMap? in value.flatMap { (value: Node) -> ResultMap in value.resultMap } } }])
-      }
-
-      public var __typename: String {
-        get {
-          return resultMap["__typename"]! as! String
-        }
-        set {
-          resultMap.updateValue(newValue, forKey: "__typename")
-        }
-      }
-
-      /// A list of nodes in the connection (without going through the
-      /// `edges` field).
-      public var nodes: [Node?]? {
-        get {
-          return (resultMap["nodes"] as? [ResultMap?]).flatMap { (value: [ResultMap?]) -> [Node?] in value.map { (value: ResultMap?) -> Node? in value.flatMap { (value: ResultMap) -> Node in Node(unsafeResultMap: value) } } }
-        }
-        set {
-          resultMap.updateValue(newValue.flatMap { (value: [Node?]) -> [ResultMap?] in value.map { (value: Node?) -> ResultMap? in value.flatMap { (value: Node) -> ResultMap in value.resultMap } } }, forKey: "nodes")
-        }
-      }
-
-      public struct Node: GraphQLSelectionSet {
-        public static let possibleTypes = ["Release"]
-
-        public static let selections: [GraphQLSelection] = [
-          GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
-          GraphQLField("mbid", type: .nonNull(.scalar(String.self))),
-        ]
-
-        public private(set) var resultMap: ResultMap
-
-        public init(unsafeResultMap: ResultMap) {
-          self.resultMap = unsafeResultMap
-        }
-
-        public init(mbid: String) {
-          self.init(unsafeResultMap: ["__typename": "Release", "mbid": mbid])
-        }
-
-        public var __typename: String {
-          get {
-            return resultMap["__typename"]! as! String
-          }
-          set {
-            resultMap.updateValue(newValue, forKey: "__typename")
-          }
-        }
-
-        /// The MBID of the entity.
-        public var mbid: String {
-          get {
-            return resultMap["mbid"]! as! String
-          }
-          set {
-            resultMap.updateValue(newValue, forKey: "mbid")
-          }
-        }
-      }
-    }
-
-    public struct TheAudioDb: GraphQLSelectionSet {
-      public static let possibleTypes = ["TheAudioDBAlbum"]
-
-      public static let selections: [GraphQLSelection] = [
-        GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
-        GraphQLField("frontImage", type: .scalar(String.self)),
-      ]
-
-      public private(set) var resultMap: ResultMap
-
-      public init(unsafeResultMap: ResultMap) {
-        self.resultMap = unsafeResultMap
-      }
-
-      public init(frontImage: String? = nil) {
-        self.init(unsafeResultMap: ["__typename": "TheAudioDBAlbum", "frontImage": frontImage])
-      }
-
-      public var __typename: String {
-        get {
-          return resultMap["__typename"]! as! String
-        }
-        set {
-          resultMap.updateValue(newValue, forKey: "__typename")
-        }
-      }
-
-      /// An image of the front of the album packaging.
-      public var frontImage: String? {
-        get {
-          return resultMap["frontImage"] as? String
-        }
-        set {
-          resultMap.updateValue(newValue, forKey: "frontImage")
-        }
-      }
-    }
-  }
-
-  public struct AlbumArtistCreditButtonArtist: GraphQLFragment {
-    /// The raw GraphQL definition of this fragment.
-    public static let fragmentDefinition =
-      """
-      fragment AlbumArtistCreditButtonArtist on Artist {
-        __typename
-        mbid
-        name
-      }
-      """
-
-    public static let possibleTypes = ["Artist"]
-
-    public static let selections: [GraphQLSelection] = [
-      GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
-      GraphQLField("mbid", type: .nonNull(.scalar(String.self))),
-      GraphQLField("name", type: .scalar(String.self)),
-    ]
-
-    public private(set) var resultMap: ResultMap
-
-    public init(unsafeResultMap: ResultMap) {
-      self.resultMap = unsafeResultMap
-    }
-
-    public init(mbid: String, name: String? = nil) {
-      self.init(unsafeResultMap: ["__typename": "Artist", "mbid": mbid, "name": name])
-    }
-
-    public var __typename: String {
-      get {
-        return resultMap["__typename"]! as! String
-      }
-      set {
-        resultMap.updateValue(newValue, forKey: "__typename")
-      }
-    }
-
-    /// The MBID of the entity.
-    public var mbid: String {
-      get {
-        return resultMap["mbid"]! as! String
-      }
-      set {
-        resultMap.updateValue(newValue, forKey: "mbid")
-      }
-    }
-
-    /// The official name of the entity.
-    public var name: String? {
-      get {
-        return resultMap["name"] as? String
-      }
-      set {
-        resultMap.updateValue(newValue, forKey: "name")
       }
     }
   }
