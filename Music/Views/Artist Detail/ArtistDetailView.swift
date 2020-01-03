@@ -16,8 +16,8 @@ struct ArtistDetailView: View {
     @GraphQL(Music.lookup.artist.name)
     var name: String?
 
-    @GraphQL(Music.lookup.artist.theAudioDb.thumbnail)
-    var image: String?
+    @GraphQL<URL.Decoder?>(Music.lookup.artist.theAudioDb.thumbnail)
+    var image: URL?
 
     @GraphQL(Music.lookup.artist.lastFm.topTracks(first: .value(5)))
     var topSongs: Paging<TrendingTrackCell.LastFMTrack>?
@@ -56,7 +56,6 @@ struct ArtistDetailView: View {
                         scrollDownHeaderBehavior: .sticky,
                         header: {
                             image
-                                .flatMap(URL.init(string:))
                                 .map { url in
                                     Image.artwork(url).aspectRatio(contentMode: .fill).clipped()
                                 }

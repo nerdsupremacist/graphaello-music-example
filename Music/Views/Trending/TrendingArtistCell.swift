@@ -20,14 +20,14 @@ struct TrendingArtistCell: View {
     @GraphQL(Music.LastFMArtist.topTags(first: .value(3)).nodes._forEach(\.name))
     var tags: [String?]?
 
-    @GraphQL(Music.LastFMArtist.topAlbums(first: .value(4)).nodes._forEach(\.image))
-    var images: [String?]?
+    @GraphQL<[URL.Decoder?]?>(Music.LastFMArtist.topAlbums(first: .value(4)).nodes._forEach(\.image))
+    var images: [URL?]?
 
     @GraphQL(Music.LastFMArtist.topTracks(first: .value(1)).nodes._forEach(\.title))
     var mostFamousSongs: [String?]?
 
     var body: some View {
-        let card = SimpleCardView(images: images?.compactMap { $0.flatMap(URL.init(string:)) },
+        let card = SimpleCardView(images: images?.compactMap { $0 },
                                   title: name,
                                   headline: mostFamousSongs?.first.flatMap { $0 }.map { "Known for \"\($0)\"" },
                                   caption: tags?.first(3).compactMap { $0 }.joined(separator: ", "))

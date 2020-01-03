@@ -15,18 +15,18 @@ struct ArtistAlbumCell: View {
     @GraphQL(Music.ReleaseGroup.title)
     var title: String?
 
-    @GraphQL(Music.ReleaseGroup.theAudioDb.frontImage)
-    var cover: String?
+    @GraphQL<URL.Decoder?>(Music.ReleaseGroup.theAudioDb.frontImage)
+    var cover: URL?
 
-    @GraphQL(Music.ReleaseGroup.theAudioDb.frontImage)
-    var discImage: String?
+    @GraphQL<URL.Decoder?>(Music.ReleaseGroup.theAudioDb.frontImage)
+    var discImage: URL?
 
     @GraphQL(Music.ReleaseGroup.releases(type: .value([.album]), status: .value([.official])).nodes._forEach(\.mbid))
     var releaseIds: [String?]?
 
     var body: some View {
         let stack = VStack {
-            Image.artwork(cover.flatMap(URL.init(string:)) ?? discImage.flatMap(URL.init(string:)))
+            Image.artwork(cover ?? discImage)
                 .clipped()
                 .cornerRadius(5)
 

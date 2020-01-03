@@ -18,16 +18,15 @@ struct TrendingTrackCell: View {
     @GraphQL(Music.LastFMTrack.artist.name)
     var artist: String?
 
-    @GraphQL(Music.LastFMTrack.album.image)
-    var image: String?
+    @GraphQL<URL.Decoder?>(Music.LastFMTrack.album.image)
+    var image: URL?
 
     @GraphQL(Music.LastFMTrack.album.mbid)
     var albumId: String?
 
     var body: some View {
         let stack = HStack {
-            Image.artwork(image.flatMap(URL.init(string:)))
-                .frame(width: 50)
+            Image.artwork(image).frame(width: 50)
             
             VStack(alignment: .leading) {
                 title.map { title in

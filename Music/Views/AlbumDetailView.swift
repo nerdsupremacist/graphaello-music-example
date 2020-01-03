@@ -16,8 +16,8 @@ struct AlbumDetailView: View {
     @GraphQL(Music.lookup.release.title)
     var title: String?
 
-    @GraphQL(Music.lookup.release.coverArtArchive.front(size: .value(.small)))
-    var cover: String?
+    @GraphQL<URL.Decoder?>(Music.lookup.release.coverArtArchive.front(size: .value(.small)))
+    var cover: URL?
 
     @GraphQL(Music.lookup.release.artistCredits._forEach(\.artist))
     var artists: [AlbumArtistCreditButton.Artist?]?
@@ -47,7 +47,7 @@ struct AlbumDetailView: View {
                 header: {
                     HStack(spacing: 8) {
                         Image
-                            .artwork(self.cover.flatMap(URL.init(string:)))
+                            .artwork(self.cover)
                             .cornerRadius(5)
                             .frame(width: 150, height: 150)
 
