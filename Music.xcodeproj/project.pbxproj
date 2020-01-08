@@ -205,7 +205,6 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 0ECD148423AEF7EA00ABD3F4 /* Build configuration list for PBXNativeTarget "Music" */;
 			buildPhases = (
-				AA827BDC2378BBA1C9D64690 /* Graphaello */,
 				0ECD146C23AEF7E500ABD3F4 /* Sources */,
 				0ECD146D23AEF7E500ABD3F4 /* Frameworks */,
 				0ECD146E23AEF7E500ABD3F4 /* Resources */,
@@ -275,23 +274,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
-
-/* Begin PBXShellScriptBuildPhase section */
-		AA827BDC2378BBA1C9D64690 /* Graphaello */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = Graphaello;
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "if ! type \"graphaello\" > /dev/null; then\n  echo \"warning: graphaello is not installed on your machine. Your project won't be updated automatically\"\n  exit 0\nfi\n#graphaello codegen --project $PROJECT_FILE_PATH --apollo derivedData\n";
-		};
-/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		0ECD146C23AEF7E500ABD3F4 /* Sources */ = {
