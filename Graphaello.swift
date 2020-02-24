@@ -50,13 +50,15 @@ private struct QueryRenderer<Query: GraphQLQuery, Content: View>: View {
     @ObservedObject private var viewModel = ViewModel()
 
     var body: some View {
-        return VStack {
+        VStack {
             viewModel.error.map { Text("Error: \($0)") }
             viewModel.value.map(factory)
             viewModel.isLoading ? Text("Loading") : nil
-        }.onAppear {
+        }
+        .onAppear {
             self.viewModel.load(client: self.client, query: self.query)
-        }.onDisappear {
+        }
+        .onDisappear {
             self.viewModel.cancel()
         }
     }
