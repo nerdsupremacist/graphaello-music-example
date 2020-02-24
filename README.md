@@ -5,4 +5,4 @@ It's using [GraphBrains](https://github.com/exogen/graphbrainz)
 
 ## How does it look?
 
-![demo.gif](Demo Gif)
+![Demo Gif](demo.gif)
