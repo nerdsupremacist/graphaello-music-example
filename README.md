@@ -5,4 +5,7 @@ It's using [GraphBrains](https://github.com/exogen/graphbrainz)
 
 ## How does it look?
 
+Please try it for yourself. Navigate the code.
+
+Here's a short screen recording of the App:
 ![Demo Gif](demo.gif)
