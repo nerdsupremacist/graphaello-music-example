@@ -13,10 +13,10 @@ struct TrendingArtistsList: View {
     let api: Music
 
     @GraphQL(Music.lastFm.chart.topArtists)
-    var artists: Paging<TrendingArtistCell.LastFMArtist>?
+    var artists: Paging<TrendingArtistCell.LastFmArtist>?
 
     @GraphQL(Music.lastFm.chart.topTracks)
-    var tracks: Paging<TrendingTrackCell.LastFMTrack>?
+    var tracks: Paging<TrendingTrackCell.LastFmTrack>?
 
     var body: some View {
         FancyScrollView {

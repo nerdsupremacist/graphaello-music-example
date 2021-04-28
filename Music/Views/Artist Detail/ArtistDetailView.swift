@@ -16,11 +16,11 @@ struct ArtistDetailView: View {
     @GraphQL(Music.lookup.artist.name)
     var name: String?
 
-    @GraphQL<URL.Decoder?>(Music.lookup.artist.theAudioDb.thumbnail)
+    @GraphQL(Music.lookup.artist.theAudioDb.thumbnail)
     var image: URL?
 
     @GraphQL(Music.lookup.artist.lastFm.topTracks(first: .value(5)))
-    var topSongs: Paging<TrendingTrackCell.LastFMTrack>?
+    var topSongs: Paging<TrendingTrackCell.LastFmTrack>?
 
     @GraphQL(Music.lookup.artist.releaseGroups(type: .value([.album]), first: .value(5)))
     var albums: Paging<ArtistAlbumCell.ReleaseGroup>?
@@ -45,9 +45,6 @@ struct ArtistDetailView: View {
 
     @GraphQL(Music.lookup.artist.theAudioDb.mood)
     var mood: String?
-
-    @GraphQL(Music.lookup.artist.lastFm.similarArtists(first: .value(3)))
-    var similarArtists: Paging<SimilarArtistCell.LastFMArtist>?
 
     var body: some View {
         FancyScrollView(title: name ?? "",
@@ -92,10 +89,6 @@ struct ArtistDetailView: View {
 
                     Divider()
                         .padding(.horizontal, 16)
-
-                    ArtistInfoSection("Similar Artists") {
-                        SimilarArtistsList(api: self.api, artists: self.similarArtists)
-                    }
                 }
                 .padding(.vertical, 16)
                 .background(Color(UIColor.systemGray6))

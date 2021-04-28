@@ -12,16 +12,16 @@ import SwiftUI
 struct TrendingTrackCell: View {
     let api: Music
 
-    @GraphQL(Music.LastFMTrack.title)
+    @GraphQL(Music.LastFmTrack.title)
     var title: String?
 
-    @GraphQL(Music.LastFMTrack.artist.name)
+    @GraphQL(Music.LastFmTrack.artist.name)
     var artist: String?
 
-    @GraphQL<URL.Decoder?>(Music.LastFMTrack.album.image)
+    @GraphQL(Music.LastFmTrack.album.image)
     var image: URL?
 
-    @GraphQL(Music.LastFMTrack.album.mbid)
+    @GraphQL(Music.LastFmTrack.album.mbid)
     var albumId: String?
 
     var body: some View {

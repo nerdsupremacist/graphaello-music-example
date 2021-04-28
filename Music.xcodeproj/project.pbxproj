@@ -20,8 +20,6 @@
 		0E3E9ADB23AF1A0A00B28C72 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E3E9ADA23AF1A0A00B28C72 /* ContentView.swift */; };
 		0E3E9ADF23AFF32600B28C72 /* TrendingTrackCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E3E9ADE23AFF32600B28C72 /* TrendingTrackCell.swift */; };
 		0E3E9AE523B006D600B28C72 /* BasicCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E3E9AE423B006D600B28C72 /* BasicCardView.swift */; };
-		0E8BAB2123B5A029000FE98A /* SimilarArtistCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E8BAB2023B5A029000FE98A /* SimilarArtistCell.swift */; };
-		0E8BAB2323B5A1AD000FE98A /* SimilarArtistsList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E8BAB2223B5A1AC000FE98A /* SimilarArtistsList.swift */; };
 		0E942D0F23BFDCD300287C98 /* URL+Decoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E942D0E23BFDCD300287C98 /* URL+Decoder.swift */; };
 		0E96235223B5B071003DE485 /* ArtistMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E96235123B5B071003DE485 /* ArtistMetadata.swift */; };
 		0E96235423B616DB003DE485 /* AlbumDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E96235323B616DB003DE485 /* AlbumDetailView.swift */; };
@@ -55,8 +53,6 @@
 		0E3E9ADA23AF1A0A00B28C72 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		0E3E9ADE23AFF32600B28C72 /* TrendingTrackCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrendingTrackCell.swift; sourceTree = "<group>"; };
 		0E3E9AE423B006D600B28C72 /* BasicCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BasicCardView.swift; sourceTree = "<group>"; };
-		0E8BAB2023B5A029000FE98A /* SimilarArtistCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = SimilarArtistCell.swift; path = "../../../../music/Music/Views/Artist Detail/SimilarArtistCell.swift"; sourceTree = "<group>"; };
-		0E8BAB2223B5A1AC000FE98A /* SimilarArtistsList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = SimilarArtistsList.swift; path = "../../../../music/Music/Views/Artist Detail/SimilarArtistsList.swift"; sourceTree = "<group>"; };
 		0E942D0E23BFDCD300287C98 /* URL+Decoder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "URL+Decoder.swift"; sourceTree = "<group>"; };
 		0E96235123B5B071003DE485 /* ArtistMetadata.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArtistMetadata.swift; sourceTree = "<group>"; };
 		0E96235323B616DB003DE485 /* AlbumDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlbumDetailView.swift; sourceTree = "<group>"; };
@@ -98,8 +94,6 @@
 				0E08AA3F23B17D0700146CFB /* ArtistAlbumCell.swift */,
 				0E08AA4323B195A100146CFB /* ArtistAlbumList.swift */,
 				0E08AA4923B2218C00146CFB /* ArtistTopSongsList.swift */,
-				0E8BAB2023B5A029000FE98A /* SimilarArtistCell.swift */,
-				0E8BAB2223B5A1AC000FE98A /* SimilarArtistsList.swift */,
 			);
 			path = "Artist Detail";
 			sourceTree = "<group>";
@@ -205,6 +199,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 0ECD148423AEF7EA00ABD3F4 /* Build configuration list for PBXNativeTarget "Music" */;
 			buildPhases = (
+				AA827BDC2378BBA1C9D64690 /* Graphaello */,
 				0ECD146C23AEF7E500ABD3F4 /* Sources */,
 				0ECD146D23AEF7E500ABD3F4 /* Frameworks */,
 				0ECD146E23AEF7E500ABD3F4 /* Resources */,
@@ -230,7 +225,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 1130;
-				LastUpgradeCheck = 1130;
+				LastUpgradeCheck = 1240;
 				ORGANIZATIONNAME = "Mathias Quintero";
 				TargetAttributes = {
 					0ECD146F23AEF7E500ABD3F4 = {
@@ -275,6 +270,23 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		AA827BDC2378BBA1C9D64690 /* Graphaello */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = Graphaello;
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "if ! type \"graphaello\" > /dev/null; then\n  echo \"warning: graphaello is not installed on your machine. Your project won't be updated automatically\"\n  exit 0\nfi\ngraphaello codegen --project $PROJECT_FILE_PATH --apollo derivedData\n";
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		0ECD146C23AEF7E500ABD3F4 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
@@ -282,7 +294,6 @@
 			files = (
 				0EB5889C23B5704200FAFDF2 /* URLImage+artwork.swift in Sources */,
 				0ECD147423AEF7E500ABD3F4 /* AppDelegate.swift in Sources */,
-				0E8BAB2323B5A1AD000FE98A /* SimilarArtistsList.swift in Sources */,
 				0ECD147623AEF7E500ABD3F4 /* SceneDelegate.swift in Sources */,
 				0E08AA4A23B2218C00146CFB /* ArtistTopSongsList.swift in Sources */,
 				0E08AA4023B17D0700146CFB /* ArtistAlbumCell.swift in Sources */,
@@ -290,7 +301,6 @@
 				0EF69A5023B0644A00712F5B /* ImageGridView.swift in Sources */,
 				0E96235623B62498003DE485 /* AlbumTrackCell.swift in Sources */,
 				0E08AA3023B072F300146CFB /* TopArtistsList.swift in Sources */,
-				0E8BAB2123B5A029000FE98A /* SimilarArtistCell.swift in Sources */,
 				0EF69A4E23B04E4D00712F5B /* CardContainer.swift in Sources */,
 				0E08AA3623B1265E00146CFB /* ArtistDetailView.swift in Sources */,
 				0E08AA3423B074D400146CFB /* TopSongsList.swift in Sources */,
@@ -348,6 +358,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -408,6 +419,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -451,6 +463,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = io.quintero.Music;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) GRAPHAELLO_MUSIC_TARGET";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -471,6 +484,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = io.quintero.Music;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) GRAPHAELLO_MUSIC_TARGET";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -520,8 +534,8 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/apollographql/apollo-ios.git";
 			requirement = {
-				branch = master;
-				kind = branch;
+				kind = upToNextMinorVersion;
+				minimumVersion = 0.40.0;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */

@@ -16,7 +16,7 @@ struct AlbumDetailView: View {
     @GraphQL(Music.lookup.release.title)
     var title: String?
 
-    @GraphQL<URL.Decoder?>(Music.lookup.release.coverArtArchive.front(size: .value(.small)))
+    @GraphQL(Music.lookup.release.coverArtArchive.front(size: .value(.small)))
     var cover: URL?
 
     @GraphQL(Music.lookup.release.artistCredits._forEach(\.artist))

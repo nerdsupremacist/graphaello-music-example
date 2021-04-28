@@ -11,7 +11,7 @@ import SwiftUI
 
 struct TopArtistsList: View {
     let api: Music
-    let paging: Paging<TrendingArtistCell.LastFMArtist>
+    let paging: Paging<TrendingArtistCell.LastFmArtist>
 
     var body: some View {
         ScrollView {

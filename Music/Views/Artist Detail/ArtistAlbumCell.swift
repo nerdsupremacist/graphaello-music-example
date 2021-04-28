@@ -15,10 +15,10 @@ struct ArtistAlbumCell: View {
     @GraphQL(Music.ReleaseGroup.title)
     var title: String?
 
-    @GraphQL<URL.Decoder?>(Music.ReleaseGroup.theAudioDb.frontImage)
+    @GraphQL(Music.ReleaseGroup.theAudioDb.frontImage)
     var cover: URL?
 
-    @GraphQL<URL.Decoder?>(Music.ReleaseGroup.theAudioDb.frontImage)
+    @GraphQL(Music.ReleaseGroup.theAudioDb.frontImage)
     var discImage: URL?
 
     @GraphQL(Music.ReleaseGroup.releases(type: .value([.album]), status: .value([.official])).nodes._forEach(\.mbid))

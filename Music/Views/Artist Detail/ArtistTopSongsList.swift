@@ -11,7 +11,7 @@ import SwiftUI
 
 struct ArtistTopSongsList: View {
     let api: Music
-    let tracks: Paging<TrendingTrackCell.LastFMTrack>?
+    let tracks: Paging<TrendingTrackCell.LastFmTrack>?
 
     var body: some View {
         tracks.map { tracks in

@@ -11,19 +11,19 @@ import SwiftUI
 struct TrendingArtistCell: View {
     let api: Music
 
-    @GraphQL(Music.LastFMArtist.mbid)
+    @GraphQL(Music.LastFmArtist.mbid)
     var id: String?
 
-    @GraphQL(Music.LastFMArtist.name)
+    @GraphQL(Music.LastFmArtist.name)
     var name: String?
 
-    @GraphQL(Music.LastFMArtist.topTags(first: .value(3)).nodes._forEach(\.name))
+    @GraphQL(Music.LastFmArtist.topTags(first: .value(3)).nodes._forEach(\.name))
     var tags: [String?]?
 
-    @GraphQL<[URL.Decoder?]?>(Music.LastFMArtist.topAlbums(first: .value(4)).nodes._forEach(\.image))
+    @GraphQL(Music.LastFmArtist.topAlbums(first: .value(4)).nodes._forEach(\.image))
     var images: [URL?]?
 
-    @GraphQL(Music.LastFMArtist.topTracks(first: .value(1)).nodes._forEach(\.title))
+    @GraphQL(Music.LastFmArtist.topTracks(first: .value(1)).nodes._forEach(\.title))
     var mostFamousSongs: [String?]?
 
     var body: some View {
