@@ -14,11 +14,7 @@ struct TopArtistsList: View {
     let paging: Paging<TrendingArtistCell.LastFmArtist>
 
     var body: some View {
-        ScrollView {
-            VStack {
-                PagingView(paging, pageSize: 20) { TrendingArtistCell(api: self.api, lastFmArtist: $0) }
-            }
-        }
-        .navigationBarTitle("Top Artists")
+        PagingView(paging, pageSize: 20) { TrendingArtistCell(api: self.api, lastFmArtist: $0) }
+            .navigationBarTitle("Top Artists")
     }
 }

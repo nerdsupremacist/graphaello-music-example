@@ -14,12 +14,10 @@ struct TopSongsList: View {
     let paging: Paging<TrendingTrackCell.LastFmTrack>
 
     var body: some View {
-        List {
-            PagingView(paging, pageSize: 20) {
-                TrendingTrackCell(api: self.api, lastFmTrack: $0)
-            }
-            .animation(nil)
+        PagingView(paging, pageSize: 20) {
+            TrendingTrackCell(api: self.api, lastFmTrack: $0)
         }
+        .animation(nil)
         .navigationBarTitle("Top Songs")
     }
 }
