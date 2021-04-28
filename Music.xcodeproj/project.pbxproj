@@ -519,7 +519,7 @@
 			repositoryURL = "https://github.com/nerdsupremacist/FancyScrollView.git";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 0.1.0;
+				minimumVersion = 0.1.3;
 			};
 		};
 		0EB5889823B5700500FAFDF2 /* XCRemoteSwiftPackageReference "url-image" */ = {
